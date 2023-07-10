@@ -1,4 +1,3 @@
-import { Navigation } from '@/components/Navigation'
 import React from 'react'
 
 interface LayoutProps {
@@ -6,10 +5,5 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-    return (
-        <>
-            <Navigation />
-            <main>{children}</main>
-        </>
-    )
+    return <div>{children}</div>
 }
