@@ -46,7 +46,7 @@ export interface StoreTypes {
 const userSlice = createSlice({
     name: 'user',
     initialState: {
-        user: null,
+        user: null as UserTypes | null,
         token: null,
         authModal: false,
         theme: 'light',
