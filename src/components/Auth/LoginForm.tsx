@@ -3,11 +3,13 @@ import styles from './form.module.sass'
 import { useState } from 'react'
 import { TextField } from '../UI/TextField'
 import { Button } from '@/components/UI/Button'
+import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Cookie from 'js-cookie'
 import { LoginData, loginUser } from '@/api'
 import { useDispatch } from 'react-redux'
 import { addUserData } from '@/store/reducers/user.reducer'
+import { enqueueSnackbar } from 'notistack'
 
 export const LoginForm = () => {
     const [user, setUser] = useState<LoginData>({
@@ -17,6 +19,7 @@ export const LoginForm = () => {
     const [loading, setLoading] = useState<boolean>(false)
 
     const dispatch = useDispatch()
+    const router = useRouter()
 
     const change = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUser((prev: any) => {
@@ -27,10 +30,47 @@ export const LoginForm = () => {
     const submit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         setLoading(true)
-        loginUser(user).then((resp: any) => {
-            console.log(resp)
-            Cookie.set('auth_token', resp.jwt)
-        })
+        loginUser(user)
+            .then((resp: any) => {
+                console.log(resp)
+                Cookie.set('auth_token', resp.jwt)
+                enqueueSnackbar('Вы успешно авторизовались', {
+                    variant: 'success',
+                })
+                router.push('/')
+            })
+            .catch((err) => {
+                console.log(err)
+                if (err.response.data?.error?.message) {
+                    const errorMessage = err.response.data.error.message
+                    switch (errorMessage) {
+                        case 'Invalid identifier or password':
+                            enqueueSnackbar('Неправильный логин или пароль', {
+                                variant: 'error',
+                            })
+                            break
+                        case 'email must be a valid email':
+                            enqueueSnackbar('Введите правильный email', {
+                                variant: 'error',
+                            })
+                            break
+                        default:
+                            break
+                    }
+                } else {
+                    if (
+                        err.response.data?.message[0]?.messages[0]?.message ===
+                        'Too many attempts, please try again in a minute.'
+                    ) {
+                        enqueueSnackbar('Превышен лимит запросов, попробуйте позже.', {
+                            variant: 'error',
+                        })
+                    }
+                }
+            })
+            .finally(() => {
+                setLoading(false)
+            })
     }
 
     return (
@@ -53,7 +93,7 @@ export const LoginForm = () => {
             </label>
 
             <Link href="/auth/register">У меня нет аккаунта</Link>
-            <Button color="primary" type="submit">
+            <Button color="primary" type="submit" loading={loading} disabled={loading}>
                 Войти
             </Button>
         </form>

@@ -21,12 +21,8 @@ export interface RegisterData {
 }
 
 export const registerUser = async (data: RegisterData): Promise<any> => {
-    try {
-        const response = await strapiApi.post('auth/local/register', data)
-        return response.data
-    } catch (error) {
-        console.log(error)
-    }
+    const response = await strapiApi.post('auth/local/register', data)
+    return response.data
 }
 
 export interface LoginData {
@@ -35,41 +31,25 @@ export interface LoginData {
 }
 
 export const loginUser = async (data: LoginData) => {
-    try {
-        const response = await strapiApi.post('auth/local', data)
-        return response.data
-    } catch (error) {
-        console.log(error)
-    }
+    const response = await strapiApi.post('auth/local', data)
+    return response.data
 }
 
 export const getUserData = async (token: string) => {
-    try {
-        const response = await strapiApi.get('users/me?populate=*', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
-        return response.data
-    } catch (error) {
-        console.log(error)
-    }
+    const response = await strapiApi.get('users/me?populate=*', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+    return response.data
 }
 
 export const getTitleByTitle = async (title: string) => {
-    try {
-        const response = await strapiApi.get(`get-titles?populate=deep&filters[title_id]=${title}`)
-        return response.data
-    } catch (error) {
-        console.log(error)
-    }
+    const response = await strapiApi.get(`get-titles?populate=deep&filters[title_id]=${title}`)
+    return response.data
 }
 
 export const getTitleByName = async (name: string) => {
-    try {
-        const response = await strapiApi.get(`get-titles?populate=deep&filters[title]=${name}`)
-        return response.data
-    } catch (error) {
-        console.log(error)
-    }
+    const response = await strapiApi.get(`get-titles?populate=deep&filters[title]=${name}`)
+    return response.data
 }

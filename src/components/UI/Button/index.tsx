@@ -10,6 +10,8 @@ interface ButtonProps {
     color?: 'primary' | 'warning' | 'error' | 'success'
     type?: 'submit' | 'button'
     style?: React.CSSProperties | undefined
+    loading?: boolean
+    disabled?: boolean
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -20,6 +22,8 @@ export const Button: React.FC<ButtonProps> = ({
     color,
     type,
     style,
+    loading,
+    disabled,
 }): JSX.Element => {
     return (
         <button
@@ -32,8 +36,9 @@ export const Button: React.FC<ButtonProps> = ({
             onClick={onClick}
             type={type}
             style={style}
+            disabled={disabled}
         >
-            {children}
+            {loading ? 'Загрузка' : children}
         </button>
     )
 }
