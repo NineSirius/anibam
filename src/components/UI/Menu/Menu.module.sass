@@ -1,0 +1,20 @@
+.menu
+  position: relative
+
+  &_content
+    position: absolute
+    top: 90%
+    right: 0
+    background: var(--menu-bg)
+    padding: 10px 0
+    will-change: top
+    border: 1px solid var(--border-color)
+    border-radius: 5px
+    visibility: hidden
+    opacity: 0
+    transition: .2s
+
+    &.active
+      top: 110%
+      visibility: visible
+      opacity: 1

@@ -41,6 +41,7 @@ export interface StoreTypes {
     user: UserTypes
     token: string
     authModal: boolean
+    theme: 'dark' | 'light'
 }
 
 const userSlice = createSlice({
@@ -49,6 +50,7 @@ const userSlice = createSlice({
         user: null,
         token: null,
         authModal: false,
+        theme: 'light',
     },
     reducers: {
         addUserData: (state, action) => {
@@ -75,6 +77,12 @@ const userSlice = createSlice({
         showAuthModal: (state) => {
             state.authModal = true
         },
+        setLightTheme: (state) => {
+            state.theme = 'light'
+        },
+        setDarkTheme: (state) => {
+            state.theme = 'dark'
+        },
     },
 })
 
@@ -85,6 +93,8 @@ export const {
     addPostponedAnime,
     hideAuthModal,
     showAuthModal,
+    setLightTheme,
+    setDarkTheme,
 } = userSlice.actions
 
 export default userSlice.reducer

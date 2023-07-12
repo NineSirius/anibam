@@ -6,30 +6,27 @@
   padding: 0
 
 body
-  background: #111
+  background: var(--bg)
+  transition: .2s background
 
 a
-  color: #bb6d25
   text-decoration: none
+  color: #ccc
 
   &:hover
     text-decoration: underline
 
-.nav_link
-  color: #e29736
-  font-weight: 500
-  text-decoration: none
-
-  &:hover
-    color: #945707
-
 .container
   max-width: 1280px
   margin: 0 auto
-  padding: 0 15px
-
-h1,h2,h3,h4,h5,h6
-  color: #f2f2f2
+  padding: 10px
 
 .main_title
-  margin: 20px 0
+  font-size: 1.5rem
+  color: var(--title-color)
+
+.anime_list
+  margin-top: 20px
+  display: flex
+  align-items: center
+  gap: 10px

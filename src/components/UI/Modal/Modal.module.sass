@@ -1,0 +1,21 @@
+.modal
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%) scale(0.1)
+  background: var(--modal-bg)
+  visibility: hidden
+  opacity: 0
+  transition: .2s
+  border-radius: 5px
+  padding: 10px
+  z-index: 11
+  max-height: 100vh
+  overflow-y: auto
+  overflow-x: hidden
+  border: 1px solid var(--border-color)
+
+  &.active
+    visibility: visible
+    opacity: 1
+    transform: translate(-50%, -50%) scale(1)

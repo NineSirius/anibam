@@ -1,0 +1,96 @@
+.navbar
+  min-height: 60px
+  padding: 10px
+
+  border-bottom: 1px solid var(--border-color)
+  background: var(--header-bg)
+  transition: .2s background
+
+  nav
+    position: relative
+    max-width: 1280px
+    margin: 0 auto
+    display: flex
+    justify-content: center
+
+    .nav_left
+      position: absolute
+      left: 10px
+
+      display: flex
+      align-items: center
+      gap: 5px
+
+    .hamburger
+      display: none
+
+    .nav_links
+      list-style: none
+      display: flex
+      align-items: center
+      gap: 10px
+
+      .mobile_logo_wrap
+        display: none
+
+    .nav_right
+      position: absolute
+      right: 10px
+
+      display: flex
+      align-items: center
+      gap: 5px
+
+.avatar
+  width: 50px
+  height: 50px
+  border-radius: 50%
+
+.role
+  font-size: 12px
+  font-weight: 400
+  color: #aaaaaa
+
+@media screen and (max-width: 600px)
+
+  .nav_left,
+  .nav_right
+    top: 50%
+    transform: translateY(-25%)
+
+  .nav_links
+    position: fixed
+    top: 0
+    left: 0
+    min-width: 50vw
+    width: max-content
+    height: 100vh
+    transform: translateX(-100%)
+    transition: .2s
+    background: var(--header-bg)
+    border-right: 1px solid var(--border-color)
+    flex-direction: column
+    align-items: flex-start !important
+    padding: 15px 10px
+    z-index: 11
+
+    li
+      width: 100%
+
+      button
+        width: 100%
+
+    &.active
+      transform: translateX(0)
+
+  .hamburger
+    display: inline-flex !important
+
+@media screen and (max-width: 320px)
+  .mobile_logo_wrap
+    display: flex !important
+    gap: 10px
+
+  .nav_left
+    .logo
+      display: none

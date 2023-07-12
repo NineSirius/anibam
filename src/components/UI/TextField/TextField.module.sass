@@ -1,0 +1,19 @@
+.input
+  width: 100%
+  position: relative
+  outline: none
+  border: 1px solid var(--border-color)
+  background: #fff
+  padding: 10px
+  border-radius: 5px
+
+  &::placeholder
+    color: #333
+
+@media (prefers-color-scheme: dark)
+  .input
+    background: #111
+    color: #fff
+
+    &::placeholder
+      color: #acacac
