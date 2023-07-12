@@ -25,7 +25,7 @@ export const registerUser = async (data: RegisterData): Promise<any> => {
         const response = await strapiApi.post('auth/local/register', data)
         return response.data
     } catch (error) {
-        throw new Error(error.response.data)
+        console.log(error)
     }
 }
 
@@ -39,7 +39,7 @@ export const loginUser = async (data: LoginData) => {
         const response = await strapiApi.post('auth/local', data)
         return response.data
     } catch (error) {
-        throw new Error(error.response.data)
+        console.log(error)
     }
 }
 
@@ -52,7 +52,7 @@ export const getUserData = async (token: string) => {
         })
         return response.data
     } catch (error) {
-        throw new Error(error.response.data)
+        console.log(error)
     }
 }
 
@@ -61,7 +61,7 @@ export const getTitleByTitle = async (title: string) => {
         const response = await strapiApi.get(`get-titles?populate=deep&filters[title_id]=${title}`)
         return response.data
     } catch (error) {
-        throw new Error(error.response.data)
+        console.log(error)
     }
 }
 
@@ -70,6 +70,6 @@ export const getTitleByName = async (name: string) => {
         const response = await strapiApi.get(`get-titles?populate=deep&filters[title]=${name}`)
         return response.data
     } catch (error) {
-        throw new Error(error.response.data)
+        console.log(error)
     }
 }
