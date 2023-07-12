@@ -9,7 +9,7 @@ interface ButtonProps {
     onClick?: () => void
     color?: 'primary' | 'warning' | 'error' | 'success'
     type?: 'submit' | 'button'
-    style?: any
+    style?: React.CSSProperties | undefined
 }
 
 export const Button: React.FC<ButtonProps> = ({

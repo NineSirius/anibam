@@ -3,17 +3,18 @@
   position: relative
   outline: none
   border: 1px solid var(--border-color)
-  background: #fff
+  background: var(--input-bg)
+  transition: .2s
   padding: 10px
   border-radius: 5px
 
   &::placeholder
-    color: #333
+    color: var(--input-placeholder)
 
-@media (prefers-color-scheme: dark)
-  .input
-    background: #111
-    color: #fff
+// @media (prefers-color-scheme: dark)
+//   .input
+//     background: #111
+//     color: #fff
 
-    &::placeholder
-      color: #acacac
+//     &::placeholder
+//       color: #acacac

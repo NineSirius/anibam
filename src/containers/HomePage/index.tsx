@@ -71,9 +71,9 @@ export const HomePage: React.FC<HomePageProps> = ({ data }) => {
         console.log(data)
 
         if (data) {
-            setTitles(data)
+            setTitles(data.data)
         }
-    }, [])
+    }, [data])
 
     return (
         <>
@@ -91,7 +91,7 @@ export const HomePage: React.FC<HomePageProps> = ({ data }) => {
             <div className="container">
                 <h4 className="main_title">Подборка</h4>
 
-                {/* <div className="anime_list">
+                <div className="anime_list">
                     {titles.map((item) => {
                         return (
                             <TitleCard
@@ -102,7 +102,7 @@ export const HomePage: React.FC<HomePageProps> = ({ data }) => {
                             />
                         )
                     })}
-                </div> */}
+                </div>
             </div>
         </>
     )

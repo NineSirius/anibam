@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const strapiApi = axios.create({
-    baseURL: 'http://localhost:1337/api',
+    baseURL: 'https://anibam-api.onrender.com/api/',
 })
 
 export const getTitles = async () => {
@@ -58,9 +58,16 @@ export const getUserData = async (token: string) => {
 
 export const getTitleByTitle = async (title: string) => {
     try {
-        const response = await strapiApi.get(
-            `title?populate=deep&filters[title_id]=${title}`,
-        )
+        const response = await strapiApi.get(`get-titles?populate=deep&filters[title_id]=${title}`)
+        return response.data
+    } catch (error) {
+        throw new Error(error.response.data)
+    }
+}
+
+export const getTitleByName = async (name: string) => {
+    try {
+        const response = await strapiApi.get(`get-titles?populate=deep&filters[title]=${name}`)
         return response.data
     } catch (error) {
         throw new Error(error.response.data)

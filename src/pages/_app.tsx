@@ -7,7 +7,6 @@ import type { AppProps } from 'next/app'
 import { Open_Sans } from 'next/font/google'
 import { SnackbarProvider } from 'notistack'
 import { Provider } from 'react-redux'
-import Cookie from 'js-cookie'
 
 const openSans = Open_Sans({
     weight: ['400', '500', '600', '700'],

@@ -1,0 +1,36 @@
+.search
+  width: 500px
+  position: absolute
+  display: flex
+  flex-direction: column
+  gap: 10px
+  top: 100px
+  left: 50%
+  transform: translateX(-50%) scale(0.1)
+  z-index: 11
+  visibility: visible
+  opacity: 0
+  transition: .2s
+
+  &.active
+    transform: translateX(-50%) scale(1)
+    visibility: visible
+    opacity: 1
+
+  .search_results
+    width: 100%
+    list-style: none
+    background: var(--bg)
+    transition: .2s
+    border: 1px solid var(--border-color)
+    border-radius: 5px
+    padding: 10px
+
+    img
+      width: 100px
+      height: auto
+
+    .result_info
+      display: flex
+      flex-direction: column
+      text-align: left
