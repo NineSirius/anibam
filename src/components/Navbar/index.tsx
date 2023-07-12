@@ -33,7 +33,7 @@ import { Search } from '../Search'
 
 export const Navbar = () => {
     const [drawerShow, setDrawerShow] = useState<boolean>(false)
-    const [searchShow, setSearchShow] = useState<boolean>(true)
+    const [searchShow, setSearchShow] = useState<boolean>(false)
 
     const handleHamburger = () => setDrawerShow(!drawerShow)
     const handleSearchShow = () => setSearchShow(!searchShow)
@@ -86,8 +86,6 @@ export const Navbar = () => {
                     </ul>
 
                     <div className={styles.nav_right}>
-                        <Search show={searchShow} onClose={handleSearchShow} />
-
                         <Button onClick={() => setSearchShow(true)}>
                             <MdSearch size={20} />
                         </Button>
@@ -226,6 +224,8 @@ export const Navbar = () => {
             </header>
 
             <Backdrop show={drawerShow} onClose={handleHamburger} />
+
+            <Search show={searchShow} onClose={handleSearchShow} />
         </>
     )
 }
