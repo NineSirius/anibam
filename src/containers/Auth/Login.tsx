@@ -26,7 +26,7 @@ export const LoginPage = () => {
         })
     }
 
-    const submit = (e: React.FormEvent<FormEventHandler>) => {
+    const submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
         // loginUser(userData)

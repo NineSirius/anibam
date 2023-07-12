@@ -4,7 +4,7 @@ import styles from './TitleCard.module.sass'
 import { useRouter } from 'next/router'
 
 interface TitleCardProps {
-    poster: {
+    poster?: {
         name: string
         alternativeText: string | null
         caption: string | null
@@ -52,14 +52,16 @@ export const TitleCard: React.FC<TitleCardProps> = ({ poster, title, titleId }) 
     const router = useRouter()
     return (
         <div className={styles.card} onClick={() => router.push(`/anime/${titleId}`)}>
-            <Image
-                src={poster.url}
-                width={poster.width}
-                height={poster.height}
-                alt={poster.name}
-                className={styles.poster}
-                draggable={false}
-            />
+            {poster && (
+                <Image
+                    src={poster.url}
+                    width={poster.width}
+                    height={poster.height}
+                    alt={poster.name}
+                    className={styles.poster}
+                    draggable={false}
+                />
+            )}
             <h2>{title}</h2>
         </div>
     )

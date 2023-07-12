@@ -5,7 +5,10 @@ import styles from './TitlePage.module.sass'
 import Image from 'next/image'
 
 interface TitlePageProps {
-    data: WatchItemInterface
+    data: {
+        data: WatchItemInterface[]
+        meta: any
+    }
 }
 
 export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
@@ -29,9 +32,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                             <Image
                                 src={titleInfo.attributes.poster?.data.attributes.url}
                                 width={titleInfo.attributes.poster?.data.attributes.width}
-                                height={
-                                    titleInfo.attributes.poster?.data.attributes.height
-                                }
+                                height={titleInfo.attributes.poster?.data.attributes.height}
                                 alt={titleInfo.attributes.poster?.data.attributes.name}
                                 className={styles.poster}
                             />
@@ -39,9 +40,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
 
                         <div className={styles.title_info_content}>
                             <h1>{titleInfo.attributes.title}</h1>
-                            <p className="caption">
-                                {titleInfo.attributes.original_title}
-                            </p>
+                            <p className="caption">{titleInfo.attributes.original_title}</p>
                         </div>
                     </div>
                 </div>

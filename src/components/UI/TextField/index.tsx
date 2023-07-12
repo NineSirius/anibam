@@ -9,9 +9,10 @@ interface TextField {
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
     id?: number | string
     loading?: boolean
+    value?: string
 }
 
-export const TextField: React.FC<TextField> = ({ label, type, onChange, name, loading }) => {
+export const TextField: React.FC<TextField> = ({ label, type, onChange, name, loading, value }) => {
     return (
         <>
             <div>
@@ -21,6 +22,7 @@ export const TextField: React.FC<TextField> = ({ label, type, onChange, name, lo
                     onChange={onChange}
                     placeholder={label}
                     className={styles.input}
+                    value={value}
                 />
                 {loading && <MdSearch />}
             </div>

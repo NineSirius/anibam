@@ -17,15 +17,13 @@ import { getUserData } from '@/api'
 
 interface LayoutProps {
     children: React.ReactNode
-    data: any
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, data }) => {
+const Layout: React.FC<LayoutProps> = ({ children }) => {
     const theme = useSelector((store: StoreTypes) => store.theme)
     const authModal = useSelector((store: StoreTypes) => store.authModal)
     const token = useSelector((store: StoreTypes) => store.token)
     const user = useSelector((store: StoreTypes) => store.user)
-    console.log(data)
 
     const { asPath } = useRouter()
 
@@ -61,7 +59,7 @@ const Layout: React.FC<LayoutProps> = ({ children, data }) => {
                 dispatch(setLightTheme())
             }
         }
-    }, [])
+    }, [dispatch])
 
     return (
         <div className={clsx('app', theme)}>

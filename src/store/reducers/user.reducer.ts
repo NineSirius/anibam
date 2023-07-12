@@ -1,6 +1,5 @@
-import { WatchPost } from './../../containers/AnimeHome/index'
+import { WatchItemInterface } from '@/containers/HomePage'
 import { createSlice } from '@reduxjs/toolkit'
-import Cookie from 'js-cookie'
 
 export interface UserTypes {
     id: number
@@ -33,8 +32,8 @@ export interface UserTypes {
         username_styles: 'rgb' | 'default'
         show_vip_status: boolean
     }
-    pending_list: WatchPost[]
-    watch_list: WatchPost[]
+    pending_list: WatchItemInterface[]
+    watch_list: WatchItemInterface[]
 }
 
 export interface StoreTypes {
@@ -62,14 +61,18 @@ const userSlice = createSlice({
             state.token = null
         },
         removePostponedAnime: (state, action) => {
-            const user = state.user
-            user.pending_list.splice(action.payload, 1)
-            state.user = user
+            if (state.user) {
+                const user = state.user
+                user.pending_list.splice(action.payload, 1)
+                state.user = user
+            }
         },
         addPostponedAnime: (state, action) => {
-            let user = state.user
-            user.pending_list.push(action.payload)
-            state.user = user
+            if (state.user) {
+                let user = state.user
+                user.pending_list.push(action.payload)
+                state.user = user
+            }
         },
         hideAuthModal: (state) => {
             state.authModal = false

@@ -12,6 +12,7 @@ export interface WatchItemInterface {
         createdAt: string
         updatedAt: string
         publishedAt: string
+        title_id: string
         poster: {
             data: {
                 id: number
@@ -61,7 +62,10 @@ export interface WatchItemInterface {
 }
 
 interface HomePageProps {
-    data: WatchItemInterface[]
+    data: {
+        data: WatchItemInterface[]
+        meta: any
+    }
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ data }) => {
