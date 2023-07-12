@@ -24,7 +24,7 @@ export const RegisterPage = () => {
         })
     }
 
-    const submit = (e: React.FormEvent<FormEventHandler>) => {
+    const submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
         registerUser(userData)
@@ -49,13 +49,7 @@ export const RegisterPage = () => {
                         Sign Up in <strong>Game Store</strong>
                     </p>
                     <div className={styles.form_field}>
-                        <input
-                            type="text"
-                            id="username"
-                            required
-                            name="email"
-                            onChange={change}
-                        />
+                        <input type="text" id="username" required name="email" onChange={change} />
                         <label htmlFor="username" className={styles.form_field_label}>
                             Email
                         </label>

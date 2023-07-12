@@ -24,7 +24,7 @@ export const LoginForm = () => {
         })
     }
 
-    const submit = (event: React.FormEvent<SubmitEvent>) => {
+    const submit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         setLoading(true)
         loginUser(user).then((resp: any) => {
@@ -49,12 +49,7 @@ export const LoginForm = () => {
 
             <label className={styles.form_label}>
                 {/* <h4 className={styles.form_label_text}>Имя пользователя или email</h4> */}
-                <TextField
-                    label="Пароль"
-                    type="password"
-                    onChange={change}
-                    name="password"
-                />
+                <TextField label="Пароль" type="password" onChange={change} name="password" />
             </label>
 
             <Link href="/auth/register">У меня нет аккаунта</Link>
