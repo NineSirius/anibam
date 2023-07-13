@@ -1,4 +1,4 @@
-import * as cookie from 'cookie'
+import cookie from 'cookie'
 import { getUserData } from '@/api'
 import ProfilePage from '@/containers/ProfilePage'
 import Cookie from 'js-cookie'
