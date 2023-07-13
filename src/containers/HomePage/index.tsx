@@ -69,6 +69,7 @@ export interface WatchItemInterface {
         countries: {
             data: WatchItemCountry[]
         }
+        episodes: WatchItemEpisode[]
     }
 }
 
@@ -97,6 +98,13 @@ interface WatchItemGenre {
             data: WatchItemInterface[]
         }
     }
+}
+
+interface WatchItemEpisode {
+    id: number
+    episode_name: string
+    episode_number: number
+    episode_url: string
 }
 
 interface HomePageProps {
@@ -141,6 +149,7 @@ export const HomePage: React.FC<HomePageProps> = ({ data }) => {
                                 poster={item.attributes.poster?.data.attributes}
                                 title={item.attributes.title}
                                 titleId={item.attributes.title_id}
+                                description={item.attributes.description}
                             />
                         )
                     })}

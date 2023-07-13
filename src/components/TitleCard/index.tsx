@@ -46,6 +46,7 @@ interface TitleCardProps {
     }
     title: string
     titleId: string
+    description: string
 }
 
 export function limitStr(str: string, n: number, symb?: string) {
@@ -54,20 +55,25 @@ export function limitStr(str: string, n: number, symb?: string) {
     return str.substr(0, n - symb.length) + symb
 }
 
-export const TitleCard: React.FC<TitleCardProps> = ({ poster, title, titleId }) => {
+export const TitleCard: React.FC<TitleCardProps> = ({ poster, title, titleId, description }) => {
     const router = useRouter()
     return (
         <div className={styles.card} onClick={() => router.push(`/anime/${titleId}`)}>
-            {poster && (
-                <Image
-                    src={poster.url}
-                    width={poster.width}
-                    height={poster.height}
-                    alt={poster.name}
-                    className={styles.poster}
-                    draggable={false}
-                />
-            )}
+            <div className={styles.poster_wrap}>
+                {poster && (
+                    <Image
+                        src={poster.url}
+                        width={poster.width}
+                        height={poster.height}
+                        alt={poster.name}
+                        className={styles.poster}
+                        draggable={false}
+                    />
+                )}
+                <div className={styles.poster_info}>
+                    <p>{limitStr(description, 80)}</p>
+                </div>
+            </div>
             <h2>{limitStr(title, 48, '...')}</h2>
         </div>
     )

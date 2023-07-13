@@ -5,7 +5,7 @@ import clsx from 'clsx'
 interface ButtonProps {
     children: React.ReactNode
     variant?: 'contained' | 'outline'
-    className?: string
+    className?: any
     onClick?: () => void
     color?: 'primary' | 'warning' | 'error' | 'success'
     type?: 'submit' | 'button'

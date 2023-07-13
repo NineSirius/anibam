@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { limitStr } from '@/components/TitleCard'
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 import clsx from 'clsx'
+import { Button } from '@/components/UI/Button'
 
 interface TitlePageProps {
     data: {
@@ -56,6 +57,10 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                     <span>{titleInfo.attributes.type}</span>
                                 </li>
                                 <li>
+                                    <p>Статус</p>
+                                    <span>{titleInfo.attributes.status}</span>
+                                </li>
+                                <li>
                                     <p>Страна</p>
                                     <span>
                                         {titleInfo.attributes.countries.data.map((item) => {
@@ -94,6 +99,10 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                     <span>{titleInfo.attributes.type}</span>
                                 </li>
                                 <li>
+                                    <p>Статус</p>
+                                    <span>{titleInfo.attributes.status}</span>
+                                </li>
+                                <li>
                                     <p>Страна</p>
                                     <span>
                                         {titleInfo.attributes.countries.data.map((item) => {
@@ -114,6 +123,20 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                             >
                                 {hideDesc ? 'Подробнее' : 'Скрыть'}
                             </button>
+
+                            <div className={styles.episodes}>
+                                <h3>Список серий</h3>
+                                {titleInfo.attributes.episodes.map((item) => {
+                                    return (
+                                        <Button
+                                            key={item.id}
+                                            style={{ justifyContent: 'flex-start' }}
+                                        >
+                                            {item.episode_number} эпизод
+                                        </Button>
+                                    )
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>
