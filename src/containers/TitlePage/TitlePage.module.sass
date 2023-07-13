@@ -2,9 +2,100 @@
   display: flex
   gap: 30px
 
-  .poster
-    width: 20%
-    height: auto
+  .anime_info
+    display: none
+    flex-direction: column
+    gap: 15px
+    margin-top: 10px
+    list-style: none
+    border: 1px solid var(--border-color)
+    padding: 5px 15px
+    border-radius: 5px
+
+    &.active
+      display: flex
+
+    p
+      color: var(--caption-color)
+
+      .age
+        color: var(--error-color)
+
+      span
+        ont-size: 1.125rem
+
+  .poster_wrap
+    display: flex
+    flex-direction: column
+    justify-content: center
+    .poster
+      min-width: 240px
+      height: 350px
+      object-fit: cover
 
   h1
     color: var(--title-color)
+
+  .genres
+    display: flex
+    gap: 10px
+    list-style: none
+    margin-top: 10px
+
+    .genre_item
+      display: inline-flex
+      max-width: max-content
+      align-items: center
+      background: var(--bg-alternate)
+      border-radius: 5px
+      font-size: 0.875rem
+      color: var(--bg)
+      padding: 5px 10px
+
+.description
+  margin-top: 10px
+
+  p
+    margin-top: 15px
+    color: var(--desc-color)
+
+.more_btn
+  border: unset
+  background: none
+  font-size: 1rem
+
+  &:hover
+    cursor: pointer
+
+@media screen and (max-width: 810px)
+  .genres
+    flex-wrap: wrap
+    align-items: center
+
+@media screen and (max-width: 700px)
+  .anime_info
+    display: flex !important
+
+    &.active
+      display: none !important
+
+  .title_info
+    display: flex
+    flex-direction: column
+
+    .poster
+      max-width: 300px
+      margin: 0 auto
+
+    .title_info_content
+
+      h1
+        text-align: center
+
+      .caption
+        text-align: center
+
+      .genres
+        flex-wrap: wrap
+        justify-content: center
+        align-items: center

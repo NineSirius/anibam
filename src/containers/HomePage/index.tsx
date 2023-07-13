@@ -13,6 +13,11 @@ export interface WatchItemInterface {
         updatedAt: string
         publishedAt: string
         title_id: string
+        description: string
+        status: 'Вышел' | 'Онгоинг' | 'Анонс'
+        type: 'ТВ Сериал' | 'Фильм' | 'OVA' | 'Спешл'
+        release_date: string
+        age: '18+' | '16+' | '14+' | '13+' | '12+' | '6+'
         poster: {
             data: {
                 id: number
@@ -58,6 +63,39 @@ export interface WatchItemInterface {
                 }
             }
         } | null
+        genres: {
+            data: WatchItemGenre[]
+        }
+        countries: {
+            data: WatchItemCountry[]
+        }
+    }
+}
+
+interface WatchItemCountry {
+    id: number
+    attributes: {
+        title: string
+        createdAt: string
+        updatedAt: string
+        publishedAt: string
+        titles: {
+            data: WatchItemInterface[]
+        }
+    }
+}
+
+interface WatchItemGenre {
+    id: number
+    attributes: {
+        title: string
+        genre_id: string
+        createdAt: string
+        updatedAt: string
+        publishedAt: string
+        titles: {
+            data: WatchItemInterface[]
+        }
     }
 }
 

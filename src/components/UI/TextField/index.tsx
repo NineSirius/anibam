@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './TextField.module.sass'
-import { MdSearch } from 'react-icons/md'
+import loader from './loader.module.css'
+import clsx from 'clsx'
 
 interface TextField {
     label: string
@@ -26,7 +27,7 @@ export const TextField: React.FC<TextField> = ({
 }) => {
     return (
         <>
-            <div>
+            <div className={styles.input_wrap}>
                 <input
                     type={type ? type : 'text'}
                     name={name}
@@ -37,7 +38,7 @@ export const TextField: React.FC<TextField> = ({
                     required={required}
                     autoFocus={autoFocus}
                 />
-                {loading && <MdSearch />}
+                {loading && <span className={clsx(styles.search_icon, loader.loader)}></span>}
             </div>
         </>
     )

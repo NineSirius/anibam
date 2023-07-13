@@ -1,13 +1,22 @@
-.input
-  width: 100%
+.input_wrap
   position: relative
-  outline: none
-  border: 1px solid var(--border-color)
-  background: var(--input-bg)
-  transition: .2s
-  padding: 10px
-  border-radius: 5px
-  color: var(--input-color)
+
+  .search_icon
+    position: absolute
+    right: 20px
+    top: 50%
+    transform: translateY(-50%)
+
+  .input
+    width: 100%
+    position: relative
+    outline: none
+    border: 1px solid var(--border-color)
+    background: var(--input-bg)
+    transition: .2s
+    padding: 10px
+    border-radius: 5px
+    color: var(--input-color)
 
   &::placeholder
     color: var(--input-placeholder)

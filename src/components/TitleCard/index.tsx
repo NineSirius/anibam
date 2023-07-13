@@ -48,7 +48,7 @@ interface TitleCardProps {
     titleId: string
 }
 
-function limitStr(str: string, n: number, symb?: string) {
+export function limitStr(str: string, n: number, symb?: string) {
     if (!n && !symb) return str
     symb = symb || '...'
     return str.substr(0, n - symb.length) + symb

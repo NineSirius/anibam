@@ -66,39 +66,49 @@ export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
                     autoFocus
                 />
 
-                {searchQuery && (
-                    <ul className={styles.search_results}>
-                        {searchResults ? (
-                            searchResults.map((result: WatchItemInterface, index) => (
-                                <li
-                                    key={index}
-                                    style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}
+                <ul className={styles.search_results}>
+                    {searchResults ? (
+                        searchResults.map((result: WatchItemInterface, index) => (
+                            <li
+                                key={index}
+                                style={{
+                                    display: 'flex',
+                                    gap: 10,
+                                    alignItems: 'flex-start',
+                                }}
+                            >
+                                <Button
+                                    style={{
+                                        padding: 5,
+                                        alignItems: 'flex-start',
+                                        justifyContent: 'flex-start',
+                                        paddingRight: 15,
+                                        paddingLeft: 15,
+                                        borderRadius: 0,
+                                    }}
+                                    onClick={() =>
+                                        router.push(`anime/${result.attributes.title_id}`)
+                                    }
                                 >
-                                    <Button
-                                        style={{ padding: 5, alignItems: 'flex-start' }}
-                                        onClick={() =>
-                                            router.push(`anime/${result.attributes.title_id}`)
-                                        }
-                                    >
-                                        {result.attributes.poster && (
-                                            <Image
-                                                src={result.attributes.poster?.data.attributes.url}
-                                                width={50}
-                                                height={50}
-                                                alt={result.attributes.poster?.data.attributes.name}
-                                            />
-                                        )}
-                                        <div className={styles.result_info}>
-                                            <h5>{result.attributes.title}</h5>
-                                        </div>
-                                    </Button>
-                                </li>
-                            ))
-                        ) : (
-                            <li>Ничего не найдено</li>
-                        )}
-                    </ul>
-                )}
+                                    {result.attributes.poster && (
+                                        <Image
+                                            src={result.attributes.poster?.data.attributes.url}
+                                            width={50}
+                                            height={50}
+                                            alt={result.attributes.poster?.data.attributes.name}
+                                        />
+                                    )}
+                                    <div className={styles.result_info}>
+                                        <span>{result.attributes.status}</span>
+                                        <h5>{result.attributes.title}</h5>
+                                    </div>
+                                </Button>
+                            </li>
+                        ))
+                    ) : (
+                        <li className={styles.nothing}>Ничего не найдено</li>
+                    )}
+                </ul>
             </div>
             <Backdrop show={show} onClose={onClose} />
         </>

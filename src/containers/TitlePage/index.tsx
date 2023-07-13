@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { WatchItemInterface } from '../HomePage'
 import styles from './TitlePage.module.sass'
 import Image from 'next/image'
+import { limitStr } from '@/components/TitleCard'
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
+import clsx from 'clsx'
 
 interface TitlePageProps {
     data: {
@@ -13,6 +16,8 @@ interface TitlePageProps {
 
 export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
     const [titleInfo, setTitleInfo] = useState<WatchItemInterface>()
+    const [hideDesc, setHideDesc] = useState<boolean>(true)
+    const [mobile, setMobile] = useState<boolean>(false)
 
     useEffect(() => {
         if (data) {
@@ -28,19 +33,87 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                 </Head>
                 <div className="container">
                     <div className={styles.title_info}>
-                        {titleInfo.attributes.poster && (
-                            <Image
-                                src={titleInfo.attributes.poster?.data.attributes.url}
-                                width={titleInfo.attributes.poster?.data.attributes.width}
-                                height={titleInfo.attributes.poster?.data.attributes.height}
-                                alt={titleInfo.attributes.poster?.data.attributes.name}
-                                className={styles.poster}
-                            />
-                        )}
+                        <div className={styles.poster_wrap}>
+                            {titleInfo.attributes.poster && (
+                                <Image
+                                    src={titleInfo.attributes.poster?.data.attributes.url}
+                                    width={titleInfo.attributes.poster?.data.attributes.width}
+                                    height={titleInfo.attributes.poster?.data.attributes.height}
+                                    alt={titleInfo.attributes.poster?.data.attributes.name}
+                                    className={styles.poster}
+                                />
+                            )}
+
+                            <ul className={clsx(styles.anime_info, !mobile && styles.active)}>
+                                <li>
+                                    <p>Возрастное ограничение</p>
+                                    <span className={styles.age}>
+                                        {titleInfo.attributes.age || 'Не указано'}
+                                    </span>
+                                </li>
+                                <li>
+                                    <p>Тип</p>
+                                    <span>{titleInfo.attributes.type}</span>
+                                </li>
+                                <li>
+                                    <p>Страна</p>
+                                    <span>
+                                        {titleInfo.attributes.countries.data.map((item) => {
+                                            return item.attributes.title
+                                        })}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
 
                         <div className={styles.title_info_content}>
                             <h1>{titleInfo.attributes.title}</h1>
-                            <p className="caption">{titleInfo.attributes.original_title}</p>
+                            <p className={clsx('caption', styles.caption)}>
+                                {titleInfo.attributes.original_title}
+                            </p>
+
+                            <div className={styles.genres}>
+                                {titleInfo.attributes.genres.data.map((item) => {
+                                    return (
+                                        <span key={item.id} className={styles.genre_item}>
+                                            {item.attributes.title}
+                                        </span>
+                                    )
+                                })}
+                            </div>
+
+                            <ul className={clsx(styles.anime_info, mobile && styles.active)}>
+                                <li>
+                                    <p>Возрастное ограничение</p>
+                                    <span className={styles.age}>
+                                        {titleInfo.attributes.age || 'Не указано'}
+                                    </span>
+                                </li>
+                                <li>
+                                    <p>Тип</p>
+                                    <span>{titleInfo.attributes.type}</span>
+                                </li>
+                                <li>
+                                    <p>Страна</p>
+                                    <span>
+                                        {titleInfo.attributes.countries.data.map((item) => {
+                                            return item.attributes.title
+                                        })}
+                                    </span>
+                                </li>
+                            </ul>
+
+                            <ReactMarkdown className={styles.description}>
+                                {hideDesc
+                                    ? limitStr(titleInfo.attributes.description, 350)
+                                    : titleInfo.attributes.description}
+                            </ReactMarkdown>
+                            <button
+                                onClick={() => setHideDesc(!hideDesc)}
+                                className={styles.more_btn}
+                            >
+                                {hideDesc ? 'Подробнее' : 'Скрыть'}
+                            </button>
                         </div>
                     </div>
                 </div>

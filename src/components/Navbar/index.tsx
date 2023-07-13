@@ -155,7 +155,10 @@ export const Navbar = () => {
                         {user ? (
                             <Menu label={user.username}>
                                 <div>
-                                    <Button style={{ borderRadius: 0 }}>
+                                    <Button
+                                        style={{ borderRadius: 0 }}
+                                        onClick={() => router.push('/users/me')}
+                                    >
                                         <div
                                             style={{
                                                 display: 'flex',

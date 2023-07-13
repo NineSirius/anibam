@@ -19,22 +19,55 @@
 
   .search_results
     width: 100%
+    min-height: 100px
     list-style: none
     background: var(--bg)
     transition: .2s
     border: 1px solid var(--border-color)
     border-radius: 5px
-    padding: 10px
+    padding: 10px 0
+
+    .nothing
+      text-align: center
 
     img
-      width: 100px
+      width: 80px
       height: auto
 
     .result_info
       display: flex
       flex-direction: column
+      padding: 5px 0
       text-align: left
+
+      span
+        font-weight: 400
+        font-size: 1rem
+        color: var(--caption-color)
+
+      h5
+        font-size: 1.375rem
 
 @media screen and (max-width: 610px)
   .search
     width: 90vw
+
+    .search_results
+      width: 100%
+      min-height: 100px
+      list-style: none
+      background: var(--bg)
+      transition: .2s
+      border: 1px solid var(--border-color)
+      border-radius: 5px
+      padding: 10px 0
+
+    .nothing
+      text-align: center
+
+    .result_info
+      span
+        font-size: 0.75rem !important
+
+      h5
+        font-size: 1rem !important
