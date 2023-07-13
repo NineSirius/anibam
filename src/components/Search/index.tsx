@@ -63,6 +63,7 @@ export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
                     id="search"
                     value={searchQuery}
                     onChange={handleSearchQueryChange}
+                    autoFocus
                 />
 
                 {searchQuery && (

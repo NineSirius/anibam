@@ -6,9 +6,8 @@ import { Button } from '@/components/UI/Button'
 import Link from 'next/link'
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router'
-import { LoginData, RegisterData, loginUser, registerUser } from '@/api'
+import { RegisterData, registerUser } from '@/api'
 import { useDispatch } from 'react-redux'
-import { addUserData } from '@/store/reducers/user.reducer'
 import { enqueueSnackbar } from 'notistack'
 
 export const RegisterForm = () => {
@@ -38,7 +37,6 @@ export const RegisterForm = () => {
                 enqueueSnackbar('Ваш аккаунт успешно зарегистрирован', {
                     variant: 'success',
                 })
-                router.push('/')
             })
             .catch((err) => {
                 console.log(err.response.data.error.message)

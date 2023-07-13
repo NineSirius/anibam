@@ -11,6 +11,7 @@ interface TextField {
     loading?: boolean
     value?: string
     required?: boolean
+    autoFocus?: boolean
 }
 
 export const TextField: React.FC<TextField> = ({
@@ -21,6 +22,7 @@ export const TextField: React.FC<TextField> = ({
     loading,
     value,
     required,
+    autoFocus,
 }) => {
     return (
         <>
@@ -33,6 +35,7 @@ export const TextField: React.FC<TextField> = ({
                     className={styles.input}
                     value={value}
                     required={required}
+                    autoFocus={autoFocus}
                 />
                 {loading && <MdSearch />}
             </div>

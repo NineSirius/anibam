@@ -8,6 +8,7 @@ import {
     MdLightMode,
     MdList,
     MdLogout,
+    MdMenu,
     MdSearch,
     MdSettings,
 } from 'react-icons/md'
@@ -60,7 +61,7 @@ export const Navbar = () => {
                 <nav className="container">
                     <div className={styles.nav_left}>
                         <Button className={styles.hamburger} onClick={handleHamburger}>
-                            <MdList />
+                            <MdMenu size={24} />
                         </Button>
                         <Button className={styles.logo} onClick={() => router.push('/')}>
                             AniBam
@@ -68,12 +69,12 @@ export const Navbar = () => {
                     </div>
 
                     <ul className={clsx(styles.nav_links, drawerShow && styles.active)}>
-                        <div className={styles.mobile_logo_wrap}>
+                        {/* <div className={styles.mobile_logo_wrap}>
                             <Button className={styles.logo}>AniBam</Button>
                             <Button>
                                 <MdDarkMode />
                             </Button>
-                        </div>
+                        </div> */}
                         <li>
                             <Button>Аниме</Button>
                         </li>

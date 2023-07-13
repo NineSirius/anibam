@@ -48,6 +48,12 @@ interface TitleCardProps {
     titleId: string
 }
 
+function limitStr(str: string, n: number, symb?: string) {
+    if (!n && !symb) return str
+    symb = symb || '...'
+    return str.substr(0, n - symb.length) + symb
+}
+
 export const TitleCard: React.FC<TitleCardProps> = ({ poster, title, titleId }) => {
     const router = useRouter()
     return (
@@ -62,7 +68,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({ poster, title, titleId }) 
                     draggable={false}
                 />
             )}
-            <h2>{title}</h2>
+            <h2>{limitStr(title, 48, '...')}</h2>
         </div>
     )
 }
