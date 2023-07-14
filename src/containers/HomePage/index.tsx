@@ -70,6 +70,9 @@ export interface WatchItemInterface {
             data: WatchItemCountry[]
         }
         episodes: WatchItemEpisode[]
+        relations: {
+            data: WatchItemInterface[]
+        }
     }
 }
 

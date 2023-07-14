@@ -6,7 +6,7 @@
     display: none
     flex-direction: column
     gap: 15px
-    margin-top: 10px
+    margin-top: 15px
     list-style: none
     border: 1px solid var(--border-color)
     padding: 10px 15px
@@ -36,6 +36,21 @@
       height: 350px
       object-fit: cover
 
+      &:hover
+        background: var(--btn-hover-bg)
+        color: var(--bg-alternate)
+
+    .relations
+      border: 1px sloid var(--border-color)
+      list-style: none
+
+  .title_info_content
+    .select
+      display: none
+
+    .button
+      display: none
+
   h1
     color: var(--title-color)
 
@@ -55,6 +70,15 @@
       color: var(--bg)
       padding: 5px 10px
 
+.select
+  margin-top: 15px
+
+.button
+  margin-top: 15px
+  background: var(--btn-hover-bg)
+  color: var(--bg-alternate)
+  transition: .2s
+
 .description
   margin-top: 10px
 
@@ -73,6 +97,13 @@
 
 .episodes
   margin-top: 20px
+  border: 1px solid var(--border-color)
+  padding: 5px 10px
+  border-radius: 5px
+
+  h2
+    color: var(--title-color)
+    margin-bottom: 10px
 
   h3
     margin: 10px 0
@@ -94,11 +125,23 @@
     display: flex
     flex-direction: column
 
+    .poster_wrap
+
+      .select
+        display: none
+
+      .button
+        display: none
+
     .poster
       max-width: 300px
       margin: 0 auto
 
     .title_info_content
+      .select
+        display: flex
+      .button
+        display: flex
 
       h1
         text-align: center

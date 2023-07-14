@@ -8,6 +8,8 @@ import { limitStr } from '@/components/TitleCard'
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 import clsx from 'clsx'
 import { Button } from '@/components/UI/Button'
+import { Select } from '@/components/UI/Select'
+import { enqueueSnackbar } from 'notistack'
 
 interface TitlePageProps {
     data: {
@@ -48,6 +50,24 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                 />
                             )}
 
+                            <Button
+                                className={styles.button}
+                                onClick={() =>
+                                    router.push(
+                                        `/anime/${titleInfo.attributes.title_id}/episodes/1`,
+                                    )
+                                }
+                            >
+                                Смотреть онлайн
+                            </Button>
+
+                            <Select
+                                options={['Просмотрено', 'Отложено', 'Брошено']}
+                                value="Добавить в папку"
+                                onChange={(value) => enqueueSnackbar('Папки в разработке')}
+                                className={styles.select}
+                            ></Select>
+
                             <ul className={clsx(styles.anime_info, !mobile && styles.active)}>
                                 <li>
                                     <p>Возрастное ограничение</p>
@@ -72,6 +92,14 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                     </span>
                                 </li>
                             </ul>
+
+                            {/* <ul className={styles.relations}>
+                                <p>Связанное</p>
+                                {titleInfo.attributes.relations.data.length > 0 &&
+                                    titleInfo.attributes.relations.data.map((item) => {
+                                        return <li key={item.id}>{item.attributes.title}</li>
+                                    })}
+                            </ul> */}
                         </div>
 
                         <div className={styles.title_info_content}>
@@ -89,6 +117,23 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                     )
                                 })}
                             </div>
+
+                            <Button
+                                className={styles.button}
+                                onClick={() =>
+                                    router.push(
+                                        `/anime/${titleInfo.attributes.title_id}/episodes/1`,
+                                    )
+                                }
+                            >
+                                Смотреть онлайн
+                            </Button>
+                            <Select
+                                options={['Просмотрено', 'Отложено', 'Брошено']}
+                                value="Добавить в папку"
+                                onChange={(value) => enqueueSnackbar('Папки в разработке')}
+                                className={styles.select}
+                            ></Select>
 
                             <ul className={clsx(styles.anime_info, mobile && styles.active)}>
                                 <li>
@@ -129,21 +174,25 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
 
                             <div className={styles.episodes}>
                                 <h3>Список серий</h3>
-                                {titleInfo.attributes.episodes.map((item) => {
-                                    return (
-                                        <Button
-                                            key={item.id}
-                                            style={{ justifyContent: 'flex-start' }}
-                                            onClick={() =>
-                                                router.push(
-                                                    `/anime/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
-                                                )
-                                            }
-                                        >
-                                            {item.episode_number} эпизод
-                                        </Button>
-                                    )
-                                })}
+                                {titleInfo.attributes.episodes.length > 0 ? (
+                                    titleInfo.attributes.episodes.map((item) => {
+                                        return (
+                                            <Button
+                                                key={item.id}
+                                                style={{ justifyContent: 'flex-start' }}
+                                                onClick={() =>
+                                                    router.push(
+                                                        `/anime/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
+                                                    )
+                                                }
+                                            >
+                                                {item.episode_number} эпизод
+                                            </Button>
+                                        )
+                                    })
+                                ) : (
+                                    <h2>В скором времени добавятся</h2>
+                                )}
                             </div>
                         </div>
                     </div>

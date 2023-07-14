@@ -10,21 +10,18 @@ import { Link } from '@mui/material'
 import { Select } from '@/components/UI/Select'
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
 
-interface EpisodeProps {
-    data: WatchItemInterface
-    episodeNumber: any
-}
-
-export const EpisodePage: React.FC<EpisodeProps> = ({ data, episodeNumber }) => {
+export const EpisodePage = () => {
     const [animeInfo, setAnimeInfo] = useState<WatchItemInterface | null>(null)
+    const [episodeNumber, setEpisodeNumber] = useState<any | null>(null)
 
     const router = useRouter()
 
     useEffect(() => {
-        if (data) {
-            setAnimeInfo(data)
+        if (router.query.title) {
+            setEpisodeNumber(router.query.episodeNumber)
+            getTitleByTitle(router.query.title).then((resp) => setAnimeInfo(resp.data[0]))
         }
-    }, [data])
+    }, [router.query])
 
     if (animeInfo) {
         return (
@@ -49,7 +46,7 @@ export const EpisodePage: React.FC<EpisodeProps> = ({ data, episodeNumber }) => 
                                 <div className={styles.left}>
                                     <h2>
                                         {episodeNumber} серия -{' '}
-                                        {animeInfo.attributes.episodes[episodeNumber]
+                                        {animeInfo.attributes.episodes[episodeNumber - 1]
                                             ?.episode_name || 'Без названия'}
                                     </h2>
                                     <Link href={`/anime/${animeInfo.attributes.title_id}`}>
@@ -58,6 +55,7 @@ export const EpisodePage: React.FC<EpisodeProps> = ({ data, episodeNumber }) => 
                                 </div>
                                 <div className={styles.right}>
                                     <Button
+                                        disabled={+episodeNumber === 1}
                                         onClick={() =>
                                             router.push(
                                                 `/anime/${animeInfo.attributes.title_id}/episodes/${
@@ -69,6 +67,9 @@ export const EpisodePage: React.FC<EpisodeProps> = ({ data, episodeNumber }) => 
                                         <MdSkipPrevious size={24} />
                                     </Button>
                                     <Button
+                                        disabled={
+                                            +episodeNumber === animeInfo.attributes.episodes.length
+                                        }
                                         onClick={() =>
                                             router.push(
                                                 `/anime/${animeInfo.attributes.title_id}/episodes/${

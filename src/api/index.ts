@@ -44,7 +44,7 @@ export const getUserData = async (token: string) => {
     return response.data
 }
 
-export const getTitleByTitle = async (title: string) => {
+export const getTitleByTitle = async (title: any) => {
     const response = await strapiApi.get(`get-titles?populate=deep&filters[title_id]=${title}`)
     return response.data
 }

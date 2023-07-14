@@ -1,33 +1,50 @@
 .select
-  width: 100%
-  min-width: 200px
+  min-width: 100%
   position: relative
-  padding: 5px
   align-items: center
   justify-content: center
   border-radius: 5px
   max-width: max-content
 
   .selectedOption
+    display: inline-flex
+    align-items: center
+    justify-content: space-between
+    font-family: inherit
     border: 1px solid var(--border-color)
-    padding: 5px 10px
+    transition: .2s
 
   .options
     position: absolute
-    top: 110%
+    top: 90%
     width: 100%
     list-style: none
+    will-change: tranform
     color: var(--bg-alternate)
+    background: var(--bg)
     padding: 5px
     border: 1px solid var(--border-color)
     border-radius: 5px
+    visibility: hidden
+    opacity: 0
+    transition: .2s
+
+    &.active
+      top: 110%
+      visibility: visible
+      opacity: 1
 
 .selectedOption, .option
+  font-family: inherit
+  font-weight: 600
+  font-size: 16px
+  display: inline-flex
   width: 100%
   background: var(--bg)
   color: var(--bg-alternate)
-  padding: 5px 10px
+  padding: 10px 15px
   border-radius: 5px
+  border: unset
 
   &:hover
     cursor: pointer
