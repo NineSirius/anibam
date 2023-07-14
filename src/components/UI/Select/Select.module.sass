@@ -7,9 +7,6 @@
   max-width: max-content
 
   .selectedOption
-    display: inline-flex
-    align-items: center
-    justify-content: space-between
     font-family: inherit
     border: 1px solid var(--border-color)
     transition: .2s
@@ -39,12 +36,17 @@
   font-weight: 600
   font-size: 16px
   display: inline-flex
+  align-items: center
+  justify-content: space-between
   width: 100%
   background: var(--bg)
   color: var(--bg-alternate)
   padding: 10px 15px
   border-radius: 5px
   border: unset
+
+  &:disabled
+    color: var(--disabled-color)
 
   &:hover
     cursor: pointer

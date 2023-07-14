@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styles from './Select.module.sass'
-import { MdUnfoldLess, MdUnfoldMore } from 'react-icons/md'
+import { MdCheck, MdCircle, MdUnfoldLess, MdUnfoldMore } from 'react-icons/md'
 import clsx from 'clsx'
 
 interface SelectProps {
@@ -8,9 +8,10 @@ interface SelectProps {
     value: string
     onChange: (selectedValue: string) => void
     className?: any
+    loading?: boolean
 }
 
-export const Select: React.FC<SelectProps> = ({ options, value, onChange, className }) => {
+export const Select: React.FC<SelectProps> = ({ options, value, onChange, className, loading }) => {
     const [isOpen, setIsOpen] = useState(false)
     const SelectRef = useRef<HTMLDivElement>(null)
 
@@ -45,8 +46,11 @@ export const Select: React.FC<SelectProps> = ({ options, value, onChange, classN
                         key={option}
                         className={clsx(styles.option, option === value && styles.active)}
                         onClick={() => handleSelect(option)}
+                        disabled={loading}
                     >
                         {option}
+
+                        {value === option && <MdCheck />}
                     </button>
                 ))}
             </ul>

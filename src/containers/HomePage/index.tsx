@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react'
 import Head from 'next/head'
-import { getTitles } from '@/api'
+import { getTitleWithCustomFields, getTitles } from '@/api'
 import { TitleCard } from '@/components/TitleCard'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
 
 export interface WatchItemInterface {
     id: number
@@ -110,23 +112,14 @@ interface WatchItemEpisode {
     episode_url: string
 }
 
-interface HomePageProps {
-    data: {
-        data: WatchItemInterface[]
-        meta: any
-    }
-}
-
-export const HomePage: React.FC<HomePageProps> = ({ data }) => {
+export const HomePage = () => {
     const [titles, setTitles] = React.useState<WatchItemInterface[]>([])
 
     useEffect(() => {
-        console.log(data)
-
-        if (data) {
-            setTitles(data.data)
-        }
-    }, [data])
+        getTitleWithCustomFields(['title', 'title_id', 'poster', 'description']).then((resp) =>
+            setTitles(resp.data),
+        )
+    }, [])
 
     return (
         <>
@@ -144,19 +137,20 @@ export const HomePage: React.FC<HomePageProps> = ({ data }) => {
             <div className="container">
                 <h4 className="main_title">Подборка</h4>
 
-                <div className="anime_list">
+                <Swiper watchSlidesProgress={true} slidesPerView={'auto'} className="anime_list">
                     {titles.map((item) => {
                         return (
-                            <TitleCard
-                                key={item.id}
-                                poster={item.attributes.poster?.data.attributes}
-                                title={item.attributes.title}
-                                titleId={item.attributes.title_id}
-                                description={item.attributes.description}
-                            />
+                            <SwiperSlide key={item.id}>
+                                <TitleCard
+                                    poster={item.attributes.poster?.data.attributes}
+                                    title={item.attributes.title}
+                                    titleId={item.attributes.title_id}
+                                    description={item.attributes.description}
+                                />
+                            </SwiperSlide>
                         )
                     })}
-                </div>
+                </Swiper>
             </div>
         </>
     )
