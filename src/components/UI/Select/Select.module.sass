@@ -1,0 +1,35 @@
+.select
+  width: 100%
+  min-width: 200px
+  position: relative
+  padding: 5px
+  align-items: center
+  justify-content: center
+  border-radius: 5px
+  max-width: max-content
+
+  .selectedOption
+    border: 1px solid var(--border-color)
+    padding: 5px 10px
+
+  .options
+    position: absolute
+    top: 110%
+    width: 100%
+    list-style: none
+    color: var(--bg-alternate)
+    padding: 5px
+    border: 1px solid var(--border-color)
+    border-radius: 5px
+
+.selectedOption, .option
+  width: 100%
+  background: var(--bg)
+  color: var(--bg-alternate)
+  padding: 5px 10px
+  border-radius: 5px
+
+  &:hover
+    cursor: pointer
+    background: var(--btn-hover-bg)
+    color: var(--bg-alternate)

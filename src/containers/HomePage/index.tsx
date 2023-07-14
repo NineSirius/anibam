@@ -17,7 +17,7 @@ export interface WatchItemInterface {
         status: 'Вышел' | 'Онгоинг' | 'Анонс'
         type: 'ТВ Сериал' | 'Фильм' | 'OVA' | 'Спешл'
         release_date: string
-        age: '18+' | '16+' | '14+' | '13+' | '12+' | '6+'
+        age_limit: number
         poster: {
             data: {
                 id: number

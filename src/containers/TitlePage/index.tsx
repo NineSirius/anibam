@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { WatchItemInterface } from '../HomePage'
 import styles from './TitlePage.module.sass'
 import Image from 'next/image'
@@ -19,6 +20,8 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
     const [titleInfo, setTitleInfo] = useState<WatchItemInterface>()
     const [hideDesc, setHideDesc] = useState<boolean>(true)
     const [mobile, setMobile] = useState<boolean>(false)
+
+    const router = useRouter()
 
     useEffect(() => {
         if (data) {
@@ -49,7 +52,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                 <li>
                                     <p>Возрастное ограничение</p>
                                     <span className={styles.age}>
-                                        {titleInfo.attributes.age || 'Не указано'}
+                                        {`${titleInfo.attributes.age_limit}+` || 'Не указано'}
                                     </span>
                                 </li>
                                 <li>
@@ -91,7 +94,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                 <li>
                                     <p>Возрастное ограничение</p>
                                     <span className={styles.age}>
-                                        {titleInfo.attributes.age || 'Не указано'}
+                                        {`${titleInfo.attributes.age_limit}+` || 'Не указано'}
                                     </span>
                                 </li>
                                 <li>
@@ -131,6 +134,11 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                         <Button
                                             key={item.id}
                                             style={{ justifyContent: 'flex-start' }}
+                                            onClick={() =>
+                                                router.push(
+                                                    `/anime/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
+                                                )
+                                            }
                                         >
                                             {item.episode_number} эпизод
                                         </Button>

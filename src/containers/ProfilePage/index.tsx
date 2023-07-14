@@ -4,9 +4,10 @@ import { UserTypes } from '@/store/reducers/user.reducer'
 import Image from 'next/image'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import ReactCrop, { Crop } from 'react-image-crop'
+import ReactCrop, { Crop, PercentCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { Modal } from '@/components/UI/Modal'
+import { Button } from '@/components/UI/Button'
 
 interface Profile {
     data: UserTypes | 'None'
@@ -14,46 +15,15 @@ interface Profile {
 
 const ProfilePage: React.FC<Profile> = ({ data }) => {
     const [userInfo, setUserInfo] = useState<UserTypes | null>(null)
-    const [src, setSrc] = useState<string | null>(null)
+    const [src, setSrc] = useState<any | null>(null)
     const [image, setImage] = useState<HTMLImageElement | null>(null)
-    const [crop, setCrop] = useState<any>({ aspect: 16 / 9 })
-    const [output, setOutput] = useState<string | null>(null)
+    const [crop, setCrop] = useState<any>({ aspect: 1 / 1 })
+    const [output, setOutput] = useState<any | null>(null)
     const [modalShow, setModalShow] = useState<boolean>(false)
+    const [imageWidth, setImageWidth] = useState<number | null>(null)
+    const [imageHeight, setImageHeight] = useState<number | null>(null)
 
     const router = useRouter()
-
-    const cropImageNow = () => {
-        if (image && crop.width && crop.height) {
-            const canvas = document.createElement('canvas')
-            const scaleX = image.width / crop.width
-            const scaleY = image.height / crop.height
-            canvas.width = crop.width
-            canvas.height = crop.height
-            const ctx = canvas.getContext('2d')
-
-            const pixelRatio = window.devicePixelRatio
-            canvas.width = crop.width * pixelRatio
-            canvas.height = crop.height * pixelRatio
-            ctx!.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
-            ctx!.imageSmoothingQuality = 'high'
-
-            ctx!.drawImage(
-                image,
-                crop.x! * scaleX,
-                crop.y! * scaleY,
-                crop.width * scaleX,
-                crop.height * scaleY,
-                0,
-                0,
-                crop.width,
-                crop.height,
-            )
-
-            // Converting to base64
-            const base64Image = canvas.toDataURL('image/jpeg')
-            setOutput(base64Image)
-        }
-    }
 
     useEffect(() => {
         if (data && data !== 'None') {
@@ -68,29 +38,40 @@ const ProfilePage: React.FC<Profile> = ({ data }) => {
             const reader = new FileReader()
             reader.onload = () => {
                 setSrc(reader.result as string)
+
+                const img = new (window as any).Image()
+                img.src = reader.result as string
+                img.onload = () => {
+                    setImage(img)
+                    setImageWidth(250)
+                    setImageHeight(250)
+                    setCrop((prevCrop: Crop) => ({
+                        ...prevCrop,
+                        width: 250,
+                        height: 250,
+                        aspect: img.width / img.height,
+                    }))
+                }
+
                 setModalShow(true)
             }
             reader.readAsDataURL(e.target.files[0])
         }
     }
 
-    const handleCropChange = (newCrop: Crop) => {
-        setCrop(newCrop)
-    }
-
-    const handleCropComplete = (crop: Crop, pixelCrop: Crop) => {
+    const handleCropComplete = (crop: Crop, pixelCrop: PercentCrop) => {
         if (image) {
             const croppedImageUrl = getCroppedImageUrl(image, pixelCrop)
-            setSrc(croppedImageUrl)
+            setOutput(croppedImageUrl)
         }
     }
 
-    const getCroppedImageUrl = (image: HTMLImageElement, crop: Crop) => {
+    const getCroppedImageUrl = (image: HTMLImageElement, crop: PercentCrop): any => {
         const canvas = document.createElement('canvas')
         const scaleX = image.naturalWidth / image.width
         const scaleY = image.naturalHeight / image.height
-        canvas.width = crop.width!
-        canvas.height = crop.height!
+        canvas.width = crop.width! * scaleX
+        canvas.height = crop.height! * scaleY
         const ctx = canvas.getContext('2d')!
         ctx.drawImage(
             image,
@@ -100,12 +81,15 @@ const ProfilePage: React.FC<Profile> = ({ data }) => {
             crop.height! * scaleY,
             0,
             0,
-            crop.width!,
-            crop.height!,
+            crop.width! * scaleX,
+            crop.height! * scaleY,
         )
-        return canvas.toDataURL('image/jpeg')
+        return {
+            url: canvas.toDataURL('image/jpeg'),
+            width: crop.width * scaleX,
+            height: crop.height * scaleY,
+        }
     }
-
     return (
         <>
             <Head>
@@ -140,7 +124,36 @@ const ProfilePage: React.FC<Profile> = ({ data }) => {
             </div>
 
             <Modal show={modalShow} onClose={() => setModalShow(false)}>
-                <h4>Картинка</h4>
+                <ReactCrop
+                    crop={crop}
+                    aspect={1 / 1}
+                    onChange={(c) => setCrop(c)}
+                    onComplete={(c, pixelCrop) => handleCropComplete(c, pixelCrop)}
+                >
+                    {src && imageWidth && imageHeight && (
+                        <Image
+                            src={src}
+                            width={imageWidth}
+                            height={imageHeight}
+                            alt="dsdsds"
+                            style={{ width: '100%', height: 'auto' }}
+                        />
+                    )}
+                </ReactCrop>
+                <div>
+                    <Button>Сохранить</Button>
+                </div>
+
+                {output && (
+                    <div>
+                        <Image
+                            src={output.url}
+                            alt="Cropped Image"
+                            width={output.width}
+                            height={output.height}
+                        />
+                    </div>
+                )}
             </Modal>
         </>
     )

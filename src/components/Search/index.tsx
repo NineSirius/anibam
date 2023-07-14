@@ -2,7 +2,7 @@ import Image from 'next/image'
 import React from 'react'
 import styles from './Search.module.sass'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '../UI/Button'
 import { TextField } from '../UI/TextField'
 import { Backdrop } from '../UI/Backdrop'
@@ -86,9 +86,10 @@ export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
                                         paddingLeft: 15,
                                         borderRadius: 0,
                                     }}
-                                    onClick={() =>
-                                        router.push(`anime/${result.attributes.title_id}`)
-                                    }
+                                    onClick={() => {
+                                        router.push(`/anime/${result.attributes.title_id}`)
+                                        onClose()
+                                    }}
                                 >
                                     {result.attributes.poster && (
                                         <Image

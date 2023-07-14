@@ -9,7 +9,7 @@
     margin-top: 10px
     list-style: none
     border: 1px solid var(--border-color)
-    padding: 5px 15px
+    padding: 10px 15px
     border-radius: 5px
 
     &.active
@@ -18,11 +18,12 @@
     p
       color: var(--caption-color)
 
-      .age
-        color: var(--error-color)
+    .age
+      color: var(--error-color)
 
-      span
-        ont-size: 1.125rem
+    span
+      font-size: 1.125rem
+      color: var(--bg-alternate)
 
   .poster_wrap
     min-width: 250px
@@ -65,6 +66,7 @@
   border: unset
   background: none
   font-size: 1rem
+  color: var(--bg-alternate)
 
   &:hover
     cursor: pointer
@@ -74,6 +76,7 @@
 
   h3
     margin: 10px 0
+    color: var(--title-color)
 
 @media screen and (max-width: 810px)
   .genres
