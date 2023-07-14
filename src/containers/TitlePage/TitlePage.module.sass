@@ -25,6 +25,36 @@
       font-size: 1.125rem
       color: var(--bg-alternate)
 
+  .relations
+    margin-top: 15px
+    border: 1px solid var(--border-color)
+    border-radius: 5px
+    list-style: none
+    color: var(--title-color)
+    padding: 10px 0
+
+    h4
+      padding-left: 15px
+      padding-bottom: 10px
+      font-size: 18px
+
+    &_list
+      display: flex
+      gap: 15px
+      padding: 0 10px
+      list-style: none
+      overflow-x: auto
+
+      &_item
+        width: 24%
+        border: unset
+        background: none
+        padding: 10px 15px
+
+        &:hover
+          cursor: pointer
+          background: var(--btn-hover-bg)
+
   .poster_wrap
     min-width: 250px
     display: flex
@@ -39,10 +69,6 @@
       &:hover
         background: var(--btn-hover-bg)
         color: var(--bg-alternate)
-
-    .relations
-      border: 1px sloid var(--border-color)
-      list-style: none
 
   .title_info_content
     .select

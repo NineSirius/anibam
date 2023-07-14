@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { WatchItemInterface } from '../HomePage'
 import styles from './TitlePage.module.sass'
 import Image from 'next/image'
-import { limitStr } from '@/components/TitleCard'
+import { TitleCard, limitStr } from '@/components/TitleCard'
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 import clsx from 'clsx'
 import { Button } from '@/components/UI/Button'
@@ -22,6 +22,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
     const [titleInfo, setTitleInfo] = useState<WatchItemInterface>()
     const [hideDesc, setHideDesc] = useState<boolean>(true)
     const [mobile, setMobile] = useState<boolean>(false)
+    const [showMore, setShowMore] = useState(false)
 
     const router = useRouter()
 
@@ -31,7 +32,16 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
         }
     }, [data])
 
+    const toggleShowMore = () => {
+        setShowMore(!showMore)
+    }
+
     if (titleInfo) {
+        const episodes = showMore
+            ? titleInfo.attributes.episodes
+            : titleInfo.attributes.episodes.slice(0, 10)
+        const remainingCount = titleInfo.attributes.episodes.length - 10
+
         return (
             <>
                 <Head>
@@ -92,14 +102,6 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                     </span>
                                 </li>
                             </ul>
-
-                            {/* <ul className={styles.relations}>
-                                <p>Связанное</p>
-                                {titleInfo.attributes.relations.data.length > 0 &&
-                                    titleInfo.attributes.relations.data.map((item) => {
-                                        return <li key={item.id}>{item.attributes.title}</li>
-                                    })}
-                            </ul> */}
                         </div>
 
                         <div className={styles.title_info_content}>
@@ -174,25 +176,49 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
 
                             <div className={styles.episodes}>
                                 <h3>Список серий</h3>
-                                {titleInfo.attributes.episodes.length > 0 ? (
-                                    titleInfo.attributes.episodes.map((item) => {
-                                        return (
-                                            <Button
-                                                key={item.id}
-                                                style={{ justifyContent: 'flex-start' }}
-                                                onClick={() =>
-                                                    router.push(
-                                                        `/anime/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
-                                                    )
-                                                }
-                                            >
-                                                {item.episode_number} эпизод
-                                            </Button>
-                                        )
-                                    })
+                                {episodes.length > 0 ? (
+                                    episodes.map((item) => (
+                                        <Button
+                                            key={item.id}
+                                            style={{ justifyContent: 'flex-start' }}
+                                            onClick={() =>
+                                                router.push(
+                                                    `/anime/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
+                                                )
+                                            }
+                                        >
+                                            {item.episode_number} эпизод
+                                        </Button>
+                                    ))
                                 ) : (
                                     <h2>В скором времени добавятся</h2>
                                 )}
+
+                                {titleInfo.attributes.episodes.length > 10 && (
+                                    <Button onClick={toggleShowMore}>
+                                        {showMore
+                                            ? `Скрыть (${remainingCount})`
+                                            : `Показать еще (${remainingCount})`}
+                                    </Button>
+                                )}
+                            </div>
+
+                            <div className={styles.relations}>
+                                <h4>Связанное</h4>
+                                <ul className={styles.relations_list}>
+                                    {titleInfo.attributes.relations.data.length > 0 &&
+                                        titleInfo.attributes.relations.data.map((item) => {
+                                            return (
+                                                <TitleCard
+                                                    key={item.id}
+                                                    title={item.attributes.title}
+                                                    titleId={item.attributes.title_id}
+                                                    description={item.attributes.description}
+                                                    poster={item.attributes.poster?.data.attributes}
+                                                />
+                                            )
+                                        })}
+                                </ul>
                             </div>
                         </div>
                     </div>
