@@ -40,13 +40,14 @@
 
     &_list
       display: flex
+      flex-direction: column
       gap: 15px
-      padding: 0 10px
       list-style: none
-      overflow-x: auto
 
       &_item
-        width: 24%
+        display: flex
+        gap: 20px
+        width: 100%
         border: unset
         background: none
         padding: 10px 15px
@@ -54,6 +55,27 @@
         &:hover
           cursor: pointer
           background: var(--btn-hover-bg)
+
+        .poster
+          width: 100px
+          height: 100px
+          margin: 0
+          object-fit: cover
+          height: auto
+
+        .item_info
+          padding-top: 10px
+          display: flex
+          flex-direction: column
+
+          span
+            max-width: max-content
+            border-radius: 5px
+            color: var(--error-color)
+            font-weight: 600
+
+          h4
+            padding: 0
 
   .poster_wrap
     min-width: 250px
@@ -103,7 +125,7 @@
   margin-top: 15px
   background: var(--btn-hover-bg)
   color: var(--bg-alternate)
-  transition: .2s
+  transition: 0.2s
 
 .description
   margin-top: 10px
@@ -111,6 +133,19 @@
   p
     margin-top: 15px
     color: var(--desc-color)
+    line-height: 140%
+
+.frames_wrap
+  margin-top: 15px
+
+  .frames
+    display: flex
+    gap: 10px
+
+    img
+      width: 20%
+      height: 100px
+      object-fit: cover
 
 .more_btn
   border: unset
@@ -152,16 +187,15 @@
     flex-direction: column
 
     .poster_wrap
-
       .select
         display: none
 
       .button
         display: none
 
-    .poster
-      max-width: 300px
-      margin: 0 auto
+      .poster
+        max-width: 300px
+        margin: 0 auto
 
     .title_info_content
       .select

@@ -8,12 +8,14 @@ import ReactCrop, { Crop, PercentCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { Modal } from '@/components/UI/Modal'
 import { Button } from '@/components/UI/Button'
+import { getUserData } from '@/api'
+import Cookie from 'js-cookie'
 
 interface Profile {
     data: UserTypes | 'None'
 }
 
-const ProfilePage: React.FC<Profile> = ({ data }) => {
+const ProfilePage = () => {
     const [userInfo, setUserInfo] = useState<UserTypes | null>(null)
     const [src, setSrc] = useState<any | null>(null)
     const [image, setImage] = useState<HTMLImageElement | null>(null)
@@ -26,12 +28,13 @@ const ProfilePage: React.FC<Profile> = ({ data }) => {
     const router = useRouter()
 
     useEffect(() => {
-        if (data && data !== 'None') {
-            setUserInfo(data)
+        const token = Cookie.get('auth_token')
+        if (token) {
+            getUserData(token).then((resp: UserTypes) => setUserInfo(resp))
         } else {
             router.push('/auth/login')
         }
-    }, [data, router])
+    }, [router])
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -90,73 +93,75 @@ const ProfilePage: React.FC<Profile> = ({ data }) => {
             height: crop.height * scaleY,
         }
     }
-    return (
-        <>
-            <Head>
-                <title>Профиль пользователя {userInfo?.username}</title>
-            </Head>
-            <div className={styles.profile}>
-                <div className={styles.banner} style={{ backgroundColor: '#333' }}>
-                    <div className="container">
-                        <label>
-                            {userInfo?.avatar ? (
-                                <Image
-                                    src={userInfo.avatar.url}
-                                    width={100}
-                                    height={100}
-                                    alt={`Аватарка пользователя ${userInfo.username}`}
+    if (userInfo) {
+        return (
+            <>
+                <Head>
+                    <title>Профиль пользователя {userInfo?.username}</title>
+                </Head>
+                <div className={styles.profile}>
+                    <div className={styles.banner} style={{ backgroundColor: '#333' }}>
+                        <div className="container">
+                            <label>
+                                {userInfo?.avatar ? (
+                                    <Image
+                                        src={userInfo.avatar.url}
+                                        width={100}
+                                        height={100}
+                                        alt={`Аватарка пользователя ${userInfo.username}`}
+                                    />
+                                ) : (
+                                    <div className={styles.base_avatar}>
+                                        {userInfo?.username[0].toUpperCase()}
+                                    </div>
+                                )}
+
+                                <input
+                                    type="file"
+                                    accept="image/jpeg, image/png, image/gif"
+                                    onChange={handleFileChange}
+                                    style={{ display: 'none' }}
                                 />
-                            ) : (
-                                <div className={styles.base_avatar}>
-                                    {userInfo?.username[0].toUpperCase()}
-                                </div>
-                            )}
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-                            <input
-                                type="file"
-                                accept="image/jpeg, image/png, image/gif"
-                                onChange={handleFileChange}
-                                style={{ display: 'none' }}
+                <Modal show={modalShow} onClose={() => setModalShow(false)}>
+                    <ReactCrop
+                        crop={crop}
+                        aspect={1 / 1}
+                        onChange={(c) => setCrop(c)}
+                        onComplete={(c, pixelCrop) => handleCropComplete(c, pixelCrop)}
+                    >
+                        {src && imageWidth && imageHeight && (
+                            <Image
+                                src={src}
+                                width={imageWidth}
+                                height={imageHeight}
+                                alt="dsdsds"
+                                style={{ width: '100%', height: 'auto' }}
                             />
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <Modal show={modalShow} onClose={() => setModalShow(false)}>
-                <ReactCrop
-                    crop={crop}
-                    aspect={1 / 1}
-                    onChange={(c) => setCrop(c)}
-                    onComplete={(c, pixelCrop) => handleCropComplete(c, pixelCrop)}
-                >
-                    {src && imageWidth && imageHeight && (
-                        <Image
-                            src={src}
-                            width={imageWidth}
-                            height={imageHeight}
-                            alt="dsdsds"
-                            style={{ width: '100%', height: 'auto' }}
-                        />
-                    )}
-                </ReactCrop>
-                <div>
-                    <Button>Сохранить</Button>
-                </div>
-
-                {output && (
+                        )}
+                    </ReactCrop>
                     <div>
-                        <Image
-                            src={output.url}
-                            alt="Cropped Image"
-                            width={output.width}
-                            height={output.height}
-                        />
+                        <Button>Сохранить</Button>
                     </div>
-                )}
-            </Modal>
-        </>
-    )
+
+                    {output && (
+                        <div>
+                            <Image
+                                src={output.url}
+                                alt="Cropped Image"
+                                width={output.width}
+                                height={output.height}
+                            />
+                        </div>
+                    )}
+                </Modal>
+            </>
+        )
+    }
 }
 
 export default ProfilePage

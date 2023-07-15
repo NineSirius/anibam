@@ -3,10 +3,12 @@ import {
     StoreTypes,
     addUserData,
     hideAuthModal,
+    removeFromLightGallery,
     setDarkTheme,
     setLightTheme,
 } from '@/store/reducers/user.reducer'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import ImageViewer from 'react-simple-image-viewer'
 import clsx from 'clsx'
 import { useDispatch, useSelector } from 'react-redux'
 import { Modal } from '@/components/UI/Modal'
@@ -20,10 +22,13 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+    const [currentImage, setCurrentImage] = useState<number>(0)
+
     const theme = useSelector((store: StoreTypes) => store.theme)
     const authModal = useSelector((store: StoreTypes) => store.authModal)
     const token = useSelector((store: StoreTypes) => store.token)
     const user = useSelector((store: StoreTypes) => store.user)
+    const images = useSelector((store: StoreTypes) => store.lightgallery)
 
     const { asPath } = useRouter()
 
@@ -61,11 +66,31 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         }
     }, [dispatch])
 
+    const closeImageViewer = () => {
+        setCurrentImage(0)
+        dispatch(removeFromLightGallery())
+    }
+
     return (
-        <div className={clsx('app', theme)}>
-            {asPath !== '/auth/login' && asPath !== '/auth/register' && <Navbar />}
-            <div>{children}</div>
-        </div>
+        <>
+            <div className={clsx('app', theme)}>
+                {asPath !== '/auth/login' && asPath !== '/auth/register' && <Navbar />}
+                <div>{children}</div>
+            </div>
+
+            {images.length > 0 && (
+                <ImageViewer
+                    src={images}
+                    currentIndex={currentImage}
+                    onClose={closeImageViewer}
+                    disableScroll={false}
+                    backgroundStyle={{
+                        backgroundColor: 'rgba(0,0,0,0.9)',
+                    }}
+                    closeOnClickOutside={true}
+                />
+            )}
+        </>
     )
 }
 

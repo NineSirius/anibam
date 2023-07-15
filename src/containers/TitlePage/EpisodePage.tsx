@@ -13,15 +13,36 @@ import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
 export const EpisodePage = () => {
     const [animeInfo, setAnimeInfo] = useState<WatchItemInterface | null>(null)
     const [episodeNumber, setEpisodeNumber] = useState<any | null>(null)
+    const [activeEpisode, setActiveEpisode] = useState<string | null>(null)
 
     const router = useRouter()
 
     useEffect(() => {
         if (router.query.title) {
             setEpisodeNumber(router.query.episodeNumber)
+            setActiveEpisode(`${episodeNumber} серия`)
             getTitleByTitle(router.query.title).then((resp) => setAnimeInfo(resp.data[0]))
         }
-    }, [router.query])
+    }, [episodeNumber, router.query])
+
+    function extractNumberFromString(string: string) {
+        const numberPattern = /\d+/g
+        const numbers = string.match(numberPattern)
+
+        if (numbers && numbers.length > 0) {
+            const number = parseInt(numbers[0], 10)
+            return number
+        }
+
+        return null
+    }
+
+    const handleEpisodeChange = (value: string) => {
+        const episode = extractNumberFromString(value)
+        if (animeInfo) {
+            router.push(`/anime/${animeInfo.attributes.title_id}/episodes/${episode}`)
+        }
+    }
 
     if (animeInfo) {
         return (
@@ -105,24 +126,14 @@ export const EpisodePage = () => {
                             })}
                         </div>
                     </div>
-                    {/* <Select
-                        options={animeInfo.attributes.episodes.map(
-                            (item) => `${item.episode_number} серия`,
-                        )}
-                        value={`${episodeNumber} серия`}
-                        onChange={(value) => {
-                            const episodeNumber = parseInt(value) // Преобразование строки в число
-
-                            if (!isNaN(episodeNumber)) {
-                                console.log(episodeNumber)
-                                router.push(
-                                    `/anime/${animeInfo.attributes.title_id}/episodes/${episodeNumber}`,
-                                )
-                            } else {
-                                console.log('Невозможно извлечь число из строки')
-                            }
-                        }}
-                    ></Select> */}
+                    <Select
+                        options={animeInfo.attributes.episodes.map((item) => {
+                            return `${item.episode_number} серия`
+                        })}
+                        value={activeEpisode || 'Выберите серию'}
+                        onChange={handleEpisodeChange}
+                        className={styles.episode_list_select}
+                    ></Select>
                 </div>
             </>
         )

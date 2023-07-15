@@ -1,20 +1,23 @@
+import clsx from 'clsx'
+import ContentLoader from 'react-content-loader'
+import Cookie from 'js-cookie'
+import { enqueueSnackbar } from 'notistack'
+import { format, parseISO } from 'date-fns'
+import { ru } from 'date-fns/locale'
+import { useDispatch, useSelector } from 'react-redux'
+import { useRouter } from 'next/router'
+import Image from 'next/image'
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import { WatchItemInterface } from '../HomePage'
-import styles from './TitlePage.module.sass'
-import Image from 'next/image'
-import { TitleCard, limitStr } from '@/components/TitleCard'
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
-import clsx from 'clsx'
+import { addToLightGallery, StoreTypes } from '@/store/reducers/user.reducer'
+import { addToUserFolder, getTitleByTitle, getUserLists, removeFromUserFolder } from '@/api'
 import { Button } from '@/components/UI/Button'
 import { Select } from '@/components/UI/Select'
-import { enqueueSnackbar } from 'notistack'
-import { MdStar } from 'react-icons/md'
-import { addToUserFolder, getTitleRating, getUserLists, removeFromUserFolder } from '@/api'
-import { useSelector } from 'react-redux'
-import { StoreTypes } from '@/store/reducers/user.reducer'
-import Cookie from 'js-cookie'
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
+import { TitleCard, limitStr } from '@/components/TitleCard'
+import { WatchItemInterface } from '../HomePage'
+import { userInfo } from 'os'
+import styles from './TitlePage.module.sass'
 
 interface TitlePageProps {
     data: {
@@ -36,18 +39,20 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
     const router = useRouter()
     const user = useSelector((store: StoreTypes) => store.user)
 
-    useEffect(() => {
-        if (data) {
-            setTitleInfo(data.data[0])
-            // getTitleRating(data.data[0].attributes.title_id).then((resp) => {
-            //     console.log(resp)
+    const dispatch = useDispatch()
 
-            //     if (resp.data.data[0].attributes.rating.length > 0) {
-            //         console.log(resp.data.data[0].attributes.rating)
-            //     }
-            // })
+    useEffect(() => {
+        if (router.query.title) {
+            getTitleByTitle(router.query.title).then((resp) => setTitleInfo(resp.data[0]))
         }
-    }, [data])
+        // getTitleRating(data.data[0].attributes.title_id).then((resp) => {
+        //     console.log(resp)
+
+        //     if (resp.data.data[0].attributes.rating.length > 0) {
+        //         console.log(resp.data.data[0].attributes.rating)
+        //     }
+        // })
+    }, [router.query.title])
 
     useEffect(() => {
         if (user && data) {
@@ -75,6 +80,61 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
         setShowMore(!showMore)
     }
 
+    const handleFolderChange = (value: string) => {
+        const token = Cookie.get('auth_token')
+        if (token && titleInfo) {
+            const listToRemove =
+                userList === 'Смотрю'
+                    ? 'watch_list'
+                    : userList === 'Запланировано'
+                    ? 'planned_list'
+                    : userList === 'Просмотрено'
+                    ? 'viewed_list'
+                    : null
+
+            const currentValue =
+                value === 'Смотрю'
+                    ? 'watch_list'
+                    : value === 'Запланировано'
+                    ? 'planned_list'
+                    : value === 'Просмотрено'
+                    ? 'viewed_list'
+                    : ''
+            setUserListLoading(true)
+
+            if (!listToRemove) {
+                addToUserFolder(currentValue, titleInfo.id, user.id, token)
+                    .then((resp) => setUserList(value))
+                    .finally(() => setUserListLoading(false))
+                return
+            } else if (value === userList) {
+                removeFromUserFolder(listToRemove, titleInfo.id, user.id, token)
+                    .then((resp) => setUserList('Выберите папку'))
+                    .finally(() => setUserListLoading(false))
+            } else if (value === 'Смотрю') {
+                removeFromUserFolder(listToRemove, titleInfo.id, user.id, token).then((resp) => {
+                    addToUserFolder('watch_list', titleInfo.id, user.id, token)
+                        .then((resp) => setUserList(value))
+                        .finally(() => setUserListLoading(false))
+                })
+            } else if (value === 'Запланировано') {
+                removeFromUserFolder(listToRemove, titleInfo.id, user.id, token).then((resp) => {
+                    addToUserFolder('planned_list', titleInfo.id, user.id, token)
+                        .then((resp) => setUserList(value))
+                        .finally(() => setUserListLoading(false))
+                })
+            } else if (value === 'Просмотрено') {
+                removeFromUserFolder(listToRemove, titleInfo.id, user.id, token).then((resp) => {
+                    addToUserFolder('viewed_list', titleInfo.id, user.id, token)
+                        .then((resp) => setUserList(value))
+                        .finally(() => setUserListLoading(false))
+                })
+            }
+        } else {
+            router.push('/auth/login')
+        }
+    }
+
     if (titleInfo) {
         const episodes = showMore
             ? titleInfo.attributes.episodes
@@ -96,6 +156,13 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                     height={titleInfo.attributes.poster?.data.attributes.height}
                                     alt={titleInfo.attributes.poster?.data.attributes.name}
                                     className={styles.poster}
+                                    onClick={() =>
+                                        dispatch(
+                                            addToLightGallery([
+                                                titleInfo.attributes.poster?.data.attributes.url,
+                                            ]),
+                                        )
+                                    }
                                 />
                             )}
 
@@ -116,98 +183,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                 options={['Смотрю', 'Запланировано', 'Просмотрено']}
                                 value={userList || 'Выберите папку'}
                                 loading={userListLoading}
-                                onChange={(value) => {
-                                    const token = Cookie.get('auth_token')
-                                    if (token) {
-                                        const listToRemove =
-                                            userList === 'Смотрю'
-                                                ? 'watch_list'
-                                                : userList === 'Запланировано'
-                                                ? 'planned_list'
-                                                : userList === 'Просмотрено'
-                                                ? 'viewed_list'
-                                                : null
-
-                                        const currentValue =
-                                            value === 'Смотрю'
-                                                ? 'watch_list'
-                                                : value === 'Запланировано'
-                                                ? 'planned_list'
-                                                : value === 'Просмотрено'
-                                                ? 'viewed_list'
-                                                : ''
-                                        setUserListLoading(true)
-
-                                        if (!listToRemove) {
-                                            addToUserFolder(
-                                                currentValue,
-                                                titleInfo.id,
-                                                user.id,
-                                                token,
-                                            )
-                                                .then((resp) => setUserList(value))
-                                                .finally(() => setUserListLoading(false))
-                                            return
-                                        } else if (value === userList) {
-                                            removeFromUserFolder(
-                                                listToRemove,
-                                                titleInfo.id,
-                                                user.id,
-                                                token,
-                                            )
-                                                .then((resp) => setUserList('Выберите папку'))
-                                                .finally(() => setUserListLoading(false))
-                                        } else if (value === 'Смотрю') {
-                                            removeFromUserFolder(
-                                                listToRemove,
-                                                titleInfo.id,
-                                                user.id,
-                                                token,
-                                            ).then((resp) => {
-                                                addToUserFolder(
-                                                    'watch_list',
-                                                    titleInfo.id,
-                                                    user.id,
-                                                    token,
-                                                )
-                                                    .then((resp) => setUserList(value))
-                                                    .finally(() => setUserListLoading(false))
-                                            })
-                                        } else if (value === 'Запланировано') {
-                                            removeFromUserFolder(
-                                                listToRemove,
-                                                titleInfo.id,
-                                                user.id,
-                                                token,
-                                            ).then((resp) => {
-                                                addToUserFolder(
-                                                    'planned_list',
-                                                    titleInfo.id,
-                                                    user.id,
-                                                    token,
-                                                )
-                                                    .then((resp) => setUserList(value))
-                                                    .finally(() => setUserListLoading(false))
-                                            })
-                                        } else if (value === 'Просмотрено') {
-                                            removeFromUserFolder(
-                                                listToRemove,
-                                                titleInfo.id,
-                                                user.id,
-                                                token,
-                                            ).then((resp) => {
-                                                addToUserFolder(
-                                                    'viewed_list',
-                                                    titleInfo.id,
-                                                    user.id,
-                                                    token,
-                                                )
-                                                    .then((resp) => setUserList(value))
-                                                    .finally(() => setUserListLoading(false))
-                                            })
-                                        }
-                                    }
-                                }}
+                                onChange={handleFolderChange}
                                 className={styles.select}
                             ></Select>
 
@@ -220,7 +196,17 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                 </li>
                                 <li>
                                     <p>Тип</p>
-                                    <span>{titleInfo.attributes.type}</span>
+                                    <span>{titleInfo.attributes.format}</span>
+                                </li>
+                                <li>
+                                    <p>Дата выхода</p>
+                                    <span>
+                                        {format(
+                                            parseISO(titleInfo.attributes.release_date),
+                                            'd MMMM, yyyy',
+                                            { locale: ru },
+                                        )}
+                                    </span>
                                 </li>
                                 <li>
                                     <p>Статус</p>
@@ -282,7 +268,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                             <Select
                                 options={['Смотрю', 'Запланировано', 'Просмотрено']}
                                 value="Добавить в папку"
-                                onChange={(value) => enqueueSnackbar('Папки в разработке')}
+                                onChange={handleFolderChange}
                                 className={styles.select}
                             ></Select>
 
@@ -295,7 +281,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                 </li>
                                 <li>
                                     <p>Тип</p>
-                                    <span>{titleInfo.attributes.type}</span>
+                                    <span>{titleInfo.attributes.format}</span>
                                 </li>
                                 <li>
                                     <p>Статус</p>
@@ -323,34 +309,87 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                 {hideDesc ? 'Подробнее' : 'Скрыть'}
                             </button>
 
-                            <div className={styles.episodes}>
-                                <h3>Список серий</h3>
-                                {episodes.length > 0 ? (
-                                    episodes.map((item) => (
-                                        <Button
-                                            key={item.id}
-                                            style={{ justifyContent: 'flex-start' }}
-                                            onClick={() =>
-                                                router.push(
-                                                    `/anime/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
-                                                )
-                                            }
-                                        >
-                                            {item.episode_number} эпизод
-                                        </Button>
-                                    ))
-                                ) : (
-                                    <h2>В скором времени добавятся</h2>
-                                )}
-
-                                {titleInfo.attributes.episodes.length > 10 && (
-                                    <Button onClick={toggleShowMore}>
-                                        {showMore
-                                            ? `Скрыть (${remainingCount})`
-                                            : `Показать еще (${remainingCount})`}
-                                    </Button>
-                                )}
+                            <div className={styles.frames_wrap}>
+                                <h3>Кадры</h3>
+                                {titleInfo.attributes.frames.data &&
+                                    titleInfo.attributes.frames.data.length > 0 && (
+                                        <div className={styles.frames}>
+                                            {titleInfo.attributes.frames.data.map((item) => (
+                                                <Image
+                                                    key={item.id}
+                                                    src={item.attributes.url}
+                                                    width={item.attributes.width}
+                                                    height={item.attributes.height}
+                                                    alt={item.attributes.name}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
                             </div>
+
+                            {titleInfo.attributes.type === 'Мультсериал' ||
+                            titleInfo.attributes.type === 'Сериал' ||
+                            titleInfo.attributes.type === 'Аниме' ? (
+                                <div className={styles.episodes}>
+                                    <h3>Список серий</h3>
+                                    {episodes.length > 0 ? (
+                                        episodes.map((item) => (
+                                            <Button
+                                                key={item.id}
+                                                style={{ justifyContent: 'flex-start' }}
+                                                onClick={() =>
+                                                    router.push(
+                                                        `/anime/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
+                                                    )
+                                                }
+                                            >
+                                                {titleInfo.attributes.format === 'Фильм'
+                                                    ? `${item.episode_name}`
+                                                    : `${item.episode_number} эпизод`}
+                                            </Button>
+                                        ))
+                                    ) : (
+                                        <h2>В скором времени добавятся</h2>
+                                    )}
+
+                                    {titleInfo.attributes.episodes.length > 10 && (
+                                        <Button onClick={toggleShowMore}>
+                                            {showMore
+                                                ? `Скрыть (${remainingCount})`
+                                                : `Показать еще (${remainingCount})`}
+                                        </Button>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className={styles.episodes}>
+                                    <h3>Список озвучек </h3>
+                                    {episodes.length > 0 ? (
+                                        episodes.map((item) => (
+                                            <Button
+                                                key={item.id}
+                                                style={{ justifyContent: 'flex-start' }}
+                                                onClick={() =>
+                                                    router.push(
+                                                        `/anime/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
+                                                    )
+                                                }
+                                            >
+                                                {`${item.episode_number}. ${item.episode_name}`}
+                                            </Button>
+                                        ))
+                                    ) : (
+                                        <h2>В скором времени добавятся</h2>
+                                    )}
+
+                                    {titleInfo.attributes.episodes.length > 10 && (
+                                        <Button onClick={toggleShowMore}>
+                                            {showMore
+                                                ? `Скрыть (${remainingCount})`
+                                                : `Показать еще (${remainingCount})`}
+                                        </Button>
+                                    )}
+                                </div>
+                            )}
 
                             {titleInfo.attributes.relations.data.length > 0 && (
                                 <div className={styles.relations}>
@@ -359,15 +398,53 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                                         {titleInfo.attributes.relations.data.length > 0 &&
                                             titleInfo.attributes.relations.data.map((item) => {
                                                 return (
-                                                    <TitleCard
+                                                    <div
                                                         key={item.id}
-                                                        title={item.attributes.title}
-                                                        titleId={item.attributes.title_id}
-                                                        description={item.attributes.description}
-                                                        poster={
-                                                            item.attributes.poster?.data.attributes
+                                                        className={styles.relations_list_item}
+                                                        onClick={() =>
+                                                            router.push(
+                                                                `/${
+                                                                    item.attributes.type === 'Фильм'
+                                                                        ? 'films'
+                                                                        : item.attributes.type ===
+                                                                          'Аниме'
+                                                                        ? 'anime'
+                                                                        : null
+                                                                }/${item.attributes.title_id}`,
+                                                            )
                                                         }
-                                                    />
+                                                    >
+                                                        <Image
+                                                            src={
+                                                                item.attributes.poster?.data
+                                                                    .attributes.url ||
+                                                                '/img/base-avatar.png'
+                                                            }
+                                                            width={
+                                                                item.attributes.poster?.data
+                                                                    .attributes.width
+                                                            }
+                                                            height={
+                                                                item.attributes.poster?.data
+                                                                    .attributes.height
+                                                            }
+                                                            alt="Hello"
+                                                            className={styles.poster}
+                                                        />
+                                                        <div className={styles.item_info}>
+                                                            <span>{item.attributes.status}</span>
+                                                            <h4>{item.attributes.title}</h4>
+                                                            <p>
+                                                                {format(
+                                                                    parseISO(
+                                                                        item.attributes
+                                                                            .release_date,
+                                                                    ),
+                                                                    'yyyy',
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 )
                                             })}
                                     </ul>
@@ -377,6 +454,30 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                     </div>
                 </div>
             </>
+        )
+    } else {
+        return (
+            <div className="container">
+                <ContentLoader
+                    speed={2}
+                    width={'100%'}
+                    height={'auto'}
+                    viewBox="0 0 400 160"
+                    backgroundColor="#f3f3f3"
+                    foregroundColor="#ecebeb"
+                >
+                    <rect x="100" y="8" width="100%" height="6" />
+                    <rect x="100" y="26" width="52" height="6" />
+                    <rect x="100" y="56" width="410" height="6" />
+                    <rect x="100" y="72" rx="3" ry="3" width="380" height="6" />
+                    <rect x="100" y="88" rx="3" ry="3" width="178" height="6" />
+
+                    <rect x="0" y="0" width="20%" height="100" />
+                    <rect x="0" y="105" width="80" height="12" />
+                    <rect x="0" y="122.5" width="80" height="12" />
+                    <rect x="0" y="140" width="80" height="100" />
+                </ContentLoader>
+            </div>
         )
     }
 }

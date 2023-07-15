@@ -38,7 +38,11 @@ export const Select: React.FC<SelectProps> = ({ options, value, onChange, classN
         <div className={clsx(styles.select, className && className)} ref={SelectRef}>
             <button className={styles.selectedOption} onClick={() => setIsOpen(!isOpen)}>
                 {value}
-                {isOpen ? <MdUnfoldLess /> : <MdUnfoldMore />}
+                {isOpen ? (
+                    <MdUnfoldLess style={{ pointerEvents: 'none' }} />
+                ) : (
+                    <MdUnfoldMore style={{ pointerEvents: 'none' }} />
+                )}
             </button>
             <ul className={clsx(styles.options, isOpen && styles.active)}>
                 {options.map((option) => (
@@ -50,7 +54,7 @@ export const Select: React.FC<SelectProps> = ({ options, value, onChange, classN
                     >
                         {option}
 
-                        {value === option && <MdCheck />}
+                        {value === option && <MdCheck style={{ pointerEvents: 'none' }} />}
                     </button>
                 ))}
             </ul>

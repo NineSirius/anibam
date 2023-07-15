@@ -4,11 +4,14 @@ import styles from './Navbar.module.sass'
 import { Button } from '../UI/Button'
 import {
     MdDarkMode,
+    MdForum,
     MdLaptop,
     MdLightMode,
     MdList,
     MdLogout,
     MdMenu,
+    MdPeople,
+    MdPerson3,
     MdSearch,
     MdSettings,
 } from 'react-icons/md'
@@ -201,7 +204,17 @@ export const Navbar = () => {
                                             justifyContent: 'flex-start',
                                         }}
                                     >
-                                        <MdSettings size={20} /> Настройки
+                                        <MdPeople size={20} /> Друзья
+                                    </Button>
+                                    <Button
+                                        style={{
+                                            borderRadius: 0,
+                                            alignItems: 'center',
+                                            gap: 10,
+                                            justifyContent: 'flex-start',
+                                        }}
+                                    >
+                                        <MdForum size={20} /> Сообщения
                                     </Button>
                                     <Button
                                         style={{

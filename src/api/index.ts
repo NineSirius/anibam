@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const strapiApi = axios.create({
-    baseURL: 'https://anibam-api.onrender.com/api/',
+    baseURL: 'http://localhost:1337/api/',
 })
 
 export const getTitles = async () => {

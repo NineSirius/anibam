@@ -17,53 +17,12 @@ export interface WatchItemInterface {
         title_id: string
         description: string
         status: 'Вышел' | 'Онгоинг' | 'Анонс'
-        type: 'ТВ Сериал' | 'Фильм' | 'OVA' | 'Спешл'
+        format: 'ТВ Сериал' | 'Фильм' | 'OVA' | 'Спешл'
+        type: 'Аниме' | 'Фильм' | 'Сериал' | 'Мультфильм' | 'Мультсериал'
         release_date: string
         age_limit: number
         poster: {
-            data: {
-                id: number
-                attributes: {
-                    name: string
-                    alternativeText: string | null
-                    caption: string | null
-                    width: number
-                    height: number
-                    url: string
-                    formats: {
-                        thumbnail?: {
-                            name: string
-                            hash: string
-                            ext: '.jpg' | '.png'
-                            mime: 'image/jpeg' | 'image/png'
-                            path: string | null
-                            width: number
-                            height: number
-                            size: number
-                            url: string
-                            provider_metadata?: {
-                                public_id: string
-                                resource_type: 'image'
-                            }
-                        }
-                        small?: {
-                            name: string
-                            hash: string
-                            ext: '.jpg' | '.png'
-                            mime: 'image/jpeg' | 'image/png'
-                            path: string | null
-                            width: number
-                            height: number
-                            size: number
-                            url: string
-                            provider_metadata?: {
-                                public_id: string
-                                resource_type: 'image'
-                            }
-                        }
-                    }
-                }
-            }
+            data: WatchItemImage
         } | null
         genres: {
             data: WatchItemGenre[]
@@ -74,6 +33,9 @@ export interface WatchItemInterface {
         episodes: WatchItemEpisode[]
         relations: {
             data: WatchItemInterface[]
+        }
+        frames: {
+            data?: WatchItemImage[]
         }
     }
 }
@@ -87,6 +49,50 @@ interface WatchItemCountry {
         publishedAt: string
         titles: {
             data: WatchItemInterface[]
+        }
+    }
+}
+
+interface WatchItemImage {
+    id: number
+    attributes: {
+        name: string
+        alternativeText: string | null
+        caption: string | null
+        width: number
+        height: number
+        url: string
+        formats: {
+            thumbnail?: {
+                name: string
+                hash: string
+                ext: '.jpg' | '.png'
+                mime: 'image/jpeg' | 'image/png'
+                path: string | null
+                width: number
+                height: number
+                size: number
+                url: string
+                provider_metadata?: {
+                    public_id: string
+                    resource_type: 'image'
+                }
+            }
+            small?: {
+                name: string
+                hash: string
+                ext: '.jpg' | '.png'
+                mime: 'image/jpeg' | 'image/png'
+                path: string | null
+                width: number
+                height: number
+                size: number
+                url: string
+                provider_metadata?: {
+                    public_id: string
+                    resource_type: 'image'
+                }
+            }
         }
     }
 }
@@ -116,8 +122,8 @@ export const HomePage = () => {
     const [titles, setTitles] = React.useState<WatchItemInterface[]>([])
 
     useEffect(() => {
-        getTitleWithCustomFields(['title', 'title_id', 'poster', 'description']).then((resp) =>
-            setTitles(resp.data),
+        getTitleWithCustomFields(['title', 'title_id', 'poster', 'description', 'type']).then(
+            (resp) => setTitles(resp.data),
         )
     }, [])
 
@@ -137,7 +143,7 @@ export const HomePage = () => {
             <div className="container">
                 <h4 className="main_title">Подборка</h4>
 
-                <Swiper watchSlidesProgress={true} slidesPerView={'auto'} className="anime_list">
+                <Swiper slidesPerView={5} className="anime_list">
                     {titles.map((item) => {
                         return (
                             <SwiperSlide key={item.id}>
@@ -146,6 +152,7 @@ export const HomePage = () => {
                                     title={item.attributes.title}
                                     titleId={item.attributes.title_id}
                                     description={item.attributes.description}
+                                    type={item.attributes.type}
                                 />
                             </SwiperSlide>
                         )

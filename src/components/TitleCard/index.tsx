@@ -2,6 +2,7 @@ import Image from 'next/image'
 import React from 'react'
 import styles from './TitleCard.module.sass'
 import { useRouter } from 'next/router'
+import clsx from 'clsx'
 
 interface TitleCardProps {
     poster?: {
@@ -47,6 +48,8 @@ interface TitleCardProps {
     title: string
     titleId: string
     description: string
+    className?: any
+    type: 'Аниме' | 'Фильм' | 'Мультсериал' | 'Мультфильм' | 'Сериал'
 }
 
 export function limitStr(str: string, n: number, symb?: string) {
@@ -55,10 +58,24 @@ export function limitStr(str: string, n: number, symb?: string) {
     return str.substr(0, n - symb.length) + symb
 }
 
-export const TitleCard: React.FC<TitleCardProps> = ({ poster, title, titleId, description }) => {
+export const TitleCard: React.FC<TitleCardProps> = ({
+    poster,
+    title,
+    titleId,
+    description,
+    className,
+    type,
+}) => {
     const router = useRouter()
     return (
-        <div className={styles.card} onClick={() => router.push(`/anime/${titleId}`)}>
+        <div
+            className={clsx(styles.card, className && className)}
+            onClick={() =>
+                router.push(
+                    `/${type === 'Аниме' ? 'anime' : type === 'Фильм' ? 'films' : null}/${titleId}`,
+                )
+            }
+        >
             <div className={styles.poster_wrap}>
                 {poster && (
                     <Image

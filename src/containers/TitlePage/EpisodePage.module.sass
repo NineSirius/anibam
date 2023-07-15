@@ -31,6 +31,9 @@
   max-height: 500px
   overflow-y: auto
 
+.episode_list_select
+  display: none
+
 .active_btn
   background: var(--bg-alternate)
   color: var(--bg)
@@ -42,5 +45,17 @@
     .episode_video_wrap
       width: 100%
 
+      .episode_info
+        display: flex
+        flex-direction: column
+
+        .right
+          margin-top: 10px
+
     .episode_list
       width: 100%
+      display: none
+
+  .episode_list_select
+    margin-top: 15px
+    display: flex
