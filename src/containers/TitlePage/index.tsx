@@ -26,7 +26,7 @@ interface TitlePageProps {
     }
 }
 
-export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
+export const TitlePage = () => {
     const [titleInfo, setTitleInfo] = useState<WatchItemInterface>()
     const [hideDesc, setHideDesc] = useState<boolean>(true)
     const [mobile, setMobile] = useState<boolean>(false)
@@ -45,17 +45,10 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
         if (router.query.title) {
             getTitleByTitle(router.query.title).then((resp) => setTitleInfo(resp.data[0]))
         }
-        // getTitleRating(data.data[0].attributes.title_id).then((resp) => {
-        //     console.log(resp)
-
-        //     if (resp.data.data[0].attributes.rating.length > 0) {
-        //         console.log(resp.data.data[0].attributes.rating)
-        //     }
-        // })
     }, [router.query.title])
 
     useEffect(() => {
-        if (user && data) {
+        if (user && titleInfo) {
             getUserLists(user.id).then((resp) => {
                 setUserLists(resp)
 
@@ -64,17 +57,22 @@ export const TitlePage: React.FC<TitlePageProps> = ({ data }) => {
                     planned_list: 'Запланировано',
                     viewed_list: 'Просмотрено',
                 }
-
+                let folder = null
                 for (const category in categories) {
-                    const item = resp[category].find((item: any) => item.id === data.data[0].id)
+                    const item = resp[category].find((item: any) => item.id === titleInfo.id)
                     if (item) {
                         setUserList(categories[category])
+                        folder = categories[category]
                         return
                     }
                 }
+
+                if (!folder) {
+                    setUserList('Добавить в папку')
+                }
             })
         }
-    }, [data, user])
+    }, [router.asPath, titleInfo, user])
 
     const toggleShowMore = () => {
         setShowMore(!showMore)

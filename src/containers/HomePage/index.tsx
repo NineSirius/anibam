@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { getTitleWithCustomFields, getTitles } from '@/api'
 import { TitleCard } from '@/components/TitleCard'
@@ -120,11 +120,13 @@ interface WatchItemEpisode {
 
 export const HomePage = () => {
     const [titles, setTitles] = React.useState<WatchItemInterface[]>([])
+    const [innerWidth, setInnerWidth] = useState<number>(0)
 
     useEffect(() => {
         getTitleWithCustomFields(['title', 'title_id', 'poster', 'description', 'type']).then(
             (resp) => setTitles(resp.data),
         )
+        setInnerWidth(window.innerWidth)
     }, [])
 
     return (
@@ -143,21 +145,20 @@ export const HomePage = () => {
             <div className="container">
                 <h4 className="main_title">Подборка</h4>
 
-                <Swiper slidesPerView={5} className="anime_list">
+                <div className="anime_list">
                     {titles.map((item) => {
                         return (
-                            <SwiperSlide key={item.id}>
-                                <TitleCard
-                                    poster={item.attributes.poster?.data.attributes}
-                                    title={item.attributes.title}
-                                    titleId={item.attributes.title_id}
-                                    description={item.attributes.description}
-                                    type={item.attributes.type}
-                                />
-                            </SwiperSlide>
+                            <TitleCard
+                                key={item.id}
+                                poster={item.attributes.poster?.data.attributes}
+                                title={item.attributes.title}
+                                titleId={item.attributes.title_id}
+                                description={item.attributes.description}
+                                type={item.attributes.type}
+                            />
                         )
                     })}
-                </Swiper>
+                </div>
             </div>
         </>
     )
