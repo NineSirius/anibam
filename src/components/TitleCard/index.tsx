@@ -50,6 +50,7 @@ interface TitleCardProps {
     description: string
     className?: any
     type: 'Аниме' | 'Фильм' | 'Мультсериал' | 'Мультфильм' | 'Сериал'
+    episodesCount: number
 }
 
 export function limitStr(str: string, n: number, symb?: string) {
@@ -65,16 +66,13 @@ export const TitleCard: React.FC<TitleCardProps> = ({
     description,
     className,
     type,
+    episodesCount,
 }) => {
     const router = useRouter()
     return (
         <div
             className={clsx(styles.card, className && className)}
-            onClick={() =>
-                router.push(
-                    `/${type === 'Аниме' ? 'anime' : type === 'Фильм' ? 'films' : null}/${titleId}`,
-                )
-            }
+            onClick={() => router.push(`/watch/${titleId}`)}
         >
             <div className={styles.poster_wrap}>
                 {poster && (
@@ -88,10 +86,13 @@ export const TitleCard: React.FC<TitleCardProps> = ({
                     />
                 )}
                 <div className={styles.poster_info}>
+                    <div className={styles.poster_info_content}>
+                        <span>{episodesCount} эп.</span>
+                    </div>
                     <p>{limitStr(description, 80)}</p>
                 </div>
             </div>
-            <h2>{limitStr(title, 48, '...')}</h2>
+            <h2 title={title}>{title.length > 30 ? limitStr(title, 36, '...') : title}</h2>
         </div>
     )
 }

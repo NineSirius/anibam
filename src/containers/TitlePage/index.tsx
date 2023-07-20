@@ -165,11 +165,12 @@ export const TitlePage = () => {
                             )}
 
                             <Button
+                                color="primary"
                                 className={styles.button}
                                 onClick={() => {
                                     if (titleInfo.attributes.episodes.length > 0) {
                                         router.push(
-                                            `/anime/${titleInfo.attributes.title_id}/episodes/1`,
+                                            `/watch/${titleInfo.attributes.title_id}/episodes/1`,
                                         )
                                     } else enqueueSnackbar('Эпизоды отсутствуют')
                                 }}
@@ -196,6 +197,12 @@ export const TitlePage = () => {
                                     <p>Тип</p>
                                     <span>{titleInfo.attributes.format}</span>
                                 </li>
+                                {titleInfo.attributes.format === 'ТВ Сериал' && (
+                                    <li>
+                                        <p>Кол-во эпизодов</p>
+                                        <span>{titleInfo.attributes.episodes.length} эп.</span>
+                                    </li>
+                                )}
                                 <li>
                                     <p>Дата выхода</p>
                                     <span>
@@ -281,6 +288,12 @@ export const TitlePage = () => {
                                     <p>Тип</p>
                                     <span>{titleInfo.attributes.format}</span>
                                 </li>
+                                {titleInfo.attributes.format === 'ТВ Сериал' && (
+                                    <li>
+                                        <p>Кол-во эпизодов</p>
+                                        <span>{titleInfo.attributes.episodes.length} эп.</span>
+                                    </li>
+                                )}
                                 <li>
                                     <p>Статус</p>
                                     <span>{titleInfo.attributes.status}</span>
@@ -296,16 +309,20 @@ export const TitlePage = () => {
                             </ul>
 
                             <ReactMarkdown className={styles.description}>
-                                {hideDesc
+                                {titleInfo.attributes.description.length < 350
+                                    ? titleInfo.attributes.description
+                                    : hideDesc
                                     ? limitStr(titleInfo.attributes.description, 350)
                                     : titleInfo.attributes.description}
                             </ReactMarkdown>
-                            <button
-                                onClick={() => setHideDesc(!hideDesc)}
-                                className={styles.more_btn}
-                            >
-                                {hideDesc ? 'Подробнее' : 'Скрыть'}
-                            </button>
+                            {titleInfo.attributes.description.length >= 350 && (
+                                <button
+                                    onClick={() => setHideDesc(!hideDesc)}
+                                    className={styles.more_btn}
+                                >
+                                    {hideDesc ? 'Подробнее' : 'Скрыть'}
+                                </button>
+                            )}
 
                             <div className={styles.frames_wrap}>
                                 <h3>Кадры</h3>
@@ -337,7 +354,7 @@ export const TitlePage = () => {
                                                 style={{ justifyContent: 'flex-start' }}
                                                 onClick={() =>
                                                     router.push(
-                                                        `/anime/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
+                                                        `/watch/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
                                                     )
                                                 }
                                             >
@@ -368,7 +385,7 @@ export const TitlePage = () => {
                                                 style={{ justifyContent: 'flex-start' }}
                                                 onClick={() =>
                                                     router.push(
-                                                        `/anime/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
+                                                        `/watch/${titleInfo.attributes.title_id}/episodes/${item.episode_number}`,
                                                     )
                                                 }
                                             >
@@ -401,14 +418,7 @@ export const TitlePage = () => {
                                                         className={styles.relations_list_item}
                                                         onClick={() =>
                                                             router.push(
-                                                                `/${
-                                                                    item.attributes.type === 'Фильм'
-                                                                        ? 'films'
-                                                                        : item.attributes.type ===
-                                                                          'Аниме'
-                                                                        ? 'anime'
-                                                                        : null
-                                                                }/${item.attributes.title_id}`,
+                                                                `/watch/${item.attributes.title_id}`,
                                                             )
                                                         }
                                                     >
@@ -448,6 +458,10 @@ export const TitlePage = () => {
                                     </ul>
                                 </div>
                             )}
+
+                            <div className={styles.comments}>
+                                <h2>Комментарии</h2>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { getTitleWithCustomFields, getTitles } from '@/api'
 import { TitleCard } from '@/components/TitleCard'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/css'
+import styles from './HomePage.module.sass'
+import { useRouter } from 'next/router'
+import { Button } from '@/components/UI/Button'
 
 export interface WatchItemInterface {
     id: number
@@ -129,6 +130,8 @@ export const HomePage = () => {
         setInnerWidth(window.innerWidth)
     }, [])
 
+    const router = useRouter()
+
     return (
         <>
             <Head>
@@ -143,6 +146,20 @@ export const HomePage = () => {
                 ></meta>
             </Head>
             <div className="container">
+                <div className={styles.banners}>
+                    <div
+                        className={styles.banner}
+                        onClick={() => router.replace('https://t.me/anibam_bot')}
+                    >
+                        <h4>Telegram Бот</h4>
+                        <p>Смотрите аниме в нашем телеграмм боте</p>
+                    </div>
+                    <div className={styles.banner}>
+                        <h4>Мобильное приложение</h4>
+                        <p>Вы также можете смотреть аниме в нашем мобильном приложении</p>
+                    </div>
+                </div>
+
                 <h4 className="main_title">Подборка</h4>
 
                 <div className="anime_list">
@@ -155,6 +172,7 @@ export const HomePage = () => {
                                 titleId={item.attributes.title_id}
                                 description={item.attributes.description}
                                 type={item.attributes.type}
+                                episodesCount={item.attributes.episodes.length}
                             />
                         )
                     })}

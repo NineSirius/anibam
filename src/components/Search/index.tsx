@@ -9,6 +9,8 @@ import { Backdrop } from '../UI/Backdrop'
 import { getTitleByName } from '@/api'
 import clsx from 'clsx'
 import { WatchItemInterface } from '@/containers/HomePage'
+import { limitStr } from '../TitleCard'
+import { format, parse, parseISO } from 'date-fns'
 
 interface SearchProps {
     show: boolean
@@ -87,7 +89,7 @@ export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
                                         borderRadius: 0,
                                     }}
                                     onClick={() => {
-                                        router.push(`/anime/${result.attributes.title_id}`)
+                                        router.push(`/watch/${result.attributes.title_id}`)
                                         onClose()
                                     }}
                                 >
@@ -101,7 +103,18 @@ export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
                                     )}
                                     <div className={styles.result_info}>
                                         <span>{result.attributes.status}</span>
-                                        <h5>{result.attributes.title}</h5>
+                                        <h5>
+                                            {result.attributes.title.length >= 40
+                                                ? limitStr(result.attributes.title, 40)
+                                                : result.attributes.title}
+                                        </h5>
+                                        <p className={styles.caption}>
+                                            {result.attributes.type} * {result.attributes.format} *{' '}
+                                            {format(
+                                                parseISO(result.attributes.release_date),
+                                                'yyyy',
+                                            )}
+                                        </p>
                                     </div>
                                 </Button>
                             </li>

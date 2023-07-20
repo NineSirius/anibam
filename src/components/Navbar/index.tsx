@@ -7,13 +7,11 @@ import {
     MdForum,
     MdLaptop,
     MdLightMode,
-    MdList,
     MdLogout,
     MdMenu,
     MdPeople,
-    MdPerson3,
     MdSearch,
-    MdSettings,
+    MdTune,
 } from 'react-icons/md'
 import { Backdrop } from '../UI/Backdrop'
 import { useDispatch, useSelector } from 'react-redux'
@@ -73,11 +71,13 @@ export const Navbar = () => {
 
                     <ul className={clsx(styles.nav_links, drawerShow && styles.active)}>
                         {/* <div className={styles.mobile_logo_wrap}>
-                            <Button className={styles.logo}>AniBam</Button>
                             <Button>
                                 <MdDarkMode />
                             </Button>
                         </div> */}
+                        <li>
+                            <Button className={styles.logo}>AniBam</Button>
+                        </li>
                         <li>
                             <Button>Аниме</Button>
                         </li>
@@ -192,10 +192,26 @@ export const Navbar = () => {
                                                 <p className={styles.role}>
                                                     {user.role.name === 'Authenticated' &&
                                                         'Пользователь'}
+                                                    {user.role.name === 'Owner' && 'Владелец'}
                                                 </p>
                                             </div>
                                         </div>
                                     </Button>
+                                    {user.role.name === 'Owner' && (
+                                        <Button
+                                            style={{
+                                                borderRadius: 0,
+                                                alignItems: 'center',
+                                                gap: 10,
+                                                justifyContent: 'flex-start',
+                                            }}
+                                            onClick={() =>
+                                                router.replace('http://localhost:1337/admin')
+                                            }
+                                        >
+                                            <MdTune size={20} /> Панель администратора
+                                        </Button>
+                                    )}
                                     <Button
                                         style={{
                                             borderRadius: 0,

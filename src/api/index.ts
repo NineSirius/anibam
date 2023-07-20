@@ -59,14 +59,16 @@ export const getTitleByTitle = async (title: any) => {
 export const getTitleByName = async (name: string) => {
     const query = name.charAt(0).toUpperCase() + name.slice(1)
     const response = await strapiApi.get(
-        `get-titles?filters[title][$contains]=${query}&fields[0]=title&fields[1]=status&fields[2]=poster&populate=poster&fields[3]=title_id`,
+        `get-titles?filters[title][$contains]=${query}&fields[0]=title&fields[1]=status&fields[2]=poster&populate=poster&fields[3]=title_id&fields[4]=format&fields[5]=type&fields[6]=release_date`,
     )
     return response.data
 }
 
 export const getTitleWithCustomFields = async (query: any[]) => {
     const response = await strapiApi.get(
-        `get-titles?populate=*${query.map((item, index) => `&fields[${index}]=${item}`).join('')}`,
+        `get-titles?populate=episodes&populate=poster${query
+            .map((item, index) => `&fields[${index}]=${item}`)
+            .join('')}`,
     )
     return response.data
 }

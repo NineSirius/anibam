@@ -28,8 +28,9 @@
       align-items: center
       gap: 10px
 
-      .mobile_logo_wrap
-        display: none
+      li
+        .logo
+          display: none
 
     .nav_right
       right: 10px
@@ -49,11 +50,6 @@
   color: #aaaaaa
 
 @media screen and (max-width: 600px)
-
-  .nav_left,
-  .nav_right
-    top: 50%
-    transform: translateY(-25%)
 
   .nav_links
     position: fixed
@@ -86,6 +82,12 @@
 @media screen and (max-width: 400px)
   .logo
     display: none !important
+
+  .nav_links
+
+    li
+      .logo
+        display: flex !important
 
 @media screen and (max-width: 320px)
   .mobile_logo_wrap

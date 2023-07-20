@@ -9,6 +9,7 @@ import Head from 'next/head'
 import { Link } from '@mui/material'
 import { Select } from '@/components/UI/Select'
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
+import clsx from 'clsx'
 
 export const EpisodePage = () => {
     const [animeInfo, setAnimeInfo] = useState<WatchItemInterface | null>(null)
@@ -40,7 +41,7 @@ export const EpisodePage = () => {
     const handleEpisodeChange = (value: string) => {
         const episode = extractNumberFromString(value)
         if (animeInfo) {
-            router.push(`/anime/${animeInfo.attributes.title_id}/episodes/${episode}`)
+            router.push(`/watch/${animeInfo.attributes.title_id}/episodes/${episode}`)
         }
     }
 
@@ -54,7 +55,12 @@ export const EpisodePage = () => {
                 </Head>
                 <div className="container">
                     <div className={styles.episode_wrap}>
-                        <div className={styles.episode_video_wrap}>
+                        <div
+                            className={clsx(
+                                styles.episode_video_wrap,
+                                animeInfo.attributes.format === 'Фильм' && styles.full,
+                            )}
+                        >
                             <iframe
                                 src={animeInfo.attributes.episodes[episodeNumber - 1].episode_url}
                                 width="100%"
@@ -70,61 +76,68 @@ export const EpisodePage = () => {
                                         {animeInfo.attributes.episodes[episodeNumber - 1]
                                             ?.episode_name || 'Без названия'}
                                     </h2>
-                                    <Link href={`/anime/${animeInfo.attributes.title_id}`}>
+                                    <Link href={`/watch/${animeInfo.attributes.title_id}`}>
                                         {animeInfo.attributes.title}
                                     </Link>
                                 </div>
-                                <div className={styles.right}>
-                                    <Button
-                                        disabled={+episodeNumber === 1}
-                                        onClick={() =>
-                                            router.push(
-                                                `/anime/${animeInfo.attributes.title_id}/episodes/${
-                                                    +episodeNumber - 1
-                                                }`,
-                                            )
-                                        }
-                                    >
-                                        <MdSkipPrevious size={24} />
-                                    </Button>
-                                    <Button
-                                        disabled={
-                                            +episodeNumber === animeInfo.attributes.episodes.length
-                                        }
-                                        onClick={() =>
-                                            router.push(
-                                                `/anime/${animeInfo.attributes.title_id}/episodes/${
-                                                    +episodeNumber + 1
-                                                }`,
-                                            )
-                                        }
-                                    >
-                                        <MdSkipNext size={24} />
-                                    </Button>
-                                </div>
+                                {animeInfo.attributes.format === 'ТВ Сериал' && (
+                                    <div className={styles.right}>
+                                        <Button
+                                            color="primary"
+                                            disabled={+episodeNumber === 1}
+                                            onClick={() =>
+                                                router.push(
+                                                    `/watch/${
+                                                        animeInfo.attributes.title_id
+                                                    }/episodes/${+episodeNumber - 1}`,
+                                                )
+                                            }
+                                        >
+                                            <MdSkipPrevious size={24} />
+                                        </Button>
+                                        <Button
+                                            color="primary"
+                                            disabled={
+                                                +episodeNumber ===
+                                                animeInfo.attributes.episodes.length
+                                            }
+                                            onClick={() =>
+                                                router.push(
+                                                    `/watch/${
+                                                        animeInfo.attributes.title_id
+                                                    }/episodes/${+episodeNumber + 1}`,
+                                                )
+                                            }
+                                        >
+                                            <MdSkipNext size={24} />
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        <div className={styles.episode_list}>
-                            {animeInfo.attributes.episodes.map((item) => {
-                                return (
-                                    <Button
-                                        className={
-                                            episodeNumber === item.episode_number &&
-                                            styles.active_btn
-                                        }
-                                        key={item.id}
-                                        onClick={() =>
-                                            router.push(
-                                                `/anime/${animeInfo.attributes.title_id}/episodes/${item.episode_number}`,
-                                            )
-                                        }
-                                    >
-                                        {item.episode_number} эпизод
-                                    </Button>
-                                )
-                            })}
-                        </div>
+                        {animeInfo.attributes.format === 'ТВ Сериал' && (
+                            <div className={styles.episode_list}>
+                                {animeInfo.attributes.episodes.map((item) => {
+                                    return (
+                                        <Button
+                                            className={
+                                                episodeNumber === item.episode_number &&
+                                                styles.active_btn
+                                            }
+                                            key={item.id}
+                                            onClick={() =>
+                                                router.push(
+                                                    `/watch/${animeInfo.attributes.title_id}/episodes/${item.episode_number}`,
+                                                )
+                                            }
+                                        >
+                                            {item.episode_number} эпизод
+                                        </Button>
+                                    )
+                                })}
+                            </div>
+                        )}
                     </div>
                     <Select
                         options={animeInfo.attributes.episodes.map((item) => {
