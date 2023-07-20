@@ -263,7 +263,7 @@ export const TitlePage = () => {
                                 onClick={() => {
                                     if (titleInfo.attributes.episodes.length > 0) {
                                         router.push(
-                                            `/anime/${titleInfo.attributes.title_id}/episodes/1`,
+                                            `/watch/${titleInfo.attributes.title_id}/episodes/1`,
                                         )
                                     } else enqueueSnackbar('Эпизоды отсутствуют')
                                 }}
