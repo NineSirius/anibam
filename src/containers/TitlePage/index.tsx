@@ -18,6 +18,7 @@ import { TitleCard, limitStr } from '@/components/TitleCard'
 import { WatchItemInterface } from '../HomePage'
 import { userInfo } from 'os'
 import styles from './TitlePage.module.sass'
+import { Link } from '@mui/material'
 
 interface TitlePageProps {
     data: {
@@ -193,6 +194,24 @@ export const TitlePage = () => {
                                         {`${titleInfo.attributes.age_limit}+` || 'Не указано'}
                                     </span>
                                 </li>
+                                {titleInfo.attributes.studios.data.length > 0 && (
+                                    <li>
+                                        <p>Студия</p>
+                                        <span>
+                                            {titleInfo.attributes.studios.data.map((item) => {
+                                                return (
+                                                    <Link
+                                                        key={item.id}
+                                                        target="_blank"
+                                                        href={`https://letmegooglethat.com/?q=${item.attributes.title} `}
+                                                    >
+                                                        {item.attributes.title}
+                                                    </Link>
+                                                )
+                                            })}
+                                        </span>
+                                    </li>
+                                )}
                                 <li>
                                     <p>Тип</p>
                                     <span>{titleInfo.attributes.format}</span>
@@ -284,10 +303,29 @@ export const TitlePage = () => {
                                         {`${titleInfo.attributes.age_limit}+` || 'Не указано'}
                                     </span>
                                 </li>
+                                {titleInfo.attributes.studios.data.length > 0 && (
+                                    <li>
+                                        <p>Студия</p>
+                                        <span>
+                                            {titleInfo.attributes.studios.data.map((item) => {
+                                                return (
+                                                    <Link
+                                                        key={item.id}
+                                                        target="_blank"
+                                                        href={`https://letmegooglethat.com/?q=${item.attributes.title}`}
+                                                    >
+                                                        {item.attributes.title}
+                                                    </Link>
+                                                )
+                                            })}
+                                        </span>
+                                    </li>
+                                )}
                                 <li>
                                     <p>Тип</p>
                                     <span>{titleInfo.attributes.format}</span>
                                 </li>
+
                                 {titleInfo.attributes.format === 'ТВ Сериал' && (
                                     <li>
                                         <p>Кол-во эпизодов</p>
@@ -458,6 +496,8 @@ export const TitlePage = () => {
                                     </ul>
                                 </div>
                             )}
+
+                            <div className={styles.similar_titles}></div>
 
                             <div className={styles.comments}>
                                 <h2>Комментарии</h2>

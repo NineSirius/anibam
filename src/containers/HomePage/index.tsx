@@ -38,6 +38,9 @@ export interface WatchItemInterface {
         frames: {
             data?: WatchItemImage[]
         }
+        studios: {
+            data: WatchItemStudio[]
+        }
     }
 }
 
@@ -54,6 +57,19 @@ interface WatchItemCountry {
     }
 }
 
+interface WatchItemStudio {
+    id: number
+    attributes: {
+        title: string
+        studio_id: string
+        createdAt: string
+        updatedAt: string
+        publishedAt: string
+        watch_items: {
+            data: WatchItemInterface[]
+        }
+    }
+}
 interface WatchItemImage {
     id: number
     attributes: {

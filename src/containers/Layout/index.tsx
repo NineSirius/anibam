@@ -16,6 +16,7 @@ import { LoginForm } from '@/components/Auth/LoginForm'
 import { useRouter } from 'next/router'
 import Cookie from 'js-cookie'
 import { getUserData } from '@/api'
+import { Footer } from '@/components/Footer'
 
 interface LayoutProps {
     children: React.ReactNode
@@ -76,6 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className={clsx('app', theme)}>
                 {asPath !== '/auth/login' && asPath !== '/auth/register' && <Navbar />}
                 <div>{children}</div>
+                {asPath !== '/auth/login' && asPath !== '/auth/register' && <Footer />}
             </div>
 
             {images.length > 0 && (
