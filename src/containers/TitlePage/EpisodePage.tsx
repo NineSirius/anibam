@@ -10,6 +10,7 @@ import { Link } from '@mui/material'
 import { Select } from '@/components/UI/Select'
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
 import clsx from 'clsx'
+import { addMonths } from 'date-fns'
 
 export const EpisodePage = () => {
     const [animeInfo, setAnimeInfo] = useState<WatchItemInterface | null>(null)
@@ -62,7 +63,15 @@ export const EpisodePage = () => {
                             )}
                         >
                             <iframe
-                                src={animeInfo.attributes.episodes[episodeNumber - 1].episode_url}
+                                src={
+                                    animeInfo.attributes.episodes[
+                                        animeInfo.attributes.episodes.find(
+                                            (item) => item.episode_number === '0',
+                                        )
+                                            ? episodeNumber
+                                            : episodeNumber - 1
+                                    ].episode_url
+                                }
                                 width="100%"
                                 height="500"
                                 frameBorder="0"
@@ -73,8 +82,13 @@ export const EpisodePage = () => {
                                 <div className={styles.left}>
                                     <h2>
                                         {episodeNumber} серия -{' '}
-                                        {animeInfo.attributes.episodes[episodeNumber - 1]
-                                            ?.episode_name || 'Без названия'}
+                                        {animeInfo.attributes.episodes[
+                                            animeInfo.attributes.episodes.find(
+                                                (item) => item.episode_number === '0',
+                                            )
+                                                ? episodeNumber
+                                                : episodeNumber - 1
+                                        ]?.episode_name || 'Без названия'}
                                     </h2>
                                     <Link href={`/watch/${animeInfo.attributes.title_id}`}>
                                         {animeInfo.attributes.title}
@@ -84,7 +98,10 @@ export const EpisodePage = () => {
                                     <div className={styles.right}>
                                         <Button
                                             color="primary"
-                                            disabled={+episodeNumber === 1}
+                                            disabled={
+                                                +episodeNumber ===
+                                                +animeInfo.attributes.episodes[0].episode_number
+                                            }
                                             onClick={() =>
                                                 router.push(
                                                     `/watch/${
@@ -99,7 +116,9 @@ export const EpisodePage = () => {
                                             color="primary"
                                             disabled={
                                                 +episodeNumber ===
-                                                animeInfo.attributes.episodes.length
+                                                +animeInfo.attributes.episodes[
+                                                    animeInfo.attributes.episodes.length - 1
+                                                ].episode_number
                                             }
                                             onClick={() =>
                                                 router.push(
@@ -141,7 +160,7 @@ export const EpisodePage = () => {
                     </div>
                     <Select
                         options={animeInfo.attributes.episodes.map((item) => {
-                            return `${item.episode_number} серия`
+                            return `${item.episode_number} серия - ${item.episode_name}`
                         })}
                         value={activeEpisode || 'Выберите серию'}
                         onChange={handleEpisodeChange}

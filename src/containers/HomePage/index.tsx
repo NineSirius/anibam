@@ -131,7 +131,7 @@ interface WatchItemGenre {
 interface WatchItemEpisode {
     id: number
     episode_name: string
-    episode_number: number
+    episode_number: string
     episode_url: string
 }
 
