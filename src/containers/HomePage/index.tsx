@@ -162,7 +162,7 @@ export const HomePage = () => {
                 ></meta>
             </Head>
             <div className="container">
-                <div className={styles.banners}>
+                {/* <div className={styles.banners}>
                     <div
                         className={styles.banner}
                         onClick={() => router.replace('https://t.me/anibam_bot')}
@@ -174,7 +174,7 @@ export const HomePage = () => {
                         <h4>Мобильное приложение</h4>
                         <p>Вы также можете смотреть аниме в нашем мобильном приложении</p>
                     </div>
-                </div>
+                </div> */}
 
                 <h4 className="main_title">Подборка</h4>
 
