@@ -66,8 +66,9 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                                 qualityOptions={Object.keys(
                                     titleInfo.player.list[episodeNumber - 1].hls,
                                 )
-                                    .map((key: string) => {
+                                    .map((key) => {
                                         const hlsUrl =
+                                            //@ts-ignore
                                             titleInfo.player.list[episodeNumber - 1].hls[key]
                                         if (hlsUrl) {
                                             return {
