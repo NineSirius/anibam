@@ -1,4 +1,4 @@
-import { WatchItemInterface } from '@/containers/HomePage'
+import { TitleT } from '@/containers/types/TitleT'
 import { createSlice } from '@reduxjs/toolkit'
 
 export interface UserTypes {
@@ -32,8 +32,8 @@ export interface UserTypes {
         username_styles: 'rgb' | 'default'
         show_vip_status: boolean
     }
-    pending_list: WatchItemInterface[]
-    watch_list: WatchItemInterface[]
+    pending_list: TitleT[]
+    watch_list: TitleT[]
 }
 
 export interface StoreTypes {
