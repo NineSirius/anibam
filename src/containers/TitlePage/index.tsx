@@ -152,7 +152,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                 className={styles.button}
                                 onClick={() => {
                                     if (titleInfo.player.list.length > 0) {
-                                        router.push(`/watch/${titleInfo.code}/episodes/1`)
+                                        router.push(`/anime/${titleInfo.code}/episodes/1`)
                                     } else enqueueSnackbar('Эпизоды отсутствуют')
                                 }}
                             >
@@ -197,8 +197,17 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                     <span>{titleInfo.type.string}</span>
                                 </li>
                                 <li>
+                                    <p>Дата выхода</p>
+                                    <span>{`${titleInfo.season.year}`}</span>
+                                </li>
+                                <li>
+                                    <p>Озвучка</p>
+                                    <span title={titleInfo.team.voice.join(', ')}>AniLibria</span>
+                                </li>
+
+                                <li>
                                     <p>Кол-во эпизодов</p>
-                                    <span>{titleInfo.player.episodes.last} эп.</span>
+                                    <span>{titleInfo.player.list.length} эп.</span>
                                 </li>
                                 <li>
                                     <p>Статус</p>
@@ -243,7 +252,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                 className={styles.button}
                                 onClick={() => {
                                     if (titleInfo.player.episodes.last > 0) {
-                                        router.push(`/watch/${titleInfo.code}/episodes/1`)
+                                        router.push(`/anime/${titleInfo.code}/episodes/1`)
                                     } else enqueueSnackbar('Эпизоды отсутствуют')
                                 }}
                             >
@@ -258,13 +267,20 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
 
                             <ul className={clsx(styles.anime_info, mobile && styles.active)}>
                                 <li>
-                                    <p>Тип</p>
+                                    <p>Формат</p>
                                     <span>{titleInfo.type.string}</span>
                                 </li>
-
+                                <li>
+                                    <p>Дата выхода</p>
+                                    <span>{`${titleInfo.season.year}, ${titleInfo.season.string}`}</span>
+                                </li>
+                                <li>
+                                    <p>Озвучка</p>
+                                    <span title={titleInfo.team.voice.join(', ')}>AniLibria</span>
+                                </li>
                                 <li>
                                     <p>Кол-во эпизодов</p>
-                                    <span>{titleInfo.player.episodes.last} эп.</span>
+                                    <span>{titleInfo.player.list.length} эп.</span>
                                 </li>
                                 <li>
                                     <p>Статус</p>
@@ -313,14 +329,14 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
 
                             <div className={styles.episodes}>
                                 <h3>Список серий</h3>
-                                {titleInfo.player.list.length > 0 ? (
-                                    titleInfo.player.list.map((item, index) => (
+                                {episodes.length > 0 ? (
+                                    episodes.map((item, index) => (
                                         <Button
                                             key={index}
                                             style={{ justifyContent: 'flex-start' }}
                                             onClick={() =>
                                                 router.push(
-                                                    `/watch/${titleInfo.code}/episodes/${item.episode}`,
+                                                    `/anime/${titleInfo.code}/episodes/${item.episode}`,
                                                 )
                                             }
                                         >
@@ -330,8 +346,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                 ) : (
                                     <h2>В скором времени добавятся</h2>
                                 )}
-
-                                {episodes.length > 10 && (
+                                {titleInfo.player.list.length > 7 && (
                                     <Button onClick={toggleShowMore}>
                                         {showMore
                                             ? `Скрыть (${remainingCount})`
@@ -346,19 +361,35 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                     <ul className={styles.relations_list}>
                                         {titleInfo.franchises[0].releases.length > 0 &&
                                             titleInfo.franchises[0].releases.map((item: any) => {
-                                                return (
-                                                    <div
-                                                        key={item.id}
-                                                        className={styles.relations_list_item}
-                                                        onClick={() =>
-                                                            router.push(`/watch/${item.code}`)
-                                                        }
-                                                    >
-                                                        <div className={styles.item_info}>
-                                                            <h4>{item.names.ru}</h4>
+                                                if (item.code === titleInfo.code) {
+                                                    return (
+                                                        <div
+                                                            key={item.id}
+                                                            className={clsx(
+                                                                styles.relations_list_item,
+                                                                styles.active,
+                                                            )}
+                                                        >
+                                                            <div className={styles.item_info}>
+                                                                <h4>{item.names.ru}</h4>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )
+                                                    )
+                                                } else {
+                                                    return (
+                                                        <div
+                                                            key={item.id}
+                                                            className={styles.relations_list_item}
+                                                            onClick={() =>
+                                                                router.push(`/anime/${item.code}`)
+                                                            }
+                                                        >
+                                                            <div className={styles.item_info}>
+                                                                <h4>{item.names.ru}</h4>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                }
                                             })}
                                     </ul>
                                 </div>

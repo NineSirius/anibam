@@ -89,7 +89,7 @@ export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
                                         borderRadius: 0,
                                     }}
                                     onClick={() => {
-                                        router.push(`/watch/${result.code}`)
+                                        router.push(`/anime/${result.code}`)
                                         onClose()
                                     }}
                                 >

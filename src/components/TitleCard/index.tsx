@@ -31,7 +31,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
     return (
         <div
             className={clsx(styles.card, className && className)}
-            onClick={() => router.push(`/watch/${code}`)}
+            onClick={() => router.push(`/anime/${code}`)}
         >
             <div className={styles.poster_wrap}>
                 {poster && (
@@ -48,7 +48,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
                     <div className={styles.poster_info_content}>
                         <span>{episodesCount} эп.</span>
                     </div>
-                    <p>{limitStr(description, 80)}</p>
+                    <p>{description && limitStr(description, 80)}</p>
                 </div>
             </div>
             <h2 title={name}>{name.length > 30 ? limitStr(name, 36, '...') : name}</h2>

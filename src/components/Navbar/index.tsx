@@ -53,7 +53,7 @@ export const Navbar = () => {
     }, [dispatch, user])
 
     const getRandom = () => {
-        getAnilibriaRandomTitle().then((resp) => router.push(`/watch/${resp.code}`))
+        getAnilibriaRandomTitle().then((resp) => router.push(`/anime/${resp.code}`))
     }
 
     return (
@@ -79,7 +79,7 @@ export const Navbar = () => {
                             <Button className={styles.logo}>AniBam</Button>
                         </li>
                         <li>
-                            <Button>Аниме</Button>
+                            <Button onClick={() => router.push('/anime')}>Аниме</Button>
                         </li>
                         <li>
                             <Button onClick={getRandom}>Рандом</Button>

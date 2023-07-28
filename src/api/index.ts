@@ -1,3 +1,4 @@
+import { TitlesDataT } from '@/containers/types/TitleT'
 import axios from 'axios'
 
 // https://anibam-api.onrender.com/api
@@ -141,8 +142,12 @@ export const getAnilibriaTitle = async (code: string) => {
     return response.data
 }
 
+export const getAnilibriaTitles = async (page: number): Promise<TitlesDataT> => {
+    const response = await anilibriaApi.get(`title/updates?items_per_page=20&page=${page}`)
+    return response.data
+}
 export const getAnilibriaTitleSearch = async (params: string) => {
-    const response = await anilibriaApi.get(`search?search=${params}`)
+    const response = await anilibriaApi.get(`title/search?search=${params}`)
     return response.data
 }
 

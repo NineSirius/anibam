@@ -220,6 +220,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
             onMouseEnter={() => setControlsShow(true)}
             onMouseLeave={() => setControlsShow(false)}
         >
+            <div className={styles.controls_zone} onClick={handlePlayPause}></div>
             <ReactPlayer
                 ref={playerRef}
                 url={activeUrl}
@@ -236,13 +237,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
                 }}
                 onDuration={(duration) => {
                     setDuration(duration)
-                }}
-                config={{
-                    file: {
-                        attributes: {
-                            controlsList: 'nodownload', // Скрыть опцию скачивания
-                        },
-                    },
                 }}
                 {...(quality !== 'auto' && { config: { file: { attributes: { quality } } } })}
             />
@@ -262,7 +256,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
                         Пропустить заставку
                     </button>
                 )}
-            <div className={clsx(styles.controls, controlsShow && styles.active)}>
+            <div className={clsx(styles.controls, controlsShow && !loading && styles.active)}>
                 <Slider
                     className={styles.seek_slider} // Применяем свои стили к ползунку
                     value={seekTime}

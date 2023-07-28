@@ -1,6 +1,6 @@
 export type TitlesDataT = {
     list: TitlesT
-    pagination: any[]
+    pagination: any
 }
 
 export type TitlesT = Array<TitleT>

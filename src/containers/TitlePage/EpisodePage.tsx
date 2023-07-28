@@ -10,7 +10,6 @@ import { Select } from '@/components/UI/Select'
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
 import clsx from 'clsx'
 import { TitleT, hlsT } from '../types/TitleT'
-import ReactPlayer from 'react-player'
 import VideoPlayer from '@/components/VideoPlayer'
 
 interface EpisodePageProps {
@@ -22,6 +21,12 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
     const [activeEpisode, setActiveEpisode] = useState<string>(`${episodeNumber} серия`)
 
     const router = useRouter()
+
+    const findEpisodeIndex = (episodeNum: number) => {
+        return titleInfo.player.list.findIndex((item) => item.episode === episodeNum)
+    }
+
+    const currentEpisodeIndex = findEpisodeIndex(episodeNumber)
 
     function extractNumberFromString(string: string) {
         const numberPattern = /\d+/g
@@ -38,7 +43,7 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
     const handleEpisodeChange = (value: string) => {
         const episode = extractNumberFromString(value)
         if (titleInfo) {
-            router.push(`/watch/${titleInfo.code}/episodes/${episode}`)
+            router.push(`/anime/${titleInfo.code}/episodes/${episode}`)
         }
     }
 
@@ -59,17 +64,15 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                             )}
                         >
                             <VideoPlayer
-                                url={`https://cache.libria.fun${
-                                    titleInfo.player.list[episodeNumber - 1].hls.hd
-                                }`}
-                                skips={titleInfo.player.list[episodeNumber - 1].skips}
+                                url={`https://cache.libria.fun${titleInfo.player.list[currentEpisodeIndex].hls.hd}`}
+                                skips={titleInfo.player.list[currentEpisodeIndex].skips}
                                 qualityOptions={Object.keys(
-                                    titleInfo.player.list[episodeNumber - 1].hls,
+                                    titleInfo.player.list[currentEpisodeIndex].hls,
                                 )
                                     .map((key) => {
                                         const hlsUrl =
                                             //@ts-ignore
-                                            titleInfo.player.list[episodeNumber - 1].hls[key]
+                                            titleInfo.player.list[currentEpisodeIndex].hls[key]
                                         if (hlsUrl) {
                                             return {
                                                 quality: key,
@@ -84,10 +87,10 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                                 <div className={styles.left}>
                                     <h2>
                                         {episodeNumber} серия -{' '}
-                                        {titleInfo.player.list[episodeNumber - 1].name ||
+                                        {titleInfo.player.list[currentEpisodeIndex].name ||
                                             'Без названия'}
                                     </h2>
-                                    <Link href={`/watch/${titleInfo.code}`}>
+                                    <Link href={`/anime/${titleInfo.code}`}>
                                         {titleInfo.names.ru}
                                     </Link>
                                 </div>
@@ -99,9 +102,7 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                                         }
                                         onClick={() =>
                                             router.push(
-                                                `/watch/${titleInfo.code}/episodes/${
-                                                    episodeNumber - 1
-                                                }`,
+                                                `/anime/${titleInfo.code}/episodes/${currentEpisodeIndex}`,
                                             )
                                         }
                                     >
@@ -116,7 +117,7 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                                         }
                                         onClick={() =>
                                             router.push(
-                                                `/watch/${titleInfo.code}/episodes/${
+                                                `/anime/${titleInfo.code}/episodes/${
                                                     episodeNumber + 1
                                                 }`,
                                             )
@@ -135,7 +136,7 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                                     key={item.uuid}
                                     onClick={() =>
                                         router.push(
-                                            `/watch/${titleInfo.code}/episodes/${item.episode}`,
+                                            `/anime/${titleInfo.code}/episodes/${item.episode}`,
                                         )
                                     }
                                 >
