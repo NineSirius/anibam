@@ -5,51 +5,11 @@ import { useRouter } from 'next/router'
 import clsx from 'clsx'
 
 interface TitleCardProps {
-    poster?: {
-        name: string
-        alternativeText: string | null
-        caption: string | null
-        width: number
-        height: number
-        url: string
-        formats: {
-            thumbnail?: {
-                name: string
-                hash: string
-                ext: '.jpg' | '.png'
-                mime: 'image/jpeg' | 'image/png'
-                path: string | null
-                width: number
-                height: number
-                size: number
-                url: string
-                provider_metadata?: {
-                    public_id: string
-                    resource_type: 'image'
-                }
-            }
-            small?: {
-                name: string
-                hash: string
-                ext: '.jpg' | '.png'
-                mime: 'image/jpeg' | 'image/png'
-                path: string | null
-                width: number
-                height: number
-                size: number
-                url: string
-                provider_metadata?: {
-                    public_id: string
-                    resource_type: 'image'
-                }
-            }
-        }
-    }
-    title: string
-    titleId: string
+    poster: string
+    name: string
+    code: string
     description: string
     className?: any
-    type: 'Аниме' | 'Фильм' | 'Мультсериал' | 'Мультфильм' | 'Сериал'
     episodesCount: number
 }
 
@@ -61,26 +21,25 @@ export function limitStr(str: string, n: number, symb?: string) {
 
 export const TitleCard: React.FC<TitleCardProps> = ({
     poster,
-    title,
-    titleId,
+    name,
+    code,
     description,
     className,
-    type,
     episodesCount,
 }) => {
     const router = useRouter()
     return (
         <div
             className={clsx(styles.card, className && className)}
-            onClick={() => router.push(`/watch/${titleId}`)}
+            onClick={() => router.push(`/watch/${code}`)}
         >
             <div className={styles.poster_wrap}>
                 {poster && (
                     <Image
-                        src={poster.url}
-                        width={poster.width}
-                        height={poster.height}
-                        alt={poster.name}
+                        src={poster}
+                        width={200}
+                        height={400}
+                        alt={`Постер к аниме ${name}`}
                         className={styles.poster}
                         draggable={false}
                     />
@@ -92,7 +51,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
                     <p>{limitStr(description, 80)}</p>
                 </div>
             </div>
-            <h2 title={title}>{title.length > 30 ? limitStr(title, 36, '...') : title}</h2>
+            <h2 title={name}>{name.length > 30 ? limitStr(name, 36, '...') : name}</h2>
         </div>
     )
 }

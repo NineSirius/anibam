@@ -6,11 +6,11 @@ import { useState, useEffect } from 'react'
 import { Button } from '../UI/Button'
 import { TextField } from '../UI/TextField'
 import { Backdrop } from '../UI/Backdrop'
-import { getTitleByName } from '@/api'
+import { getAnilibriaTitleSearch, getTitleByName } from '@/api'
 import clsx from 'clsx'
-import { WatchItemInterface } from '@/containers/HomePage'
 import { limitStr } from '../TitleCard'
 import { format, parse, parseISO } from 'date-fns'
+import { TitleT, TitlesDataT } from '@/containers/types/TitleT'
 
 interface SearchProps {
     show: boolean
@@ -19,7 +19,7 @@ interface SearchProps {
 
 export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
     const [searchQuery, setSearchQuery] = useState<string>('')
-    const [searchResults, setSearchResults] = useState<any[] | null>([])
+    const [searchResults, setSearchResults] = useState<TitleT[] | null>([])
     const [loading, setLoading] = useState<boolean>(false)
     const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>(undefined)
 
@@ -42,11 +42,11 @@ export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
     const search = async (query: string) => {
         setLoading(true)
         try {
-            const resp = await getTitleByName(query)
-            if (resp.data.length < 1) {
+            const resp = await getAnilibriaTitleSearch(query)
+            if (resp.list.length < 1) {
                 setSearchResults(null)
             } else {
-                setSearchResults(resp.data)
+                setSearchResults(resp.list)
             }
         } catch (error) {
             console.error('Ошибка при выполнении поиска:', error)
@@ -70,7 +70,7 @@ export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
 
                 <ul className={styles.search_results}>
                     {searchResults ? (
-                        searchResults.map((result: WatchItemInterface, index) => (
+                        searchResults.map((result, index) => (
                             <li
                                 key={index}
                                 style={{
@@ -89,32 +89,26 @@ export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
                                         borderRadius: 0,
                                     }}
                                     onClick={() => {
-                                        router.push(`/watch/${result.attributes.title_id}`)
+                                        router.push(`/watch/${result.code}`)
                                         onClose()
                                     }}
                                 >
-                                    {result.attributes.poster && (
+                                    {result.posters && (
                                         <Image
-                                            src={result.attributes.poster?.data.attributes.url}
+                                            src={`https://anilibria.tv${result.posters.small.url}`}
                                             width={50}
                                             height={50}
-                                            alt={result.attributes.poster?.data.attributes.name}
+                                            alt={`Постер к аниме ${result.names.ru}`}
                                         />
                                     )}
                                     <div className={styles.result_info}>
-                                        <span>{result.attributes.status}</span>
+                                        <span>{result.status.string}</span>
                                         <h5>
-                                            {result.attributes.title.length >= 40
-                                                ? limitStr(result.attributes.title, 40)
-                                                : result.attributes.title}
+                                            {result.names.ru.length >= 40
+                                                ? limitStr(result.names.ru, 40)
+                                                : result.names.ru}
                                         </h5>
-                                        <p className={styles.caption}>
-                                            {result.attributes.type} * {result.attributes.format} *{' '}
-                                            {format(
-                                                parseISO(result.attributes.release_date),
-                                                'yyyy',
-                                            )}
-                                        </p>
+                                        <p className={styles.caption}>{result.type.string}</p>
                                     </div>
                                 </Button>
                             </li>

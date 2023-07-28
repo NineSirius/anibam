@@ -1,18 +1,27 @@
-import { getTitleByTitle } from '@/api'
-import { WatchItemInterface } from '@/containers/HomePage'
+import { getAnilibriaTitle, getTitleByTitle } from '@/api'
 import { TitlePage } from '@/containers/TitlePage'
+import { TitleT } from '@/containers/types/TitleT'
 import React from 'react'
-import { Context } from 'vm'
 
-const Title = () => {
-    return <TitlePage />
+interface TitleProps {
+    titleInfo: TitleT
+}
+
+const Title: React.FC<TitleProps> = ({ titleInfo }) => {
+    return <TitlePage titleInfo={titleInfo} />
 }
 
 export default Title
 
-// export const getServerSideProps = async (context: any) => {
-//     const res = await getTitleByTitle(context.query.title)
-//     const data = res
+export const getServerSideProps = async (context: any) => {
+    const res = await getAnilibriaTitle(context.query.title)
+    const data = {
+        ...res,
+        player: {
+            ...res.player,
+            list: Object.keys(res.player.list).map((key: string) => res.player.list[key]),
+        },
+    }
 
-//     return { props: { data } }
-// }
+    return { props: { titleInfo: data } }
+}

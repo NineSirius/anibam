@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styles from './Select.module.sass'
-import { MdCheck, MdCircle, MdUnfoldLess, MdUnfoldMore } from 'react-icons/md'
+import { MdCheck, MdUnfoldLess, MdUnfoldMore } from 'react-icons/md'
 import clsx from 'clsx'
 
 interface SelectProps {
@@ -9,9 +9,19 @@ interface SelectProps {
     onChange: (selectedValue: string) => void
     className?: any
     loading?: boolean
+    position?: 'top' | 'bottom'
+    optionsClassName?: any
 }
 
-export const Select: React.FC<SelectProps> = ({ options, value, onChange, className, loading }) => {
+export const Select: React.FC<SelectProps> = ({
+    options,
+    value,
+    onChange,
+    className,
+    loading,
+    position,
+    optionsClassName,
+}) => {
     const [isOpen, setIsOpen] = useState(false)
     const SelectRef = useRef<HTMLDivElement>(null)
 
@@ -44,7 +54,14 @@ export const Select: React.FC<SelectProps> = ({ options, value, onChange, classN
                     <MdUnfoldMore style={{ pointerEvents: 'none' }} />
                 )}
             </button>
-            <ul className={clsx(styles.options, isOpen && styles.active)}>
+            <ul
+                className={clsx(
+                    styles.options,
+                    isOpen && styles.active,
+                    position ? styles[position] : styles.bottom,
+                    optionsClassName && optionsClassName,
+                )}
+            >
                 {options.map((option) => (
                     <button
                         key={option}
@@ -54,7 +71,9 @@ export const Select: React.FC<SelectProps> = ({ options, value, onChange, classN
                     >
                         {option}
 
-                        {value === option && <MdCheck style={{ pointerEvents: 'none' }} />}
+                        {value === option && (
+                            <MdCheck size={24} style={{ pointerEvents: 'none' }} />
+                        )}
                     </button>
                 ))}
             </ul>

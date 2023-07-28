@@ -6,9 +6,10 @@ import clsx from 'clsx'
 interface MenuProps {
     children: React.ReactNode
     label: React.ReactNode
+    className?: any
 }
 
-export const Menu: React.FC<MenuProps> = ({ children, label }): JSX.Element => {
+export const Menu: React.FC<MenuProps> = ({ children, label, className }): JSX.Element => {
     const [show, setShow] = useState<boolean>(false)
     const menuRef = useRef<HTMLDivElement>(null)
 
@@ -29,11 +30,9 @@ export const Menu: React.FC<MenuProps> = ({ children, label }): JSX.Element => {
     }, [])
 
     return (
-        <div className={styles.menu} ref={menuRef}>
+        <div className={clsx(styles.menu, className && className)} ref={menuRef}>
             <Button onClick={handleShow}>{label}</Button>
-            <div className={clsx(styles.menu_content, show && styles.active)}>
-                {children}
-            </div>
+            <div className={clsx(styles.menu_content, show && styles.active)}>{children}</div>
         </div>
     )
 }

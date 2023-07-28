@@ -1,7 +1,8 @@
 import axios from 'axios'
 
+// https://anibam-api.onrender.com/api
 const strapiApi = axios.create({
-    baseURL: 'https://anibam-api.onrender.com/api',
+    baseURL: 'http://localhost:1337/api',
 })
 
 export const getTitles = async () => {
@@ -122,4 +123,30 @@ export const removeFromUserFolder = async (
         },
     )
     return response
+}
+
+// AniLibria API
+
+const anilibriaApi = axios.create({
+    baseURL: 'https://api.anilibria.tv/v3',
+})
+
+export const getTitlesAnilibria = async () => {
+    const response = await anilibriaApi.get('title/updates')
+    return response.data
+}
+
+export const getAnilibriaTitle = async (code: string) => {
+    const response = await anilibriaApi.get(`title?code=${code}`)
+    return response.data
+}
+
+export const getAnilibriaTitleSearch = async (params: string) => {
+    const response = await anilibriaApi.get(`search?search=${params}`)
+    return response.data
+}
+
+export const getAnilibriaRandomTitle = async () => {
+    const response = await anilibriaApi.get('title/random')
+    return response.data
 }

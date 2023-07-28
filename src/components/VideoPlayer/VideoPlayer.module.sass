@@ -1,0 +1,91 @@
+.player
+  position: relative
+
+  .skip_opening
+    position: absolute
+    left: 5px
+    bottom: 20%
+    // transform: translateY(-50%)
+    background: rgba(33,33,33,0.8)
+    padding: 10px
+    border-radius: 5px
+    color: #fff
+    border: unset
+
+    &:hover
+      cursor: pointer
+      background: rgba(0,0,0,0.8)
+
+  .controls
+    position: absolute
+    left: 0
+    bottom: 0
+    width: 100%
+    display: flex
+    flex-direction: column
+    padding: 5px 10px
+    opacity: 0
+    visibility: hidden
+    transition: .2s
+    // -webkit-box-shadow: 0px -18px 44px 7px rgba(34, 60, 80, 0.2) inset
+    // -moz-box-shadow: 0px -18px 44px 7px rgba(34, 60, 80, 0.2) inset
+    // box-shadow: 0px -18px 44px 7px rgba(34, 60, 80, 0.2) inset
+
+    &.active
+      visibility: visible
+      opacity: 1
+
+    &_footer
+      display: flex
+      align-items: center
+      justify-content: space-between
+
+      &_left, &_right
+        display: flex
+        align-items: center
+        gap: 10px
+
+      .volume
+        display: flex
+        align-items: center
+        gap: 10px
+
+        &_picker
+          width: 0
+          visibility: hidden
+          opacity: 0
+          transition: .2s
+
+        &:hover .volume_picker
+          visibility: visible
+          opacity: 1
+          width: max-content
+
+      .time
+        color: #fff
+
+    button
+      display: inline-flex
+      justify-content: center
+      align-items: center
+      background: none
+      border: unset
+      color: #fff
+
+      &:hover
+        cursor: pointer
+
+    .play_btn
+      border: none
+      background: var(--border-color)
+      color: var(--bg-alternate)
+      padding: 5px
+      border-radius: 5px
+
+    .quality_select
+      min-width: unset
+      width: max-content
+
+    .quality_options
+      background: rgba(3,3,3,0.8)
+      border: none

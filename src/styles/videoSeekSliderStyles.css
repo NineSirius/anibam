@@ -1,0 +1,23 @@
+.ui-video-seek-slider {
+    width: 100%;
+    height: auto;
+}
+
+.ui-video-seek-slider .track {
+    height: 4px;
+    background-color: #f2f2f2;
+}
+
+.ui-video-seek-slider .hover-time {
+    width: max-content;
+}
+
+.ui-video-seek-slider .hover-time.active {
+    background-color: #f2f2f2;
+}
+
+.ui-video-seek-slider .thumb {
+    background-color: red;
+    width: 15px;
+    height: 15px;
+}

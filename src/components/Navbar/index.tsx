@@ -21,16 +21,12 @@ import {
     removeUserData,
     setDarkTheme,
     setLightTheme,
-    showAuthModal,
 } from '@/store/reducers/user.reducer'
-import { LoginForm } from '../Auth/LoginForm'
 import Image from 'next/image'
 import Cookie from 'js-cookie'
 import { Menu } from '../UI/Menu'
 import { useRouter } from 'next/router'
-import { getTitleByName, getTitleByTitle, getUserData } from '@/api'
-import { TextField } from '../UI/TextField'
-import { WatchItemInterface } from '@/containers/HomePage'
+import { getAnilibriaRandomTitle, getUserData } from '@/api'
 import { Search } from '../Search'
 
 export const Navbar = () => {
@@ -55,6 +51,10 @@ export const Navbar = () => {
                 .catch((err) => console.log(err))
         }
     }, [dispatch, user])
+
+    const getRandom = () => {
+        getAnilibriaRandomTitle().then((resp) => router.push(`/watch/${resp.code}`))
+    }
 
     return (
         <>
@@ -82,10 +82,7 @@ export const Navbar = () => {
                             <Button>Аниме</Button>
                         </li>
                         <li>
-                            <Button>Фильмы</Button>
-                        </li>
-                        <li>
-                            <Button>Сериалы</Button>
+                            <Button onClick={getRandom}>Рандом</Button>
                         </li>
                     </ul>
 
