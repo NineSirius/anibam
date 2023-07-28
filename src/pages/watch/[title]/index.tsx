@@ -1,4 +1,4 @@
-import { getAnilibriaTitle, getTitleByTitle } from '@/api'
+import { getAnilibriaTitle } from '@/api'
 import { TitlePage } from '@/containers/TitlePage'
 import { TitleT } from '@/containers/types/TitleT'
 import React from 'react'

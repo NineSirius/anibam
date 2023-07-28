@@ -1,7 +1,6 @@
 import { getAnilibriaTitle, getTitleByTitle } from '@/api'
 import { EpisodePage } from '@/containers/TitlePage/EpisodePage'
-import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
+import React from 'react'
 
 interface EpisodeProps {
     titleInfo: any

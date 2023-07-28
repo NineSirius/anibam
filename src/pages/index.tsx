@@ -1,5 +1,4 @@
-import { getTitles } from '@/api'
-import { HomePage, WatchItemInterface } from '@/containers/HomePage'
+import { HomePage } from '@/containers/HomePage'
 
 const Home = () => {
     return <HomePage />
