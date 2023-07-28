@@ -10,6 +10,7 @@ import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
 import clsx from 'clsx'
 import { TitleT, hlsT } from '../types/TitleT'
 import VideoPlayer from '@/components/VideoPlayer'
+import Link from 'next/link'
 
 interface EpisodePageProps {
     titleInfo: TitleT
