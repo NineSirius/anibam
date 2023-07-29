@@ -2,6 +2,7 @@ import { TitleT } from '@/containers/types/TitleT'
 import { createSlice } from '@reduxjs/toolkit'
 
 export interface UserTypes {
+    description: string
     id: number
     username: string
     email: string
@@ -32,6 +33,8 @@ export interface UserTypes {
         username_styles: 'rgb' | 'default'
         show_vip_status: boolean
     }
+    github_link: string | null
+    telegram_link: string | null
     pending_list: TitleT[]
     watch_list: TitleT[]
 }

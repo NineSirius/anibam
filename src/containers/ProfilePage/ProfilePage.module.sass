@@ -1,22 +1,65 @@
-.banner
-  position: relative
-  width: 100%
-  height: 200px
-  z-index: -1
 
-  .base_avatar
-    position: absolute
-    top: 70%
-    left: 25px
-    width: 100px
-    height: 100px
-    border-radius: 50%
-    font-size: 2rem
+.profile
+  max-width: 800px
+
+  &_header
     display: flex
-    justify-content: center
-    align-items: center
-    background: #4baa15
+    align-items: flex-start
+    gap: 25px
 
-.user_info
-  margin-top: 40px
-  padding: 0 15px
+    .avatar
+
+      width: 150px
+      width: 150px
+      background: #ccc
+      display: flex
+      justify-content: center
+      align-items: center
+      font-size: 2rem
+      border: 1px solid var(--bg-alternate)
+
+      img
+        width: 100%
+        height: 100%
+        object-fit: cover
+
+    .user_info
+      display: flex
+      flex-direction: column
+
+      .username
+        gap: 10px
+        h2
+          color: var(--title-color)
+
+      .description
+        margin-top: 10px
+        color: var(--desc-color)
+
+      .profile_links
+        margin-top: 10px
+        list-style: none
+        display: flex
+        gap: 5px
+
+  .profile_main
+    display: flex
+
+    .side_info
+      flex-basis: 30%
+
+  button
+    width: max-content
+    background: var(--btn-primary-bg)
+
+    &:hover
+      background: var(--btn-primary-hover-bg)
+
+.form
+  max-width: 800px
+  display: flex
+  flex-direction: column
+  gap: 10px
+
+  h2
+    color: var(--title-color)
