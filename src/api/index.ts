@@ -1,9 +1,8 @@
 import { TitlesDataT } from '@/containers/types/TitleT'
 import axios from 'axios'
 
-// https://anibam-api.onrender.com/api
 const strapiApi = axios.create({
-    baseURL: 'http://localhost:1337/api',
+    baseURL: 'https://anibam-api.onrender.com/api',
 })
 
 export const getTitles = async () => {
