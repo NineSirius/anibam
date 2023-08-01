@@ -45,6 +45,7 @@ export interface StoreTypes {
     authModal: boolean
     theme: 'dark' | 'light'
     lightgallery: any[]
+    loading: boolean
 }
 
 const userSlice = createSlice({
@@ -55,6 +56,7 @@ const userSlice = createSlice({
         authModal: false,
         theme: 'light',
         lightgallery: [],
+        loading: false,
     },
     reducers: {
         addUserData: (state, action) => {
@@ -97,6 +99,12 @@ const userSlice = createSlice({
         removeFromLightGallery: (state) => {
             state.lightgallery = []
         },
+        turnOnLoading: (state) => {
+            state.loading = true
+        },
+        turnOffLoading: (state) => {
+            state.loading = false
+        },
     },
 })
 
@@ -111,6 +119,8 @@ export const {
     setDarkTheme,
     addToLightGallery,
     removeFromLightGallery,
+    turnOnLoading,
+    turnOffLoading,
 } = userSlice.actions
 
 export default userSlice.reducer

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ChangeEvent } from 'react'
 import styles from './ProfilePage.module.sass'
-import { UserTypes } from '@/store/reducers/user.reducer'
+import { StoreTypes, UserTypes } from '@/store/reducers/user.reducer'
 import Image from 'next/image'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -8,11 +8,12 @@ import ReactCrop, { Crop, PercentCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { Modal } from '@/components/UI/Modal'
 import { Button } from '@/components/UI/Button'
-import { getUserData } from '@/api'
+import { getUserByUsername, getUserData } from '@/api'
 import { BsGithub, BsTelegram } from 'react-icons/bs'
 import Cookie from 'js-cookie'
 import Link from 'next/link'
 import clsx from 'clsx'
+import { useSelector } from 'react-redux'
 
 interface Profile {
     data: UserTypes | 'None'
@@ -22,17 +23,17 @@ const ProfilePage = () => {
     const [userInfo, setUserInfo] = useState<UserTypes | null>(null)
 
     const router = useRouter()
+    const user = useSelector((store: StoreTypes) => store.user)
 
     useEffect(() => {
-        const token = Cookie.get('auth_token')
-        if (token) {
-            getUserData(token).then((resp: UserTypes) => setUserInfo(resp))
-        } else {
-            router.push('/auth/login')
+        if (router.query.username && typeof router.query.username === 'string') {
+            getUserByUsername(router.query.username).then((resp) => {
+                setUserInfo(resp[0])
+            })
         }
     }, [router])
 
-    if (userInfo) {
+    if (userInfo && router.query.username) {
         return (
             <>
                 <Head>
@@ -63,12 +64,14 @@ const ProfilePage = () => {
                             <p className={styles.description}>
                                 {userInfo.description || 'Пользователь не добавил описание'}
                             </p>
-                            <Button
-                                style={{ marginTop: 10 }}
-                                onClick={() => router.push('/users/me/edit')}
-                            >
-                                Редактировать профиль
-                            </Button>
+                            {userInfo.username === user?.username && (
+                                <Button
+                                    style={{ marginTop: 10 }}
+                                    onClick={() => router.push(`/users/${user.username}/edit`)}
+                                >
+                                    Редактировать профиль
+                                </Button>
+                            )}
                             {/* <ul className={styles.profile_links}>
                                 {userInfo.github_link && (
                                     <Button>

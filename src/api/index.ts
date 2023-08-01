@@ -1,8 +1,11 @@
 import { TitlesDataT } from '@/containers/types/TitleT'
+import { UserTypes } from '@/store/reducers/user.reducer'
 import axios from 'axios'
 
+// https://anibam-api.onrender.com/api
+
 const strapiApi = axios.create({
-    baseURL: 'https://anibam-api.onrender.com/api',
+    baseURL: 'http://localhost:1337/api',
 })
 
 export const getTitles = async () => {
@@ -45,9 +48,29 @@ export const getUserData = async (token: string) => {
     return response.data
 }
 
+export const getUserByUsername = async (username: string): Promise<UserTypes[]> => {
+    const response = await strapiApi.get(`users?populate=deep&filters[username]=${username}`, {})
+    return response.data
+}
+
 export const getUserLists = async (userId: number) => {
     const response = await strapiApi.get(
         `users/${userId}?populate=deep&fields[0]=watch_list&fields[1]=viewed_list&fields[2]=planned_list`,
+    )
+    return response.data
+}
+
+export const updateUserInfo = async (userId: number, token: string, data: UserTypes) => {
+    const response = await strapiApi.put(
+        `users/${userId}`,
+        {
+            ...data,
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        },
     )
     return response.data
 }

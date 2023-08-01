@@ -157,7 +157,7 @@ export const Navbar = () => {
                                 <div>
                                     <Button
                                         style={{ borderRadius: 0 }}
-                                        onClick={() => router.push('/users/me')}
+                                        onClick={() => router.push(`/users/${user.username}`)}
                                     >
                                         <div
                                             style={{
@@ -175,6 +175,7 @@ export const Navbar = () => {
                                                 }
                                                 width={50}
                                                 height={50}
+                                                style={{ objectFit: 'cover' }}
                                                 alt={`Аватарка пользователя ${user.username}`}
                                             />
                                             <div

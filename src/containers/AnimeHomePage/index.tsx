@@ -5,6 +5,7 @@ import { TitlesDataT } from '../types/TitleT'
 import { TitleCard } from '@/components/TitleCard'
 import { getAnilibriaTitles } from '@/api'
 import { Button } from '@/components/UI/Button'
+import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
 
 export const AnimeHomePage = () => {
     const router = useRouter()
@@ -103,8 +104,12 @@ export const AnimeHomePage = () => {
                 </div>
 
                 <div className={styles.pagination}>
-                    <Button onClick={handlePreviousPage} disabled={currentPage === 1}>
-                        Предыдущая
+                    <Button
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                        color="primary"
+                    >
+                        <MdSkipPrevious size={24} />
                     </Button>
                     {currentPage > 4 && (
                         <>
@@ -124,8 +129,12 @@ export const AnimeHomePage = () => {
                             </Button>
                         </>
                     )}
-                    <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
-                        Следующая
+                    <Button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        color="primary"
+                    >
+                        <MdSkipNext size={24} />
                     </Button>
                 </div>
             </div>

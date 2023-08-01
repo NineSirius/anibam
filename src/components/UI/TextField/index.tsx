@@ -2,6 +2,7 @@ import React from 'react'
 import styles from './TextField.module.sass'
 import loader from './loader.module.css'
 import clsx from 'clsx'
+import { MdPassword } from 'react-icons/md'
 
 interface TextField {
     label: string
@@ -13,6 +14,7 @@ interface TextField {
     value?: string
     required?: boolean
     autoFocus?: boolean
+    showPass?: boolean
 }
 
 export const TextField: React.FC<TextField> = ({
@@ -24,6 +26,7 @@ export const TextField: React.FC<TextField> = ({
     value,
     required,
     autoFocus,
+    showPass,
 }) => {
     return (
         <>

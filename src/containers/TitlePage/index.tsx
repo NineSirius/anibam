@@ -14,6 +14,7 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 import { limitStr } from '@/components/TitleCard'
 import styles from './TitlePage.module.sass'
 import { TitleT } from '../types/TitleT'
+import { MdPlayArrow } from 'react-icons/md'
 
 interface TitlePageProps {
     titleInfo: TitleT

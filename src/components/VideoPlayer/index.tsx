@@ -240,6 +240,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
                 }}
                 {...(quality !== 'auto' && { config: { file: { attributes: { quality } } } })}
             />
+
             {skips?.opening.length > 0 &&
                 seekTime * duration >= skips?.opening[0] &&
                 seekTime * duration < skips?.opening[0] + 10 && (

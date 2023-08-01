@@ -17,6 +17,7 @@ export const LoginForm = () => {
         password: '',
     })
     const [loading, setLoading] = useState<boolean>(false)
+    const [showPass, setShowPass] = useState<boolean>(false)
 
     const dispatch = useDispatch()
     const router = useRouter()
@@ -41,8 +42,8 @@ export const LoginForm = () => {
             })
             .catch((err) => {
                 console.log(err)
-                if (err.response.data?.error?.message) {
-                    const errorMessage = err.response.data.error.message
+                if (err?.response?.data?.error?.message) {
+                    const errorMessage = err?.response.data.error.message
                     switch (errorMessage) {
                         case 'Invalid identifier or password':
                             enqueueSnackbar('Неправильный логин или пароль', {
@@ -54,16 +55,23 @@ export const LoginForm = () => {
                                 variant: 'error',
                             })
                             break
+
                         default:
                             break
                     }
                 } else {
                     if (
-                        err.response.data?.message[0]?.messages[0]?.message ===
-                        'Too many attempts, please try again in a minute.'
+                        err?.response?.data?.message[0]?.messages[0]?.message &&
+                        err?.response?.data?.message[0]?.messages[0]?.message ===
+                            'Too many attempts, please try again in a minute.'
                     ) {
                         enqueueSnackbar('Превышен лимит запросов, попробуйте позже.', {
                             variant: 'error',
+                        })
+                    } else if (err.message === 'Network Error') {
+                        enqueueSnackbar('Не удалось отправить запрос, попробуйте позже', {
+                            variant: 'error',
+                            autoHideDuration: 3000,
                         })
                     }
                 }
@@ -89,7 +97,12 @@ export const LoginForm = () => {
 
             <label className={styles.form_label}>
                 {/* <h4 className={styles.form_label_text}>Имя пользователя или email</h4> */}
-                <TextField label="Пароль" type="password" onChange={change} name="password" />
+                <TextField
+                    label="Пароль"
+                    type={showPass ? 'text' : 'password'}
+                    onChange={change}
+                    name="password"
+                />
             </label>
 
             <Link href="/auth/register">У меня нет аккаунта</Link>

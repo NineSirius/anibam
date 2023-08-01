@@ -6,6 +6,7 @@ import {
     removeFromLightGallery,
     setDarkTheme,
     setLightTheme,
+    turnOffLoading,
 } from '@/store/reducers/user.reducer'
 import React, { useCallback, useEffect, useState } from 'react'
 import ImageViewer from 'react-simple-image-viewer'
@@ -26,12 +27,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const [currentImage, setCurrentImage] = useState<number>(0)
 
     const theme = useSelector((store: StoreTypes) => store.theme)
-    const authModal = useSelector((store: StoreTypes) => store.authModal)
-    const token = useSelector((store: StoreTypes) => store.token)
-    const user = useSelector((store: StoreTypes) => store.user)
+    const loading = useSelector((store: StoreTypes) => store.loading)
     const images = useSelector((store: StoreTypes) => store.lightgallery)
 
-    const { asPath } = useRouter()
+    const router = useRouter()
 
     const dispatch = useDispatch()
 
@@ -43,7 +42,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         }
     }, [])
 
-    useEffect(() => {}, [])
+    useEffect(() => {
+        console.log(router)
+    }, [router])
 
     useEffect(() => {
         if (!localStorage.getItem('theme')) {
@@ -74,10 +75,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     return (
         <>
-            <div className={clsx('app', theme)}>
-                {asPath !== '/auth/login' && asPath !== '/auth/register' && <Navbar />}
+            <div
+                className={clsx('app', theme)}
+                style={{
+                    // background:
+                    //     router.pathname === '/anime/[title]'
+                    //         ? 'linear-gradient(90deg, rgb(2, 0, 36) 0%, rgb(31, 31, 34) 45%, rgb(40, 3, 10) 100%)'
+                    //         : 'unset',
+                    transition: '0.3s',
+                }}
+            >
+                {router.asPath !== '/auth/login' && router.asPath !== '/auth/register' && (
+                    <Navbar />
+                )}
                 <div>{children}</div>
-                {asPath !== '/auth/login' && asPath !== '/auth/register' && <Footer />}
+                {router.asPath !== '/auth/login' && router.asPath !== '/auth/register' && (
+                    <Footer />
+                )}
             </div>
 
             {images.length > 0 && (
@@ -92,6 +106,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     closeOnClickOutside={true}
                 />
             )}
+            <Modal show={loading} onClose={() => dispatch(turnOffLoading())}>
+                Загрузка
+            </Modal>
         </>
     )
 }

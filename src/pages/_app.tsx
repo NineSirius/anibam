@@ -18,7 +18,7 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
         <Provider store={store}>
             <div className={openSans.className}>
-                <SnackbarProvider maxSnack={3}>
+                <SnackbarProvider maxSnack={1}>
                     <Layout>
                         <Component {...pageProps} />
                     </Layout>
