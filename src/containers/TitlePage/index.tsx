@@ -14,7 +14,9 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 import { limitStr } from '@/components/TitleCard'
 import styles from './TitlePage.module.sass'
 import { TitleT } from '../types/TitleT'
-import { MdPlayArrow } from 'react-icons/md'
+import { MdPlayArrow, MdShare } from 'react-icons/md'
+import { Modal } from '@/components/UI/Modal'
+import Link from 'next/link'
 
 interface TitlePageProps {
     titleInfo: TitleT
@@ -27,6 +29,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
     const [userLists, setUserLists] = useState<any>(null)
     const [userList, setUserList] = useState<any | null>(null)
     const [userListLoading, setUserListLoading] = useState<boolean>(false)
+    const [shareModalShow, setShareModalShow] = useState<boolean>(false)
 
     const router = useRouter()
     const user = useSelector((store: StoreTypes) => store.user)
@@ -118,6 +121,13 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
     //         router.push('/auth/login')
     //     }
     // }
+    const handleCopyClick = () => {
+        const copyText = document.location.href
+        navigator.clipboard
+            .writeText(copyText)
+            .then(() => enqueueSnackbar('Ссылка скопирована', { variant: 'success' }))
+            .catch(() => enqueueSnackbar('Не удалось скопировать ссылку', { variant: 'error' }))
+    }
 
     if (titleInfo) {
         const episodes = showMore ? titleInfo.player.list : titleInfo.player.list.slice(0, 7)
@@ -249,16 +259,25 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                 })}
                             </div>
 
-                            <Button
-                                className={styles.button}
-                                onClick={() => {
-                                    if (titleInfo.player.episodes.last > 0) {
-                                        router.push(`/anime/${titleInfo.code}/episodes/1`)
-                                    } else enqueueSnackbar('Эпизоды отсутствуют')
-                                }}
-                            >
-                                Смотреть онлайн
-                            </Button>
+                            <div className={styles.mobile_play_btn_wrap}>
+                                <Button
+                                    className={styles.button}
+                                    onClick={() => {
+                                        if (titleInfo.player.episodes.last > 0) {
+                                            router.push(`/anime/${titleInfo.code}/episodes/1`)
+                                        } else enqueueSnackbar('Эпизоды отсутствуют')
+                                    }}
+                                >
+                                    Смотреть онлайн
+                                </Button>
+                                <Button
+                                    className={styles.share_btn}
+                                    color="primary"
+                                    onClick={() => setShareModalShow(true)}
+                                >
+                                    <MdShare size={20} />
+                                </Button>
+                            </div>
                             {/* <Select
                                 options={['Смотрю', 'Запланировано', 'Просмотрено']}
                                 value="Добавить в папку"
@@ -404,6 +423,43 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                         </div>
                     </div>
                 </div>
+
+                <Modal show={shareModalShow} onClose={() => setShareModalShow(false)}>
+                    <div className={styles.share_modal}>
+                        <h2>Поделиться аниме</h2>
+                        <p>Нажмите на ссылку чтобы скопировать</p>
+                        <pre>
+                            <code onClick={handleCopyClick}>{document.location.href}</code>
+                        </pre>
+                        <p>Поделиться в</p>
+                        <div className={styles.social}>
+                            <Link
+                                className={styles.share_btn}
+                                href={`https://vk.com/share.php?url=${document.location.href}`}
+                                target="_blank"
+                            >
+                                <Image
+                                    src="/img/logo/vk-logo.png"
+                                    width={100}
+                                    height={100}
+                                    alt="Поделиться в вк"
+                                />
+                            </Link>
+                            <Link
+                                href={`https://t.me/share/url?url=${document.location.href}`}
+                                className={styles.share_btn}
+                                target="_blank"
+                            >
+                                <Image
+                                    src="/img/logo/telegram-logo.png"
+                                    width={100}
+                                    height={100}
+                                    alt="Поделиться в телеграм"
+                                />
+                            </Link>
+                        </div>
+                    </div>
+                </Modal>
             </>
         )
     } else {

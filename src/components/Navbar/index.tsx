@@ -52,6 +52,10 @@ export const Navbar = () => {
         }
     }, [dispatch, user])
 
+    useEffect(() => {
+        setDrawerShow(false)
+    }, [router.asPath])
+
     const getRandom = () => {
         getAnilibriaRandomTitle().then((resp) => router.push(`/anime/${resp.code}`))
     }

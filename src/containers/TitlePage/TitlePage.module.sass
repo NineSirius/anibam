@@ -128,6 +128,18 @@
   color: var(--bg-alternate)
   transition: 0.2s
 
+.mobile_play_btn_wrap
+  margin-top: 10px
+  display: flex
+  align-items: center
+  gap: 10px
+
+  button
+    margin: 0
+
+.share_btn
+  width: max-content !important
+
 .description
   margin-top: 10px
 
@@ -180,6 +192,36 @@
   h2
     color: var(--title-color)
     margin-bottom: 10px
+
+.share_modal
+  display: flex
+  flex-direction: column
+  gap: 10px
+  width: max-content
+  color: var(--desc-color)
+
+  pre
+    background: var(--btn-primary-bg)
+    padding: 10px
+    border: 1px sloid var(--border-color)
+    color: var(--bg-alternate)
+
+  .social
+    display: flex
+    align-items: center
+    gap: 10px
+
+  .share_btn
+    max-width: 40px
+    max-height: 40px
+    display: inline-flex
+    background: unset
+    border-radius: 5px
+
+    img
+      width: 100%
+      height: 100%
+      border-radius: 5px
 
 @media screen and (max-width: 810px)
   .genres
