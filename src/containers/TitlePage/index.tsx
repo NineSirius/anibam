@@ -129,7 +129,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
             .catch(() => enqueueSnackbar('Не удалось скопировать ссылку', { variant: 'error' }))
     }
 
-    if (titleInfo) {
+    if (titleInfo && typeof document !== 'undefined') {
         const episodes = showMore ? titleInfo.player.list : titleInfo.player.list.slice(0, 7)
         const remainingCount = titleInfo.player.list.length - 7
 
@@ -312,7 +312,9 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                 </li>
                             </ul>
 
-                            <ReactMarkdown className={styles.description}>
+                            <ReactMarkdown
+                                className={clsx(styles.description, !hideDesc && styles.active)}
+                            >
                                 {titleInfo.description.length < 350
                                     ? titleInfo.description
                                     : hideDesc

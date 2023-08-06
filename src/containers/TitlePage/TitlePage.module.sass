@@ -141,12 +141,18 @@
   width: max-content !important
 
 .description
-  margin-top: 10px
+  max-height: auto
+  overflow: hidden
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out
 
   p
     margin-top: 15px
+    transition: height .2s
     color: var(--desc-color)
     line-height: 140%
+
+  &.active
+    max-height: 500px
 
 .frames_wrap
   margin-top: 15px

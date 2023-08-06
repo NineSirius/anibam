@@ -1,19 +1,16 @@
 import { Navbar } from '@/components/Navbar'
 import {
     StoreTypes,
-    addUserData,
-    hideAuthModal,
     removeFromLightGallery,
     setDarkTheme,
     setLightTheme,
     turnOffLoading,
 } from '@/store/reducers/user.reducer'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ImageViewer from 'react-simple-image-viewer'
 import clsx from 'clsx'
 import { useDispatch, useSelector } from 'react-redux'
 import { Modal } from '@/components/UI/Modal'
-import { LoginForm } from '@/components/Auth/LoginForm'
 import { useRouter } from 'next/router'
 import Cookie from 'js-cookie'
 import { getUserData } from '@/api'
