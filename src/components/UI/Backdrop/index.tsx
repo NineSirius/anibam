@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import styles from './Backdrop.module.sass'
 import clsx from 'clsx'
+import { useState } from 'react'
 
 interface BackdropProps {
     show: boolean
@@ -8,24 +9,24 @@ interface BackdropProps {
 }
 
 export const Backdrop: React.FC<BackdropProps> = ({ show, onClose }): JSX.Element => {
+    const [isMobile, setIsMobile] = useState<boolean>(false)
+
     useEffect(() => {
-        const handleResize = () => {
-            console.log(window.innerWidth)
-
-            const backdropElement = document.querySelector('.backdrop') as HTMLElement | null
-            if (backdropElement) {
-                const backdropFilter = window.innerWidth > 600 ? 'blur(5px)' : 'none'
-                backdropElement.style.setProperty('backdrop-filter', backdropFilter)
-            }
-        }
-
-        handleResize()
-        window.addEventListener('resize', handleResize)
-
-        return () => {
-            window.removeEventListener('resize', handleResize)
+        if (window.innerWidth <= 700) {
+            setIsMobile(true)
+        } else if (window.innerWidth > 700) {
+            setIsMobile(false)
         }
     }, [])
-
-    return <div className={clsx(styles.backdrop, show && styles.active)} onClick={onClose}></div>
+    return (
+        <div
+            className={clsx(
+                styles.backdrop,
+                show && styles.active,
+                isMobile ? styles.shadow : styles.blur,
+            )}
+            id="backdrop"
+            onClick={onClose}
+        ></div>
+    )
 }

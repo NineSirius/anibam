@@ -31,6 +31,21 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
     const [userListLoading, setUserListLoading] = useState<boolean>(false)
     const [shareModalShow, setShareModalShow] = useState<boolean>(false)
 
+    const shareSocial = [
+        {
+            id: 1,
+            title: 'Вконтакте',
+            url: `https://vk.com/share.php?url=`,
+            imageUrl: '/img/logo/vk-logo.png',
+        },
+        {
+            id: 2,
+            title: 'Телеграмм',
+            url: `https://t.me/share/url?url=`,
+            imageUrl: '/img/logo/telegram-logo.png',
+        },
+    ]
+
     const router = useRouter()
     const user = useSelector((store: StoreTypes) => store.user)
 
@@ -323,31 +338,15 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                             </ReactMarkdown>
 
                             {titleInfo.description.length >= 350 && (
-                                <button
-                                    onClick={() => setHideDesc(!hideDesc)}
-                                    className={styles.more_btn}
-                                >
-                                    {hideDesc ? 'Подробнее' : 'Скрыть'}
-                                </button>
+                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <button
+                                        onClick={() => setHideDesc(!hideDesc)}
+                                        className={styles.more_btn}
+                                    >
+                                        {hideDesc ? 'Подробнее' : 'Скрыть'}
+                                    </button>
+                                </div>
                             )}
-                            {/*
-                            <div className={styles.frames_wrap}>
-                                <h3>Кадры</h3>
-                                {titleInfo.attributes.frames.data &&
-                                    titleInfo.attributes.frames.data.length > 0 && (
-                                        <div className={styles.frames}>
-                                            {titleInfo.attributes.frames.data.map((item) => (
-                                                <Image
-                                                    key={item.id}
-                                                    src={item.attributes.url}
-                                                    width={item.attributes.width}
-                                                    height={item.attributes.height}
-                                                    alt={item.attributes.name}
-                                                />
-                                            ))}
-                                        </div>
-                                    )}
-                            </div> */}
 
                             <div className={styles.episodes}>
                                 <h3>Список серий</h3>
@@ -435,30 +434,23 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                         </pre>
                         <p>Поделиться в</p>
                         <div className={styles.social}>
-                            <Link
-                                className={styles.share_btn}
-                                href={`https://vk.com/share.php?url=${document.location.href}`}
-                                target="_blank"
-                            >
-                                <Image
-                                    src="/img/logo/vk-logo.png"
-                                    width={100}
-                                    height={100}
-                                    alt="Поделиться в вк"
-                                />
-                            </Link>
-                            <Link
-                                href={`https://t.me/share/url?url=${document.location.href}`}
-                                className={styles.share_btn}
-                                target="_blank"
-                            >
-                                <Image
-                                    src="/img/logo/telegram-logo.png"
-                                    width={100}
-                                    height={100}
-                                    alt="Поделиться в телеграм"
-                                />
-                            </Link>
+                            {shareSocial.map((item) => {
+                                return (
+                                    <Link
+                                        key={item.id}
+                                        className={styles.share_btn}
+                                        href={`${item.url}${document.location.href}`}
+                                        target="_blank"
+                                    >
+                                        <Image
+                                            src={item.imageUrl}
+                                            width={100}
+                                            height={100}
+                                            alt={`Поделиться в ${item.title}`}
+                                        />
+                                    </Link>
+                                )
+                            })}
                         </div>
                     </div>
                 </Modal>

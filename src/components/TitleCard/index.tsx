@@ -4,6 +4,7 @@ import styles from './TitleCard.module.sass'
 import { useRouter } from 'next/router'
 import clsx from 'clsx'
 import { MdClose, MdInfo } from 'react-icons/md'
+import { useEffect } from 'react'
 
 interface TitleCardProps {
     poster: string
@@ -28,11 +29,22 @@ export const TitleCard: React.FC<TitleCardProps> = ({
     className,
     episodesCount,
 }) => {
+    const [isMobile, setIsMobile] = useState<boolean>(false)
     const [hoverInfoShow, setHoverInfoShow] = useState<boolean>(false)
     const router = useRouter()
     const showHoverInfo = () => setHoverInfoShow(true)
     const hideHoverInfo = () => setHoverInfoShow(false)
-    const toggleHoverInfo = () => setHoverInfoShow(!hoverInfoShow)
+    useEffect(() => {
+        if (window.innerWidth <= 1000) {
+            setIsMobile(true)
+        } else if (window.innerWidth > 1000) {
+            setIsMobile(false)
+        }
+    }, [])
+    const toggleHoverInfo = (event: any) => {
+        event.stopPropagation()
+        setHoverInfoShow(!hoverInfoShow)
+    }
     return (
         <div
             className={clsx(styles.card, className && className)}
@@ -56,13 +68,11 @@ export const TitleCard: React.FC<TitleCardProps> = ({
                         draggable={false}
                     />
                 )}
-                <button className={styles.info_btn} onClick={toggleHoverInfo}>
-                    {hoverInfoShow ? (
-                        <MdClose style={{ color: 'var(--btn-primary-bg)' }} size={24} />
-                    ) : (
-                        <MdInfo style={{ color: 'var(--btn-primary-bg)' }} size={24} />
-                    )}
-                </button>
+                {isMobile && (
+                    <button className={styles.info_btn} onClick={toggleHoverInfo}>
+                        {hoverInfoShow ? <MdClose size={28} /> : <MdInfo size={28} />}
+                    </button>
+                )}
                 <div className={styles.poster_info}>
                     <div className={styles.poster_info_content}>
                         <span>{episodesCount} эп.</span>
