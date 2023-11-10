@@ -20,6 +20,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
     const playerRef = useRef<ReactPlayer | null>(null)
     const [playing, setPlaying] = useState(false)
     const [volume, setVolume] = useState(0.2)
+    const [isMute, setIsMute] = useState<boolean>(false)
     const [seekTime, setSeekTime] = useState<number>(0)
     const [isFullscreen, setIsFullscreen] = useState<boolean>(false)
     const [playbackRate, setPlaybackRate] = useState(1.0)
@@ -73,14 +74,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
     useEffect(() => {
         const checkCursorMovement = () => {
             const currentTime = Date.now()
-            // Check if the cursor hasn't moved for 3 seconds
             if (currentTime - lastMouseMove >= 3000) {
-                // Hide controls
                 setControlsShow(false)
             }
         }
 
-        // Set an interval to check cursor movement every 1 second
         const interval = setInterval(checkCursorMovement, 3000)
 
         return () => {
@@ -100,18 +98,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
     useEffect(() => {
         const checkCursorMovement = () => {
             const currentTime = Date.now()
-            // Check if the cursor hasn't moved for 3 seconds
             if (currentTime - lastMouseMove >= 3000) {
-                // Hide controls
                 setControlsShow(false)
             }
         }
 
-        // Set an interval to check cursor movement every 1 second
         const interval = setInterval(checkCursorMovement, 1000)
 
         return () => {
-            // Clear the interval on unmount
             clearInterval(interval)
         }
     }, [lastMouseMove])
@@ -119,13 +113,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
     const handleFullscreenToggle = useCallback(() => {
         setIsFullscreen((prevState) => !prevState)
         if (!isFullscreen) {
-            // Запускаем вход в полноэкранный режим
             const playerContainer = document.getElementById('video-player-container')
             if (playerContainer && playerContainer.requestFullscreen) {
                 playerContainer.requestFullscreen()
             }
         } else {
-            // Запускаем выход из полноэкранного режима
             if (document.exitFullscreen) {
                 document.exitFullscreen()
             }
@@ -167,7 +159,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
         setLoading(false)
     }
 
-    // Handle video error event
     const handleVideoError = () => {
         setLoading(false)
         setError(true)
@@ -186,6 +177,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
     }
 
     const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsMute(false)
         setVolume(parseFloat(e.target.value))
     }
 
@@ -199,7 +191,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
 
     const handleQualityChange = (newQuality: string) => {
         if (playerRef.current && playerRef.current.getCurrentTime()) {
-            // Save the current played time before changing the quality
             setPlayed(playerRef.current.getCurrentTime() / playerRef.current.getDuration())
         }
         setQuality(newQuality)
@@ -225,7 +216,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
                 ref={playerRef}
                 url={activeUrl}
                 playing={playing}
-                volume={volume}
+                volume={isMute ? 0 : volume}
                 playbackRate={playbackRate}
                 controls={false}
                 width="100%"
@@ -259,7 +250,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
                 )}
             <div className={clsx(styles.controls, controlsShow && !loading && styles.active)}>
                 <Slider
-                    className={styles.seek_slider} // Применяем свои стили к ползунку
+                    className={styles.seek_slider}
                     value={seekTime}
                     min={0}
                     max={1}
@@ -280,8 +271,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
                             {playing ? <MdPause size={32} /> : <MdPlayArrow size={32} />}
                         </button>
                         <div className={styles.volume}>
-                            <button>
-                                {volume > 0.2 ? (
+                            <button onClick={() => setIsMute(!isMute)}>
+                                {isMute ? (
+                                    <MdVolumeOff size={32} />
+                                ) : volume > 0.2 ? (
                                     <MdVolumeUp size={32} />
                                 ) : volume > 0 ? (
                                     <MdVolumeDown size={32} />
@@ -294,14 +287,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
                                 min={0}
                                 max={1}
                                 step="any"
-                                value={volume}
+                                value={isMute ? 0 : volume}
                                 onChange={handleVolumeChange}
                                 aria-label="Volume"
                                 className={styles.volume_picker}
                             />
                         </div>
 
-                        {duration && ( // 2. Отображаем текущее время и полное время видео, если продолжительность известна
+                        {duration && (
                             <div className={styles.time}>
                                 <span>{formatTime(seekTime * duration)}</span> /{' '}
                                 <span>{formatTime(duration)}</span>

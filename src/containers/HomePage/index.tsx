@@ -12,10 +12,29 @@ import format from 'date-fns/format'
 export const HomePage = () => {
     const [titles, setTitles] = React.useState<TitleT[]>([])
     const [innerWidth, setInnerWidth] = useState<number>(0)
+    const [currentSeason, setCurrentSeason] = useState<null | string>(null)
 
     useEffect(() => {
         const currentYear = format(new Date(), 'yyyy')
         const currentSeason = format(new Date(), 'Q')
+        console.log(currentSeason)
+
+        switch (currentSeason) {
+            case '1':
+                setCurrentSeason('зимнего')
+                break
+            case '2':
+                setCurrentSeason('весеннего')
+                break
+            case '3':
+                setCurrentSeason('летнего')
+                break
+            case '4':
+                setCurrentSeason('осеннего')
+                break
+            default:
+                break
+        }
 
         axios
             .get(
@@ -57,7 +76,7 @@ export const HomePage = () => {
               </div> */}
 
                     <h4 className="main_title" style={{ marginBottom: 10 }}>
-                        Аниме летнего сезона
+                        Аниме {currentSeason} сезона
                     </h4>
 
                     <div className={styles.list}>
