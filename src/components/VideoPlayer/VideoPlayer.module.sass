@@ -1,48 +1,121 @@
 .player
   position: relative
 
+  &_container
+    display: flex
+    justify-content: center
+    align-items: center
+    background-repeat: no-repeat
+    background-position: center
+    background-size: 100%
+
+    .preview
+      width: 100%
+      height: auto
+
+    .play_btn
+      position: absolute
+      background: none
+      border: none
+      outline: none
+
+      &:hover
+        cursor: pointer
+
   .controls_zone
     position: absolute
     top: 0
     left: 0
     width: 100%
-    height: 80%
+    height: 100%
+    display: flex
+    justify-content: center
+    align-items: center
+    z-index: 1
+
+    .play_btn
+      position: absolute
+      border: none
+      outline: 0
+      background: none
+      visibility: hidden
+      opacity: 0
+
+      &.active
+        animation: playpause 0.4s
 
   .skip_opening
     position: absolute
-    left: 5px
+    left: 10px
     bottom: 20%
-    // transform: translateY(-50%)
-    background: rgba(33,33,33,0.8)
+    transform: translateX(-100px)
+    visibility: hidden
+    opacity: 0
+    background: #222222c8
     padding: 10px
     border-radius: 5px
     color: #fff
     border: unset
+    z-index: 2
+    transition: .2s
+
+    &.active
+      transform: translateX(0)
+      visibility: visible
+      opacity: 1
 
     &:hover
       cursor: pointer
-      background: rgba(0,0,0,0.8)
+      background: #111111
 
   .controls
     position: absolute
-    left: 0
-    bottom: 0
-    width: 100%
+    z-index: 2
+    left: 50%
+    border-radius: 5px
+    transform: translateX(-50%)
+    bottom: 10px
+    width: 98%
     display: flex
     flex-direction: column
     padding: 5px 10px
     opacity: 0
     visibility: hidden
     transition: .2s
-    // -webkit-box-shadow: 0px -18px 44px 7px rgba(34, 60, 80, 0.2) inset
-    // -moz-box-shadow: 0px -18px 44px 7px rgba(34, 60, 80, 0.2) inset
-    // box-shadow: 0px -18px 44px 7px rgba(34, 60, 80, 0.2) inset
+    background-color: #111
+
+    .settings
+      position: absolute
+      right: 0
+      bottom: 110%
+      display: flex
+      flex-direction: column
+      background: #222
+      visibility: hidden
+      opacity: 0
+      transition: .2s
+      padding: 5px 0
+      border-radius: 5px
+      z-index: 2
+
+      button
+        font-size: 16px
+        font-weight: 700
+        padding: 10px 20px
+
+        &:hover
+          background: #111
+
+      &.show
+        visibility: visible
+        opacity: 1
 
     &.active
       visibility: visible
       opacity: 1
 
     &_footer
+      position: relative
       display: flex
       align-items: center
       justify-content: space-between
@@ -59,13 +132,10 @@
 
         &_picker
           width: 0
-          visibility: hidden
-          opacity: 0
+          align-items: center
           transition: .2s
 
         &:hover .volume_picker
-          visibility: visible
-          opacity: 1
           width: max-content
 
       .time
@@ -77,6 +147,8 @@
       align-items: center
       background: none
       border: unset
+      font-weight: 700
+      font-size: 16px
       color: #fff
 
       &:hover
@@ -96,3 +168,19 @@
     .quality_options
       background: rgba(3,3,3,0.8)
       border: none
+
+@keyframes playpause
+  0%
+    visibility: 0
+    opacity: 0
+    transform: scale(0.1)
+
+  50%
+    visibility: visible
+    opacity: 1
+    transform: scale(1)
+
+  100%
+    visibility: hidden
+    opacity: 0
+    transform: scale(1)

@@ -3,10 +3,14 @@ import styles from './Select.module.sass'
 import { MdCheck, MdUnfoldLess, MdUnfoldMore } from 'react-icons/md'
 import clsx from 'clsx'
 
+type OptionT = {
+    key: string | number
+    label: string
+}
 interface SelectProps {
-    options: string[]
-    value: string
-    onChange: (selectedValue: string) => void
+    options: OptionT[]
+    activeValue: string | number
+    onChange: (selectedValue: string | number) => void
     className?: any
     loading?: boolean
     position?: 'top' | 'bottom'
@@ -15,7 +19,7 @@ interface SelectProps {
 
 export const Select: React.FC<SelectProps> = ({
     options,
-    value,
+    activeValue,
     onChange,
     className,
     loading,
@@ -39,7 +43,7 @@ export const Select: React.FC<SelectProps> = ({
         }
     }, [])
 
-    const handleSelect = (selectedValue: string) => {
+    const handleSelect = (selectedValue: string | number) => {
         onChange(selectedValue)
         setIsOpen(false)
     }
@@ -47,7 +51,7 @@ export const Select: React.FC<SelectProps> = ({
     return (
         <div className={clsx(styles.select, className && className)} ref={SelectRef}>
             <button className={styles.selectedOption} onClick={() => setIsOpen(!isOpen)}>
-                {value}
+                {options.find((option) => option.key === activeValue)?.label || 'Выберите серию'}
                 {isOpen ? (
                     <MdUnfoldLess style={{ pointerEvents: 'none' }} />
                 ) : (
@@ -64,16 +68,13 @@ export const Select: React.FC<SelectProps> = ({
             >
                 {options.map((option) => (
                     <button
-                        key={option}
-                        className={clsx(styles.option, option === value && styles.active)}
-                        onClick={() => handleSelect(option)}
+                        key={option.key}
+                        className={clsx(styles.option, option.key === activeValue && styles.active)}
+                        onClick={() => handleSelect(option.key)}
                         disabled={loading}
                     >
-                        {option}
-
-                        {value === option && (
-                            <MdCheck size={24} style={{ pointerEvents: 'none' }} />
-                        )}
+                        {option.label}
+                        {activeValue === option.key && <MdCheck size={24} style={{ pointerEvents: 'none' }} />}
                     </button>
                 ))}
             </ul>

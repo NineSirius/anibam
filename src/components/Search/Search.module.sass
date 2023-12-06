@@ -11,6 +11,13 @@
   visibility: visible
   opacity: 0
   transition: .2s
+  background: var(--bg)
+  padding: 10px
+  border-radius: 10px
+  border: 1px solid var(--border-color)
+
+  input
+    font-size: 18px
 
   &.active
     transform: translateX(-50%) scale(1)
@@ -23,9 +30,8 @@
     max-height: 60vh
     overflow-y: auto
     list-style: none
-    background: var(--bg)
+
     transition: .2s
-    border: 1px solid var(--border-color)
     border-radius: 5px
     padding: 10px 0
 
@@ -58,7 +64,7 @@
 
 @media screen and (max-width: 610px)
   .search
-    width: 90vw
+    width: 100vw
 
     .search_results
       width: 100%
@@ -66,9 +72,6 @@
       list-style: none
       background: var(--bg)
       transition: .2s
-      border: 1px solid var(--border-color)
-      border-radius: 5px
-      padding: 10px 0
 
     .nothing
       text-align: center

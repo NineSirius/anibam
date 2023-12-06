@@ -33,7 +33,6 @@ export const LoginForm = () => {
         setLoading(true)
         loginUser(user)
             .then((resp: any) => {
-                console.log(resp)
                 Cookie.set('auth_token', resp.jwt)
                 enqueueSnackbar('Вы успешно авторизовались', {
                     variant: 'success',
@@ -41,7 +40,6 @@ export const LoginForm = () => {
                 router.push('/')
             })
             .catch((err) => {
-                console.log(err)
                 if (err?.response?.data?.error?.message) {
                     const errorMessage = err?.response.data.error.message
                     switch (errorMessage) {
@@ -87,22 +85,12 @@ export const LoginForm = () => {
 
             <label className={styles.form_label}>
                 {/* <h4 className={styles.form_label_text}>Имя пользователя или email</h4> */}
-                <TextField
-                    label="Имя пользователя или email"
-                    type="text"
-                    onChange={change}
-                    name="identifier"
-                />
+                <TextField label="Имя пользователя или email" type="text" onChange={change} name="identifier" />
             </label>
 
             <label className={styles.form_label}>
                 {/* <h4 className={styles.form_label_text}>Имя пользователя или email</h4> */}
-                <TextField
-                    label="Пароль"
-                    type={showPass ? 'text' : 'password'}
-                    onChange={change}
-                    name="password"
-                />
+                <TextField label="Пароль" type={showPass ? 'text' : 'password'} onChange={change} name="password" />
             </label>
 
             <Link href="/auth/register">У меня нет аккаунта</Link>

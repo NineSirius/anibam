@@ -10,32 +10,45 @@ import {
     MdVolumeOff,
 } from 'react-icons/md'
 import styles from './VideoPlayer.module.sass'
-import { Select } from '../UI/Select'
-import Slider from 'rc-slider'
-import 'rc-slider/assets/index.css' // Подключаем стили rc-slider
-import { VideoPlayerProps } from './types'
+import 'react-video-seek-slider/styles.css'
 import clsx from 'clsx'
+import { Slider } from '../UI/Slider'
+import { Loader } from '../UI/Loader'
+import { skipsT } from '@/containers/types/TitleT'
+import Image from 'next/image'
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips }) => {
+type VideoPlayerProps = {
+    url: string
+    qualityOptions?: any[]
+    skips: skipsT
+    preview: string | null
+}
+
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, preview }) => {
     const playerRef = useRef<ReactPlayer | null>(null)
+    const [isMobile, setIsMobile] = useState<boolean>(false)
+    const [pause, setPause] = useState<boolean>(false)
     const [playing, setPlaying] = useState(false)
     const [volume, setVolume] = useState(0.2)
     const [isMute, setIsMute] = useState<boolean>(false)
     const [seekTime, setSeekTime] = useState<number>(0)
+    const [savedSeekTime, setSavedSeekTime] = useState<number>(0)
+    const [bufferTime, setBufferTime] = useState<number>(0)
     const [isFullscreen, setIsFullscreen] = useState<boolean>(false)
     const [playbackRate, setPlaybackRate] = useState(1.0)
-    const [quality, setQuality] = useState<string | undefined>(
-        qualityOptions ? qualityOptions[0].quality : undefined,
+    const [quality, setQuality] = useState<string | undefined>(qualityOptions ? qualityOptions[0].quality : undefined)
+    const [activeQuality, setActiveQuality] = useState<'qhd' | 'fhd' | 'hd' | 'sd'>(
+        qualityOptions ? qualityOptions[0].quality : 'None',
     )
-    const [activeUrl, setActiveUrl] = useState<string | undefined>(
-        qualityOptions ? qualityOptions[0].url : url,
-    )
+    const [activeUrl, setActiveUrl] = useState<string | undefined>(qualityOptions ? qualityOptions[0].url : url)
     const [played, setPlayed] = useState(0)
     const [duration, setDuration] = useState<number>(0)
     const [controlsShow, setControlsShow] = useState<boolean>(false)
     const [lastMouseMove, setLastMouseMove] = useState<number>(0)
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
+
+    const [settingsShow, setSettingsShow] = useState<boolean>(false)
 
     const handleMouseMove = useCallback(() => {
         setLastMouseMove(Date.now())
@@ -44,6 +57,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
             setControlsShow(true)
         }
     }, [controlsShow])
+
+    useEffect(() => {
+        const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+        if (mobile) {
+            setIsMobile(true)
+            setVolume(1)
+        }
+    }, [isMobile])
 
     useEffect(() => {
         if (playerRef.current && playerRef.current.getDuration()) {
@@ -96,19 +117,83 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
     }, [])
 
     useEffect(() => {
-        const checkCursorMovement = () => {
-            const currentTime = Date.now()
-            if (currentTime - lastMouseMove >= 3000) {
-                setControlsShow(false)
+        const handleKeyPress = (e: KeyboardEvent) => {
+            const prevVolume = volume * 100
+            switch (e.code) {
+                case 'KeyF':
+                    handleFullscreenToggle()
+                    break
+                case 'Space':
+                    e.preventDefault()
+                    handlePlayPause()
+                    break
+                case 'ArrowRight':
+                    handleSeekForward()
+                    break
+                case 'ArrowLeft':
+                    handleSeekBackward()
+                    break
+                case 'ArrowUp':
+                    e.preventDefault()
+                    if (prevVolume <= 90) {
+                        handleVolumeChange(prevVolume + 10)
+                    }
+                    break
+                case 'ArrowDown':
+                    e.preventDefault()
+                    if (prevVolume >= 10) {
+                        handleVolumeChange(prevVolume - 10)
+                    }
+                    break
+                case 'KeyM':
+                    setIsMute((prev) => !prev)
+                    break
+                case 'Escape':
+                    if (isFullscreen) {
+                        handleFullscreenToggle()
+                    }
+                    break
+                default:
+                    break
             }
         }
 
-        const interval = setInterval(checkCursorMovement, 1000)
-
+        document.addEventListener('keydown', handleKeyPress)
         return () => {
-            clearInterval(interval)
+            document.removeEventListener('keydown', handleKeyPress)
         }
-    }, [lastMouseMove])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [duration, isFullscreen, volume])
+
+    useEffect(() => {
+        if (savedSeekTime) {
+            setSavedSeekTime(0)
+        }
+        if (playing) {
+            setPlaying(false)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [qualityOptions, savedSeekTime])
+
+    useEffect(() => {
+        if (savedSeekTime && playerRef.current) {
+            playerRef.current.seekTo(savedSeekTime)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeUrl])
+
+    const handleVideoReady = () => {
+        setLoading(false)
+    }
+
+    const handleVideoError = () => {
+        setLoading(false)
+        setError(true)
+    }
+
+    const handlePlayPause = () => {
+        setPause((prevState) => !prevState)
+    }
 
     const handleFullscreenToggle = useCallback(() => {
         setIsFullscreen((prevState) => !prevState)
@@ -124,50 +209,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
         }
     }, [isFullscreen])
 
-    useEffect(() => {
-        const handleSeekForward = () => {
-            if (playerRef.current && duration) {
-                const currentTime = playerRef.current.getCurrentTime()
-                const newTime = currentTime + 10
-                const maxTime = duration - 1
-                playerRef.current.seekTo(Math.min(newTime, maxTime))
-            }
-        }
-        const handleKeyPress = (e: KeyboardEvent) => {
-            if (e.key === ' ') {
-                // Spacebar - Play/Pause
-                handlePlayPause()
-            } else if (e.key === 'ArrowRight') {
-                // Right Arrow - Seek forward 10 seconds
-                handleSeekForward()
-            } else if (e.key === 'ArrowLeft') {
-                // Left Arrow - Seek backward 10 seconds
-                handleSeekBackward()
-            } else if (e.key === 'f' || e.key === 'F') {
-                // F key - Toggle fullscreen
-                handleFullscreenToggle()
-            }
-        }
-
-        document.addEventListener('keydown', handleKeyPress)
-        return () => {
-            document.removeEventListener('keydown', handleKeyPress)
-        }
-    }, [duration, handleFullscreenToggle])
-
-    const handleVideoReady = () => {
-        setLoading(false)
-    }
-
-    const handleVideoError = () => {
-        setLoading(false)
-        setError(true)
-    }
-
-    const handlePlayPause = () => {
-        setPlaying((prevState) => !prevState)
-    }
-
     const handleSeekBackward = () => {
         if (playerRef.current) {
             const currentTime = playerRef.current.getCurrentTime()
@@ -176,194 +217,238 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips })
         }
     }
 
-    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSeekForward = () => {
+        if (playerRef.current && duration) {
+            const currentTime = playerRef.current.getCurrentTime()
+            const newTime = currentTime + 10
+            const maxTime = duration - 1
+            playerRef.current.seekTo(Math.min(newTime, maxTime))
+        }
+    }
+
+    const handleVolumeChange = (value: number) => {
         setIsMute(false)
-        setVolume(parseFloat(e.target.value))
+        setVolume(value / 100)
     }
 
-    // const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setSeekTime(parseFloat(e.target.value))
-    // }
-
-    const handlePlaybackRateChange = (newPlaybackRate: number) => {
-        setPlaybackRate(newPlaybackRate)
-    }
-
-    const handleQualityChange = (newQuality: string) => {
+    const handleQualityChange = (newQuality: 'fhd' | 'hd' | 'sd') => {
         if (playerRef.current && playerRef.current.getCurrentTime()) {
             setPlayed(playerRef.current.getCurrentTime() / playerRef.current.getDuration())
         }
-        setQuality(newQuality)
+        setActiveQuality(newQuality)
+    }
+
+    const handleControlZoneClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (event.detail === 1) {
+            if (isMobile && !controlsShow) {
+                setControlsShow(true)
+            } else {
+                handlePlayPause()
+            }
+        } else if (event.detail === 2) {
+            handlePlayPause()
+            handleFullscreenToggle()
+        }
     }
 
     const formatTime = (seconds: number): string => {
-        const minutes = Math.floor(seconds / 60)
+        let minutes = Math.floor(seconds / 60)
         const remainingSeconds = Math.floor(seconds % 60)
-        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds
-            .toString()
-            .padStart(2, '0')}`
+        if (seconds > 3600) {
+            const hours = Math.floor(seconds / 3600)
+            minutes = Math.floor(seconds / 60) - hours * 60
+            return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+        } else {
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+        }
     }
 
-    return (
-        <div
-            className={styles.player}
-            id="video-player-container"
-            onMouseEnter={() => setControlsShow(true)}
-            onMouseLeave={() => setControlsShow(false)}
-        >
-            <div className={styles.controls_zone} onClick={handlePlayPause}></div>
-            <ReactPlayer
-                ref={playerRef}
-                url={activeUrl}
-                playing={playing}
-                volume={isMute ? 0 : volume}
-                playbackRate={playbackRate}
-                controls={false}
-                width="100%"
-                height="100%"
-                onReady={handleVideoReady}
-                onError={handleVideoError}
-                onProgress={(state) => {
-                    setSeekTime(state.played)
-                }}
-                onDuration={(duration) => {
-                    setDuration(duration)
-                }}
-                {...(quality !== 'auto' && { config: { file: { attributes: { quality } } } })}
-            />
+    const getQualityByString = (quality: string) => {
+        switch (quality) {
+            case 'qhd':
+                return '1440p'
+            case 'fhd':
+                return '1080p'
+            case 'hd':
+                return '720p'
+            case 'sd':
+                return '480p'
+            default:
+                break
+        }
+    }
 
-            {skips?.opening.length > 0 &&
-                seekTime * duration >= skips?.opening[0] &&
-                seekTime * duration < skips?.opening[0] + 10 && (
-                    <button
-                        onClick={() => {
-                            setSeekTime(skips?.opening[1] / duration)
-                            if (playerRef.current && playerRef.current.getDuration()) {
-                                const duration = playerRef.current.getDuration()
-                                playerRef.current.seekTo(skips?.opening[1] / duration)
-                            }
-                        }}
-                        className={styles.skip_opening}
-                    >
-                        Пропустить заставку
-                    </button>
-                )}
-            <div className={clsx(styles.controls, controlsShow && !loading && styles.active)}>
-                <Slider
-                    className={styles.seek_slider}
-                    value={seekTime}
-                    min={0}
-                    max={1}
-                    step={0.0001}
-                    // @ts-ignore
-                    onChange={(value) => setSeekTime(value)}
-                    onAfterChange={(value) => {
+    if (playing) {
+        return (
+            <div
+                className={styles.player}
+                style={{ cursor: controlsShow ? 'initial' : 'none' }}
+                id="video-player-container"
+                onMouseEnter={() => setControlsShow(true)}
+                onMouseLeave={() => setControlsShow(false)}
+            >
+                <div className={styles.controls_zone} onClick={handleControlZoneClick}>
+                    {loading ? (
+                        <Loader />
+                    ) : (
+                        <>
+                            <button className={clsx(styles.play_btn, !pause && styles.active)}>
+                                <MdPlayArrow size={128} color="#fff" />
+                            </button>
+                            <button className={clsx(styles.play_btn, pause && styles.active)}>
+                                <MdPause size={128} color="#fff" />
+                            </button>
+                        </>
+                    )}
+                </div>
+                <ReactPlayer
+                    ref={playerRef}
+                    url={activeUrl}
+                    playing={pause}
+                    volume={isMute ? 0 : volume}
+                    playbackRate={playbackRate}
+                    controls={false}
+                    width="100%"
+                    height="100%"
+                    onReady={handleVideoReady}
+                    onBuffer={() => setLoading(true)}
+                    onBufferEnd={() => setLoading(false)}
+                    onError={handleVideoError}
+                    onProgress={(state) => {
+                        setBufferTime(state.loadedSeconds)
+                        setSeekTime(state.playedSeconds)
+                    }}
+                    playIcon={<MdPlayArrow size={32} />}
+                    bufferTime={40000}
+                    onDuration={(duration) => {
+                        setDuration(duration)
+                    }}
+                    {...(quality !== 'auto' && { config: { file: { attributes: { quality } } } })}
+                />
+
+                <button
+                    onClick={() => {
+                        setSeekTime(skips?.opening[1] / duration)
                         if (playerRef.current && playerRef.current.getDuration()) {
                             const duration = playerRef.current.getDuration()
-                            // @ts-ignore
-                            playerRef.current.seekTo(value * duration)
+                            playerRef.current.seekTo(skips?.opening[1] / duration)
                         }
                     }}
-                />
-                <div className={styles.controls_footer}>
-                    <div className={styles.controls_footer_left}>
-                        <button onClick={handlePlayPause}>
-                            {playing ? <MdPause size={32} /> : <MdPlayArrow size={32} />}
-                        </button>
-                        <div className={styles.volume}>
-                            <button onClick={() => setIsMute(!isMute)}>
-                                {isMute ? (
-                                    <MdVolumeOff size={32} />
-                                ) : volume > 0.2 ? (
-                                    <MdVolumeUp size={32} />
-                                ) : volume > 0 ? (
-                                    <MdVolumeDown size={32} />
-                                ) : (
-                                    <MdVolumeOff size={32} />
-                                )}
-                            </button>
-                            <input
-                                type="range"
-                                min={0}
-                                max={1}
-                                step="any"
-                                value={isMute ? 0 : volume}
-                                onChange={handleVolumeChange}
-                                aria-label="Volume"
-                                className={styles.volume_picker}
-                            />
-                        </div>
-
-                        {duration && (
-                            <div className={styles.time}>
-                                <span>{formatTime(seekTime * duration)}</span> /{' '}
-                                <span>{formatTime(duration)}</span>
-                            </div>
-                        )}
+                    className={clsx(
+                        styles.skip_opening,
+                        skips?.opening.length > 0 &&
+                            seekTime >= skips?.opening[0] &&
+                            seekTime < skips?.opening[0] + 15 &&
+                            styles.active,
+                    )}
+                >
+                    Пропустить заставку
+                </button>
+                <div className={clsx(styles.controls, controlsShow && styles.active)}>
+                    <Slider
+                        id="seekSlider"
+                        max={Math.floor(duration)}
+                        min={0}
+                        value={Math.floor(seekTime)}
+                        onChange={(value) => setSeekTime(value)}
+                        onAfterChange={(value) => {
+                            if (playerRef.current && playerRef.current.getDuration()) {
+                                const duration = playerRef.current.getDuration()
+                                // @ts-ignore
+                                playerRef.current.seekTo(value)
+                            }
+                        }}
+                        isTooltip
+                        formatTime={formatTime}
+                        loaded={bufferTime}
+                    />
+                    <div className={clsx(styles.settings, settingsShow && styles.show)}>
+                        {qualityOptions &&
+                            qualityOptions.map((item, index) => {
+                                const activeQuality = getQualityByString(item.quality)
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => {
+                                            setSavedSeekTime(seekTime)
+                                            setActiveUrl(item.url)
+                                            handleQualityChange(item.quality)
+                                        }}
+                                    >
+                                        {activeQuality}
+                                    </button>
+                                )
+                            })}
                     </div>
-                    <div className={styles.controls_footer_right}>
-                        {qualityOptions && (
-                            <Select
-                                position="top"
-                                className={styles.quality_select}
-                                optionsClassName={styles.quality_options}
-                                options={qualityOptions.map((item) => {
-                                    switch (item.quality) {
-                                        case 'fhd':
-                                            return '1080p'
-                                            break
-                                        case 'hd':
-                                            return '720p'
-                                            break
-                                        case 'sd':
-                                            return '480p'
-                                            break
-                                        default:
-                                            return 'none'
-                                            break
-                                    }
-                                })}
-                                value={
-                                    quality === 'fhd'
-                                        ? '1080p'
-                                        : quality === 'hd'
-                                        ? '720p'
-                                        : quality === 'sd'
-                                        ? '480p'
-                                        : 'none'
-                                }
-                                onChange={(value) => {
-                                    const qualityValue =
-                                        value === '1080p'
-                                            ? 'fhd'
-                                            : value === '720p'
-                                            ? 'hd'
-                                            : value === '480p'
-                                            ? 'sd'
-                                            : 'none'
+                    <div className={styles.controls_footer}>
+                        <div className={styles.controls_footer_left}>
+                            <button onClick={handlePlayPause}>
+                                {pause ? <MdPause size={32} /> : <MdPlayArrow size={32} />}
+                            </button>
+                            <div className={styles.volume}>
+                                {!isMobile && (
+                                    <button onClick={() => setIsMute(!isMute)}>
+                                        {isMute ? (
+                                            <MdVolumeOff size={28} />
+                                        ) : volume > 0.2 ? (
+                                            <MdVolumeUp size={28} />
+                                        ) : volume > 0 ? (
+                                            <MdVolumeDown size={28} />
+                                        ) : (
+                                            <MdVolumeOff size={28} />
+                                        )}
+                                    </button>
+                                )}
+                                <Slider
+                                    id="volumePicker"
+                                    min={0}
+                                    max={100}
+                                    value={isMute ? 0 : volume * 100}
+                                    onChange={handleVolumeChange}
+                                    className={styles.volume_picker}
+                                />
+                            </div>
 
-                                    setActiveUrl(() => {
-                                        const qualityUrl = qualityOptions.filter(
-                                            (option) => option.quality === qualityValue,
-                                        )
-                                        return qualityUrl[0].url
-                                    })
-                                    setQuality(qualityValue)
-                                }}
-                            />
-                        )}
-                        <button onClick={handleFullscreenToggle}>
-                            {isFullscreen ? (
-                                <MdFullscreenExit size={32} />
-                            ) : (
-                                <MdFullscreen size={32} />
+                            {duration && (
+                                <div className={styles.time}>
+                                    <span>{formatTime(seekTime)}</span> / <span>{formatTime(duration)}</span>
+                                </div>
                             )}
-                        </button>
+                        </div>
+                        <div className={styles.controls_footer_right}>
+                            <button onClick={() => setSettingsShow(!settingsShow)}>
+                                {getQualityByString(activeQuality)}
+                            </button>
+                            <button onClick={handleFullscreenToggle}>
+                                {isFullscreen ? <MdFullscreenExit size={32} /> : <MdFullscreen size={32} />}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    )
+        )
+    } else {
+        return (
+            <div className={styles.player_container}>
+                <Image
+                    src={preview ? `https://anilibria.tv${preview}` : '/img/base-preview.png'}
+                    width={1280}
+                    height={720}
+                    alt={'Смотрите аниме на AniBam'}
+                    className={styles.preview}
+                />
+                <button
+                    className={styles.play_btn}
+                    onClick={() => {
+                        setPlaying(true)
+                        setPause(true)
+                    }}
+                >
+                    <MdPlayArrow color="#fff" size={128} />
+                </button>
+            </div>
+        )
+    }
 }
 
 export default VideoPlayer

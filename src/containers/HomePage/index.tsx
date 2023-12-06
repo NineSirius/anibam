@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
-import { getTitleWithCustomFields, getTitles, getTitlesAnilibria } from '@/api'
 import { TitleCard } from '@/components/TitleCard'
 import styles from './HomePage.module.sass'
 import { useRouter } from 'next/router'
-import { Button } from '@/components/UI/Button'
-import { TitleT, TitlesDataT } from '../types/TitleT'
-import axios, { AxiosResponse } from 'axios'
+import { TitleT } from '../types/TitleT'
+import axios from 'axios'
 import format from 'date-fns/format'
 
 export const HomePage = () => {

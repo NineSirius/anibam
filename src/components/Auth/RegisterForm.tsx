@@ -32,14 +32,12 @@ export const RegisterForm = () => {
         setLoading(true)
         registerUser(user)
             .then((resp: any) => {
-                console.log(resp)
                 Cookie.set('auth_token', resp.jwt)
                 enqueueSnackbar('Ваш аккаунт успешно зарегистрирован', {
                     variant: 'success',
                 })
             })
             .catch((err) => {
-                console.log(err.response.data.error.message)
                 const errorMessage = err.response.data.error.message
                 switch (errorMessage) {
                     case 'Email or Username are already taken':
@@ -67,35 +65,17 @@ export const RegisterForm = () => {
 
             <label className={styles.form_label}>
                 {/* <h4 className={styles.form_label_text}>Имя пользователя или email</h4> */}
-                <TextField
-                    label="Введите свой email*"
-                    type="email"
-                    onChange={change}
-                    name="email"
-                    required
-                />
+                <TextField label="Введите свой email*" type="email" onChange={change} name="email" required />
             </label>
 
             <label className={styles.form_label}>
                 {/* <h4 className={styles.form_label_text}>Имя пользователя или email</h4> */}
-                <TextField
-                    label="Введите имя пользователя*"
-                    type="text"
-                    onChange={change}
-                    name="username"
-                    required
-                />
+                <TextField label="Введите имя пользователя*" type="text" onChange={change} name="username" required />
             </label>
 
             <label className={styles.form_label}>
                 {/* <h4 className={styles.form_label_text}>Имя пользователя или email</h4> */}
-                <TextField
-                    label="Пароль*"
-                    type="password"
-                    onChange={change}
-                    name="password"
-                    required
-                />
+                <TextField label="Пароль*" type="password" onChange={change} name="password" required />
             </label>
 
             <Link href="/auth/login">У меня есть аккаунт</Link>

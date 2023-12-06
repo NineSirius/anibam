@@ -7,22 +7,22 @@ import Image from 'next/image'
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
 import { addToLightGallery, StoreTypes } from '@/store/reducers/user.reducer'
-import { getUserLists } from '@/api'
 import { Button } from '@/components/UI/Button'
-import { Select } from '@/components/UI/Select'
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 import { limitStr } from '@/components/TitleCard'
 import styles from './TitlePage.module.sass'
 import { TitleT } from '../types/TitleT'
-import { MdPlayArrow, MdShare } from 'react-icons/md'
+import { MdShare } from 'react-icons/md'
 import { Modal } from '@/components/UI/Modal'
 import Link from 'next/link'
+import { ScheduleT } from '../types/ScheduleT'
 
 interface TitlePageProps {
     titleInfo: TitleT
+    schedule: ScheduleT[]
 }
 
-export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
+export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => {
     const [hideDesc, setHideDesc] = useState<boolean>(true)
     const [mobile, setMobile] = useState<boolean>(false)
     const [showMore, setShowMore] = useState(false)
@@ -30,6 +30,8 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
     const [userList, setUserList] = useState<any | null>(null)
     const [userListLoading, setUserListLoading] = useState<boolean>(false)
     const [shareModalShow, setShareModalShow] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [announce, setAnnounce] = useState<string>('')
 
     const shareSocial = [
         {
@@ -51,91 +53,52 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
 
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        if (user && titleInfo) {
-            getUserLists(user.id).then((resp) => {
-                setUserLists(resp)
-
-                const categories: any = {
-                    watch_list: 'Смотрю',
-                    planned_list: 'Запланировано',
-                    viewed_list: 'Просмотрено',
-                }
-                let folder = null
-                for (const category in categories) {
-                    const item = resp[category].find((item: any) => item.id === titleInfo.id)
-                    if (item) {
-                        setUserList(categories[category])
-                        folder = categories[category]
-                        return
-                    }
-                }
-
-                if (!folder) {
-                    setUserList('Добавить в папку')
-                }
-            })
-        }
-    }, [router.asPath, titleInfo, user])
-
     const toggleShowMore = () => {
         setShowMore(!showMore)
     }
 
-    // const handleFolderChange = (value: string) => {
-    //     const token = Cookie.get('auth_token')
-    //     if (token && titleInfo) {
-    //         const listToRemove =
-    //             userList === 'Смотрю'
-    //                 ? 'watch_list'
-    //                 : userList === 'Запланировано'
-    //                 ? 'planned_list'
-    //                 : userList === 'Просмотрено'
-    //                 ? 'viewed_list'
-    //                 : null
+    useEffect(() => {
+        if (titleInfo.status.string === 'В работе') {
+            schedule.forEach((item) => {
+                let day: string | null = null
+                switch (item.day) {
+                    case 0:
+                        day = 'понедельник'
+                        break
+                    case 1:
+                        day = 'вторник'
+                        break
+                    case 2:
+                        day = 'среду'
+                        break
+                    case 3:
+                        day = 'четверг'
+                        break
+                    case 4:
+                        day = 'пятницу'
+                        break
+                    case 5:
+                        day = 'субботу'
+                        break
+                    case 6:
+                        day = 'воскресенье'
+                        break
+                    default:
+                        break
+                }
+                if (day) {
+                    item.list.forEach((list) => {
+                        if (list.code === titleInfo.code) {
+                            setAnnounce(`Новая серия каждый ${day}`)
+                        }
+                    })
+                }
+            })
+        } else {
+            setAnnounce('')
+        }
+    }, [schedule, titleInfo.code, titleInfo.status.string])
 
-    //         const currentValue =
-    //             value === 'Смотрю'
-    //                 ? 'watch_list'
-    //                 : value === 'Запланировано'
-    //                 ? 'planned_list'
-    //                 : value === 'Просмотрено'
-    //                 ? 'viewed_list'
-    //                 : ''
-    //         setUserListLoading(true)
-
-    //         if (!listToRemove) {
-    //             addToUserFolder(currentValue, titleInfo.id, user.id, token)
-    //                 .then((resp) => setUserList(value))
-    //                 .finally(() => setUserListLoading(false))
-    //             return
-    //         } else if (value === userList) {
-    //             removeFromUserFolder(listToRemove, titleInfo.id, user.id, token)
-    //                 .then((resp) => setUserList('Выберите папку'))
-    //                 .finally(() => setUserListLoading(false))
-    //         } else if (value === 'Смотрю') {
-    //             removeFromUserFolder(listToRemove, titleInfo.id, user.id, token).then((resp) => {
-    //                 addToUserFolder('watch_list', titleInfo.id, user.id, token)
-    //                     .then((resp) => setUserList(value))
-    //                     .finally(() => setUserListLoading(false))
-    //             })
-    //         } else if (value === 'Запланировано') {
-    //             removeFromUserFolder(listToRemove, titleInfo.id, user.id, token).then((resp) => {
-    //                 addToUserFolder('planned_list', titleInfo.id, user.id, token)
-    //                     .then((resp) => setUserList(value))
-    //                     .finally(() => setUserListLoading(false))
-    //             })
-    //         } else if (value === 'Просмотрено') {
-    //             removeFromUserFolder(listToRemove, titleInfo.id, user.id, token).then((resp) => {
-    //                 addToUserFolder('viewed_list', titleInfo.id, user.id, token)
-    //                     .then((resp) => setUserList(value))
-    //                     .finally(() => setUserListLoading(false))
-    //             })
-    //         }
-    //     } else {
-    //         router.push('/auth/login')
-    //     }
-    // }
     const handleCopyClick = () => {
         const copyText = document.location.href
         navigator.clipboard
@@ -247,20 +210,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                         </div>
 
                         <div className={styles.title_info_content}>
-                            <div className={styles.rating}>
-                                {/* <span>
-                                    <MdStar size={28} />
-                                    {(titleInfo.attributes.rating / titleInfo.attributes.rating) *
-                                        10 || '0'}
-                                </span> */}
-                                {/* <Select
-                                    options={['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']}
-                                    value={rate ? rate : 'Оцените сериал'}
-                                    onChange={(value) => {
-                                        setRate(value)
-                                    }}
-                                ></Select> */}
-                            </div>
+                            <div className={styles.rating}></div>
                             <h1>{titleInfo.names.ru}</h1>
                             <p className={clsx('caption', styles.caption)}>{titleInfo.names.en}</p>
 
@@ -327,9 +277,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                 </li>
                             </ul>
 
-                            <ReactMarkdown
-                                className={clsx(styles.description, !hideDesc && styles.active)}
-                            >
+                            <ReactMarkdown className={clsx(styles.description, !hideDesc && styles.active)}>
                                 {titleInfo.description.length < 350
                                     ? titleInfo.description
                                     : hideDesc
@@ -339,10 +287,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
 
                             {titleInfo.description.length >= 350 && (
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <button
-                                        onClick={() => setHideDesc(!hideDesc)}
-                                        className={styles.more_btn}
-                                    >
+                                    <button onClick={() => setHideDesc(!hideDesc)} className={styles.more_btn}>
                                         {hideDesc ? 'Подробнее' : 'Скрыть'}
                                     </button>
                                 </div>
@@ -350,15 +295,14 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
 
                             <div className={styles.episodes}>
                                 <h3>Список серий</h3>
+                                <p className={styles.announce}>{announce}</p>
                                 {episodes.length > 0 ? (
                                     episodes.map((item, index) => (
                                         <Button
                                             key={index}
                                             style={{ justifyContent: 'flex-start' }}
                                             onClick={() =>
-                                                router.push(
-                                                    `/anime/${titleInfo.code}/episodes/${item.episode}`,
-                                                )
+                                                router.push(`/anime/${titleInfo.code}/episodes/${item.episode}`)
                                             }
                                         >
                                             {`${item.episode} эпизод`}
@@ -369,9 +313,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                 )}
                                 {titleInfo.player.list.length > 7 && (
                                     <Button onClick={toggleShowMore}>
-                                        {showMore
-                                            ? `Скрыть (${remainingCount})`
-                                            : `Показать еще (${remainingCount})`}
+                                        {showMore ? `Скрыть (${remainingCount})` : `Показать еще (${remainingCount})`}
                                     </Button>
                                 )}
                             </div>
@@ -386,10 +328,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                                     return (
                                                         <div
                                                             key={item.id}
-                                                            className={clsx(
-                                                                styles.relations_list_item,
-                                                                styles.active,
-                                                            )}
+                                                            className={clsx(styles.relations_list_item, styles.active)}
                                                         >
                                                             <div className={styles.item_info}>
                                                                 <h4>{item.names.ru}</h4>
@@ -401,9 +340,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                                         <div
                                                             key={item.id}
                                                             className={styles.relations_list_item}
-                                                            onClick={() =>
-                                                                router.push(`/anime/${item.code}`)
-                                                            }
+                                                            onClick={() => router.push(`/anime/${item.code}`)}
                                                         >
                                                             <div className={styles.item_info}>
                                                                 <h4>{item.names.ru}</h4>
@@ -430,7 +367,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                         <h2>Поделиться аниме</h2>
                         <p>Нажмите на ссылку чтобы скопировать</p>
                         <pre>
-                            <code onClick={handleCopyClick}>{document.location.href}</code>
+                            <code onClick={handleCopyClick}>{`https://anibam.vercel.app/anime/${titleInfo.code}`}</code>
                         </pre>
                         <p>Поделиться в</p>
                         <div className={styles.social}>
@@ -439,7 +376,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo }) => {
                                     <Link
                                         key={item.id}
                                         className={styles.share_btn}
-                                        href={`${item.url}${document.location.href}`}
+                                        href={`${item.url}https://anibam.vercel.app/anime/${titleInfo.code}`}
                                         target="_blank"
                                     >
                                         <Image

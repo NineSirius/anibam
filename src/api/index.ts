@@ -104,12 +104,7 @@ export const getTitleRating = async (titleId: string) => {
     return response
 }
 
-export const addToUserFolder = async (
-    folder: string,
-    animeId: number,
-    userId: number,
-    token: string,
-) => {
+export const addToUserFolder = async (folder: string, animeId: number, userId: number, token: string) => {
     const response = await strapiApi.put(
         `users/${userId}`,
         {
@@ -126,12 +121,7 @@ export const addToUserFolder = async (
     return response
 }
 
-export const removeFromUserFolder = async (
-    folder: string,
-    animeId: number,
-    userId: number,
-    token: string,
-) => {
+export const removeFromUserFolder = async (folder: string, animeId: number, userId: number, token: string) => {
     const response = await strapiApi.put(
         `users/${userId}`,
         {
@@ -176,4 +166,9 @@ export const getAnilibriaTitleSearch = async (params: string) => {
 export const getAnilibriaRandomTitle = async () => {
     const response = await anilibriaApi.get('title/random')
     return response.data
+}
+
+export const getAnilibriaSchedule = async () => {
+    const response = await anilibriaApi.get(`title/schedule?filter=code`)
+    return response
 }

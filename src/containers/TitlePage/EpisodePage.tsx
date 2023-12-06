@@ -18,9 +18,19 @@ interface EpisodePageProps {
 }
 
 export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumber }) => {
-    const [activeEpisode, setActiveEpisode] = useState<string>(`${episodeNumber} серия`)
+    const [activeEpisode, setActiveEpisode] = useState<number | string>(episodeNumber)
+    const [activeEpisodeName, setActiveEpisodeName] = useState<string | null>(
+        titleInfo.player.list[episodeNumber - 1].name,
+    )
 
     const router = useRouter()
+
+    useEffect(() => {
+        if (episodeNumber !== activeEpisode) {
+            setActiveEpisode(episodeNumber)
+            setActiveEpisodeName(titleInfo.player.list[episodeNumber - 1].name)
+        }
+    }, [activeEpisode, episodeNumber, titleInfo.player.list])
 
     const findEpisodeIndex = (episodeNum: number) => {
         return titleInfo.player.list.findIndex((item) => item.episode === episodeNum)
@@ -28,22 +38,10 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
 
     const currentEpisodeIndex = findEpisodeIndex(episodeNumber)
 
-    function extractNumberFromString(string: string) {
-        const numberPattern = /\d+/g
-        const numbers = string.match(numberPattern)
-
-        if (numbers && numbers.length > 0) {
-            const number = parseInt(numbers[0], 10)
-            return number
-        }
-
-        return null
-    }
-
-    const handleEpisodeChange = (value: string) => {
-        const episode = extractNumberFromString(value)
+    const handleEpisodeChange = (value: string | number) => {
         if (titleInfo) {
-            router.push(`/anime/${titleInfo.code}/episodes/${episode}`)
+            setActiveEpisode(value)
+            router.push(`/anime/${titleInfo.code}/episodes/${value}`)
         }
     }
 
@@ -65,10 +63,9 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                         >
                             <VideoPlayer
                                 url={`https://cache.libria.fun${titleInfo.player.list[currentEpisodeIndex].hls.hd}`}
+                                preview={titleInfo.player.list[currentEpisodeIndex].preview}
                                 skips={titleInfo.player.list[currentEpisodeIndex].skips}
-                                qualityOptions={Object.keys(
-                                    titleInfo.player.list[currentEpisodeIndex].hls,
-                                )
+                                qualityOptions={Object.keys(titleInfo.player.list[currentEpisodeIndex].hls)
                                     .map((key) => {
                                         const hlsUrl =
                                             //@ts-ignore
@@ -86,24 +83,18 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                             <div className={styles.episode_info}>
                                 <div className={styles.left}>
                                     <h2>
-                                        {episodeNumber} серия -{' '}
-                                        {titleInfo.player.list[currentEpisodeIndex].name ||
-                                            'Без названия'}
+                                        {activeEpisodeName
+                                            ? `${episodeNumber} серия - ${activeEpisodeName}`
+                                            : `${episodeNumber} серия`}
                                     </h2>
-                                    <Link href={`/anime/${titleInfo.code}`}>
-                                        {titleInfo.names.ru}
-                                    </Link>
+                                    <Link href={`/anime/${titleInfo.code}`}>{titleInfo.names.ru}</Link>
                                 </div>
                                 <div className={styles.right}>
                                     <Button
                                         color="primary"
-                                        disabled={
-                                            episodeNumber === +titleInfo.player.list[0].episode
-                                        }
+                                        disabled={episodeNumber === +titleInfo.player.list[0].episode}
                                         onClick={() =>
-                                            router.push(
-                                                `/anime/${titleInfo.code}/episodes/${currentEpisodeIndex}`,
-                                            )
+                                            router.push(`/anime/${titleInfo.code}/episodes/${currentEpisodeIndex}`)
                                         }
                                     >
                                         <MdSkipPrevious size={24} />
@@ -112,15 +103,10 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                                         color="primary"
                                         disabled={
                                             episodeNumber ===
-                                            +titleInfo.player.list[titleInfo.player.list.length - 1]
-                                                .episode
+                                            +titleInfo.player.list[titleInfo.player.list.length - 1].episode
                                         }
                                         onClick={() =>
-                                            router.push(
-                                                `/anime/${titleInfo.code}/episodes/${
-                                                    episodeNumber + 1
-                                                }`,
-                                            )
+                                            router.push(`/anime/${titleInfo.code}/episodes/${episodeNumber + 1}`)
                                         }
                                     >
                                         <MdSkipNext size={24} />
@@ -134,11 +120,7 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                                 <Button
                                     className={episodeNumber === item.episode && styles.active_btn}
                                     key={item.uuid}
-                                    onClick={() =>
-                                        router.push(
-                                            `/anime/${titleInfo.code}/episodes/${item.episode}`,
-                                        )
-                                    }
+                                    onClick={() => router.push(`/anime/${titleInfo.code}/episodes/${item.episode}`)}
                                 >
                                     {item.episode} эпизод
                                 </Button>
@@ -146,10 +128,13 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                         </div>
                     </div>
                     <Select
-                        options={titleInfo.player.list.map(
-                            (item) => `${item.episode} серия - ${item.name}`,
-                        )}
-                        value={activeEpisode || 'Выберите серию'}
+                        options={titleInfo.player.list.map((item) => {
+                            return {
+                                key: item.episode,
+                                label: item.name ? `${item.episode} серия - ${item.name}` : `${item.episode} серия`,
+                            }
+                        })}
+                        activeValue={activeEpisode}
                         onChange={handleEpisodeChange}
                         className={styles.episode_list_select}
                     ></Select>
