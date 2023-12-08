@@ -3,6 +3,7 @@ import styles from './Button.module.sass'
 import clsx from 'clsx'
 
 interface ButtonProps {
+    id?: string
     children: React.ReactNode
     variant?: 'contained' | 'outline'
     className?: any
@@ -16,6 +17,7 @@ interface ButtonProps {
 }
 
 export const Button: React.FC<ButtonProps> = ({
+    id,
     children,
     variant,
     className,
@@ -30,6 +32,7 @@ export const Button: React.FC<ButtonProps> = ({
     if (type === 'link' && href) {
         return (
             <a
+                id={id}
                 className={clsx(
                     styles.button,
                     variant ? styles[variant] : styles.contained,
@@ -45,6 +48,7 @@ export const Button: React.FC<ButtonProps> = ({
     } else {
         return (
             <button
+                id={id}
                 className={clsx(
                     styles.button,
                     variant ? styles[variant] : styles.contained,

@@ -8,7 +8,7 @@ const withPWA = nextPwa({
 })
 
 const nextConfig = {
-    reactStrictMode: true,
+    reactStrictMode: false,
     images: {
         domains: ['res.cloudinary.com', 'api.anilibria.tv', 'anilibria.tv'],
     },
