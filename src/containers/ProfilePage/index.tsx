@@ -1,26 +1,22 @@
 import React, { useState, useEffect, ChangeEvent } from 'react'
 import styles from './ProfilePage.module.sass'
-import { StoreTypes, UserTypes } from '@/store/reducers/user.reducer'
+import { StoreTypes } from '@/store/reducers/user.reducer'
 import Image from 'next/image'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import ReactCrop, { Crop, PercentCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
-import { Modal } from '@/components/UI/Modal'
 import { Button } from '@/components/UI/Button'
-import { getUserByUsername, getUserData } from '@/api'
-import { BsGithub, BsTelegram } from 'react-icons/bs'
-import Cookie from 'js-cookie'
-import Link from 'next/link'
+import { getUserByUsername } from '@/api'
 import clsx from 'clsx'
 import { useSelector } from 'react-redux'
+import { UserT } from '../types/UserT'
 
 interface Profile {
-    data: UserTypes | 'None'
+    data: UserT | 'None'
 }
 
 const ProfilePage = () => {
-    const [userInfo, setUserInfo] = useState<UserTypes | null>(null)
+    const [userInfo, setUserInfo] = useState<UserT | null>(null)
 
     const router = useRouter()
     const user = useSelector((store: StoreTypes) => store.user)

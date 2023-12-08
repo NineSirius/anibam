@@ -1,3 +1,5 @@
+import { TitleT } from './TitleT'
+
 export type UserT = {
     description: string
     id: number

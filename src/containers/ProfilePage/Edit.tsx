@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react'
 import styles from './ProfilePage.module.sass'
 import clsx from 'clsx'
 import { TextField } from '@/components/UI/TextField'
-import { UserTypes } from '@/store/reducers/user.reducer'
 import { getUserData, updateUserInfo } from '@/api'
 import Cookie from 'js-cookie'
 import { Button } from '@/components/UI/Button'
 import { enqueueSnackbar } from 'notistack'
+import { UserT } from '../types/UserT'
 
 export const ProfilePageEdit = () => {
-    const [userInfo, setUserInfo] = useState<UserTypes | null>(null)
+    const [userInfo, setUserInfo] = useState<UserT | null>(null)
     const [userInfoEdit, setUserInfoEdit] = useState<any>({})
 
     useEffect(() => {
