@@ -115,6 +115,10 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => 
             <>
                 <Head>
                     <title>{`${titleInfo.names.ru} - смотреть на AniBam`}</title>
+                    <meta property="og:title" content={`${titleInfo.names.ru} смотреть онлайн`} />
+                    <meta property="og:description" content={`${titleInfo.description}`} />
+                    <meta property="og:image" content={`${titleInfo.posters.medium.url}`} />
+                    <meta property="og:url" content={`https://anibam.vercel.app/anime/${titleInfo.code}`} />
                 </Head>
                 <div className="container">
                     <div className={styles.title_info}>

@@ -32,12 +32,18 @@
         .logo
           display: none
 
+      button .icon
+          display: none
+
     .nav_right
       right: 10px
       display: flex
       margin-left: auto
       align-items: center
       gap: 5px
+
+.account_icon
+  display: none !important
 
 .avatar
   width: 50px
@@ -49,51 +55,45 @@
   font-weight: 400
   color: #aaaaaa
 
-@media screen and (max-width: 600px)
+.bottom_bar
+  position: fixed
+  width: 100vw
+  bottom: 0
+  display: none
+  grid-template-columns: repeat(3,1fr)
+  background: var(--header-bg)
+  border-top: 1px solid var(--border-color)
+  transform: translateY(100%)
+  transition: .2s
 
-  .nav_links
-    position: fixed
-    top: 0
-    left: 0
-    min-width: 50vw
-    width: max-content
-    height: 100vh
-    transform: translateX(-100%)
-    transition: .2s
-    background: var(--header-bg)
-    border-right: 1px solid var(--border-color)
+  &.active
+    transform: translateY(0)
+
+  .button
+    display: flex
+    align-items: center
     flex-direction: column
-    align-items: flex-start !important
-    padding: 15px 10px
-    z-index: 11
+    gap: 5px
+    font-weight: 700
+    font-size: 14px
+    border: none
+    outline: none
+    background: none
+    padding: 5px
+    color: var(--desc-color)
 
-    li
-      width: 100%
+    &:hover
+      background: var(--btn-primary-bg)
 
-      button
-        width: 100%
-
-    &.active
-      transform: translateX(0)
-
-  .hamburger
-    display: inline-flex !important
-
-@media screen and (max-width: 400px)
-  .logo
+@media screen and (max-width: 570px)
+  .nav_links
     display: none !important
 
-  .nav_links
+  .account_full
+    display: none !important
 
-    li
-      .logo
-        display: flex !important
+  .account_icon
+    display: inline-flex !important
 
-@media screen and (max-width: 320px)
-  .mobile_logo_wrap
-    display: flex !important
-    gap: 10px
-
-  .nav_left
-    .logo
-      display: none
+  .bottom_bar
+    display: grid

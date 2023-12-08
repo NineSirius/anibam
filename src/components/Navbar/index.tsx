@@ -4,36 +4,36 @@ import styles from './Navbar.module.sass'
 import { Button } from '../UI/Button'
 import {
     MdDarkMode,
+    MdFeaturedPlayList,
     MdForum,
+    MdHome,
     MdLaptop,
+    MdLibraryBooks,
     MdLightMode,
     MdLogout,
     MdMenu,
     MdPeople,
+    MdPerson,
     MdSearch,
+    MdShuffle,
     MdTune,
+    MdVerifiedUser,
 } from 'react-icons/md'
 import { Backdrop } from '../UI/Backdrop'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-    StoreTypes,
-    addUserData,
-    removeUserData,
-    setDarkTheme,
-    setLightTheme,
-} from '@/store/reducers/user.reducer'
+import { StoreTypes, addUserData, removeUserData, setDarkTheme, setLightTheme } from '@/store/reducers/user.reducer'
 import Image from 'next/image'
 import Cookie from 'js-cookie'
 import { Menu } from '../UI/Menu'
 import { useRouter } from 'next/router'
 import { getAnilibriaRandomTitle, getUserData } from '@/api'
 import { Search } from '../Search'
+import { AuthUserMenu } from './AuthUserMenu'
 
 export const Navbar = () => {
-    const [drawerShow, setDrawerShow] = useState<boolean>(false)
     const [searchShow, setSearchShow] = useState<boolean>(false)
+    const [isBottomBar, setIsBottomBar] = useState<boolean>(true)
 
-    const handleHamburger = () => setDrawerShow(!drawerShow)
     const handleSearchShow = () => setSearchShow(!searchShow)
 
     const user = useSelector((store: StoreTypes) => store.user)
@@ -52,28 +52,46 @@ export const Navbar = () => {
         }
     }, [dispatch, user])
 
-    useEffect(() => {
-        setDrawerShow(false)
-    }, [router.asPath])
-
     const getRandom = () => {
         getAnilibriaRandomTitle().then((resp) => router.push(`/anime/${resp.code}`))
     }
+
+    const links = [
+        { icon: <MdHome size={24} />, title: 'Главная', onClick: () => router.push('/anime') },
+        { icon: <MdLibraryBooks size={24} />, title: 'Каталог', onClick: () => router.push('/anime') },
+        { icon: <MdShuffle size={24} />, title: 'Случайное', onClick: () => getRandom() },
+    ]
+
+    useEffect(() => {
+        let lastScrollTop = 0
+
+        window.addEventListener('scroll', function () {
+            let scrollTop = window.scrollY || document.documentElement.scrollTop
+
+            if (scrollTop > lastScrollTop) {
+                if (isBottomBar) {
+                    setIsBottomBar(false)
+                }
+            } else {
+                setIsBottomBar(true)
+            }
+
+            lastScrollTop = scrollTop
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <>
             <header className={styles.navbar}>
                 <nav className="container">
                     <div className={styles.nav_left}>
-                        <Button className={styles.hamburger} onClick={handleHamburger}>
-                            <MdMenu size={24} />
-                        </Button>
                         <Button className={styles.logo} onClick={() => router.push('/')}>
                             AniBam
                         </Button>
                     </div>
 
-                    <ul className={clsx(styles.nav_links, drawerShow && styles.active)}>
+                    <ul className={styles.nav_links}>
                         {/* <div className={styles.mobile_logo_wrap}>
                             <Button>
                                 <MdDarkMode />
@@ -83,10 +101,15 @@ export const Navbar = () => {
                             <Button className={styles.logo}>AniBam</Button>
                         </li>
                         <li>
-                            <Button onClick={() => router.push('/anime')}>Аниме</Button>
+                            <Button onClick={() => router.push('/anime')}>
+                                <MdLibraryBooks size={20} className={styles.icon} />
+                                Каталог
+                            </Button>
                         </li>
                         <li>
-                            <Button onClick={getRandom}>Рандом</Button>
+                            <Button onClick={getRandom}>
+                                <MdShuffle size={20} className={styles.icon} /> Случайное аниме
+                            </Button>
                         </li>
                     </ul>
 
@@ -94,15 +117,7 @@ export const Navbar = () => {
                         <Button onClick={() => setSearchShow(true)}>
                             <MdSearch size={20} />
                         </Button>
-                        <Menu
-                            label={
-                                theme === 'dark' ? (
-                                    <MdDarkMode size={20} />
-                                ) : (
-                                    <MdLightMode size={20} />
-                                )
-                            }
-                        >
+                        <Menu label={theme === 'dark' ? <MdDarkMode size={20} /> : <MdLightMode size={20} />}>
                             <Button
                                 style={{
                                     borderRadius: 0,
@@ -157,108 +172,31 @@ export const Navbar = () => {
                             </Button>
                         </Menu>
                         {user ? (
-                            <Menu label={user.username}>
-                                <div>
-                                    <Button
-                                        style={{ borderRadius: 0 }}
-                                        onClick={() => router.push(`/users/${user.username}`)}
-                                    >
-                                        <div
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: 10,
-                                                width: 300,
-                                            }}
-                                        >
-                                            <Image
-                                                src={
-                                                    user.avatar
-                                                        ? user.avatar.url
-                                                        : '/img/base-avatar.png'
-                                                }
-                                                width={50}
-                                                height={50}
-                                                style={{ objectFit: 'cover' }}
-                                                alt={`Аватарка пользователя ${user.username}`}
-                                            />
-                                            <div
-                                                style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'flex-start',
-                                                    gap: 5,
-                                                }}
-                                            >
-                                                <h4>{user.username}</h4>
-                                                <p className={styles.role}>
-                                                    {user.role.name === 'Authenticated' &&
-                                                        'Пользователь'}
-                                                    {user.role.name === 'Owner' && 'Владелец'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </Button>
-                                    {user.role.name === 'Owner' && (
-                                        <Button
-                                            style={{
-                                                borderRadius: 0,
-                                                alignItems: 'center',
-                                                gap: 10,
-                                                justifyContent: 'flex-start',
-                                            }}
-                                            onClick={() =>
-                                                router.replace('http://localhost:1337/admin')
-                                            }
-                                        >
-                                            <MdTune size={20} /> Панель администратора
-                                        </Button>
-                                    )}
-                                    <Button
-                                        style={{
-                                            borderRadius: 0,
-                                            alignItems: 'center',
-                                            gap: 10,
-                                            justifyContent: 'flex-start',
-                                        }}
-                                    >
-                                        <MdPeople size={20} /> Друзья
-                                    </Button>
-                                    <Button
-                                        style={{
-                                            borderRadius: 0,
-                                            alignItems: 'center',
-                                            gap: 10,
-                                            justifyContent: 'flex-start',
-                                        }}
-                                    >
-                                        <MdForum size={20} /> Сообщения
-                                    </Button>
-                                    <Button
-                                        style={{
-                                            borderRadius: 0,
-                                            alignItems: 'center',
-                                            gap: 10,
-                                            justifyContent: 'flex-start',
-                                            color: '#EE4343',
-                                        }}
-                                        onClick={() => {
-                                            dispatch(removeUserData())
-                                            Cookie.remove('auth_token')
-                                        }}
-                                    >
-                                        <MdLogout size={20} /> Выйти с аккаунта
-                                    </Button>
-                                </div>
-                            </Menu>
+                            <AuthUserMenu user={user} router={router} />
                         ) : (
-                            <Button onClick={() => router.push('/auth/login')}>Аккаунт</Button>
+                            <>
+                                <Button onClick={() => router.push('/auth/login')} className={styles.account_full}>
+                                    Аккаунт
+                                </Button>
+                                <Button onClick={() => router.push('/auth/login')} className={styles.account_icon}>
+                                    <MdPerson size={20} />
+                                </Button>
+                            </>
                         )}
                     </div>
                 </nav>
             </header>
 
-            <Backdrop show={drawerShow} onClose={handleHamburger} />
+            <div className={clsx(styles.bottom_bar, isBottomBar && styles.active)}>
+                {links.map((link) => {
+                    return (
+                        <button className={styles.button} key={link.title} onClick={link.onClick}>
+                            {link.icon}
+                            <span>{link.title}</span>
+                        </button>
+                    )
+                })}
+            </div>
 
             <Search show={searchShow} onClose={handleSearchShow} />
         </>

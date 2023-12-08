@@ -20,4 +20,11 @@
       color: var(--caption-color)
 
     &_link
+      display: inline-flex
+      align-items: center
+      gap: 10px
       color: var(--link-color)
+
+  @media screen and (max-width: 570px)
+    &_content
+      flex-direction: column

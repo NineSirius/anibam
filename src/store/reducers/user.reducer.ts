@@ -1,46 +1,9 @@
 import { TitleT } from '@/containers/types/TitleT'
+import { UserT } from '@/containers/types/UserT'
 import { createSlice } from '@reduxjs/toolkit'
 
-export interface UserTypes {
-    description: string
-    id: number
-    username: string
-    email: string
-    confirmed: boolean
-    blocked: boolean
-    createdAt: string
-    updatedAt: string
-    online_status: boolean
-    last_online: string
-    role: {
-        id: number
-        name: string
-        description: string
-        type: string
-        createdAt: string
-        updatedAt: string
-    }
-    avatar: {
-        id: number
-        name: string
-        width: number
-        height: number
-        url: string
-        ext: '.gif' | '.png' | '.jpg'
-    }
-    user_config: {
-        id: number
-        username_styles: 'rgb' | 'default'
-        show_vip_status: boolean
-    }
-    github_link: string | null
-    telegram_link: string | null
-    pending_list: TitleT[]
-    watch_list: TitleT[]
-}
-
 export interface StoreTypes {
-    user: UserTypes
+    user: UserT
     token: string
     authModal: boolean
     theme: 'dark' | 'light'
@@ -51,7 +14,7 @@ export interface StoreTypes {
 const userSlice = createSlice({
     name: 'user',
     initialState: {
-        user: null as UserTypes | null,
+        user: null as UserT | null,
         token: null,
         authModal: false,
         theme: 'light',

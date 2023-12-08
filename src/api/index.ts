@@ -1,11 +1,9 @@
 import { TitlesDataT } from '@/containers/types/TitleT'
-import { UserTypes } from '@/store/reducers/user.reducer'
+import { UserT } from '@/containers/types/UserT'
 import axios from 'axios'
 
-// https://anibam-api.onrender.com/api
-
 const strapiApi = axios.create({
-    baseURL: 'http://localhost:1337/api',
+    baseURL: process.env.NEXT_PUBLIC_STRAPI_API,
 })
 
 export const getTitles = async () => {
@@ -48,7 +46,7 @@ export const getUserData = async (token: string) => {
     return response.data
 }
 
-export const getUserByUsername = async (username: string): Promise<UserTypes[]> => {
+export const getUserByUsername = async (username: string): Promise<UserT[]> => {
     const response = await strapiApi.get(`users?populate=deep&filters[username]=${username}`, {})
     return response.data
 }
@@ -60,7 +58,7 @@ export const getUserLists = async (userId: number) => {
     return response.data
 }
 
-export const updateUserInfo = async (userId: number, token: string, data: UserTypes) => {
+export const updateUserInfo = async (userId: number, token: string, data: UserT) => {
     const response = await strapiApi.put(
         `users/${userId}`,
         {
@@ -141,7 +139,7 @@ export const removeFromUserFolder = async (folder: string, animeId: number, user
 // AniLibria API
 
 const anilibriaApi = axios.create({
-    baseURL: 'https://api.anilibria.tv/v3',
+    baseURL: process.env.NEXT_PUBLIC_ANILIBRIA_API_V3,
 })
 
 export const getTitlesAnilibria = async () => {

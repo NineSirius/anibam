@@ -1,7 +1,8 @@
 import React from 'react'
+import { NotFoundPage } from '@/containers/NotFoundPage'
 
 const Error404 = () => {
-    return <div>Error404</div>
+    return <NotFoundPage />
 }
 
 export default Error404

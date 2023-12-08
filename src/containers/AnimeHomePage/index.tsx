@@ -17,24 +17,14 @@ export const AnimeHomePage = () => {
     const [currentPage, setCurrentPage] = useState<number>(0)
 
     useEffect(() => {
-        if (router.query.page) {
-            const currentPage = router.query.page ? +router.query.page : 1
-            getAnilibriaTitles(currentPage).then((resp) => {
-                setTitles(resp)
-                setItemsPerPage(resp.pagination.items_per_page)
-                setTotalItems(resp.pagination.total_items)
-                setTotalPages(Math.ceil(resp.pagination.total_items / resp.pagination.items_per_page))
-                setCurrentPage(currentPage)
-            })
-        } else {
-            getAnilibriaTitles(1).then((resp) => {
-                setTitles(resp)
-                setItemsPerPage(resp.pagination.items_per_page)
-                setTotalItems(resp.pagination.total_items)
-                setTotalPages(Math.ceil(resp.pagination.total_items / resp.pagination.items_per_page))
-                setCurrentPage(1)
-            })
-        }
+        const currentPage = router.query.page ? +router.query.page : 1
+        getAnilibriaTitles(currentPage).then((resp) => {
+            setTitles(resp)
+            setItemsPerPage(resp.pagination.items_per_page)
+            setTotalItems(resp.pagination.total_items)
+            setTotalPages(Math.ceil(resp.pagination.total_items / resp.pagination.items_per_page))
+            setCurrentPage(currentPage)
+        })
     }, [router.query.page])
 
     useEffect(() => {

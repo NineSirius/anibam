@@ -8,10 +8,11 @@ interface ButtonProps {
     className?: any
     onClick?: () => void
     color?: 'primary' | 'warning' | 'error' | 'success'
-    type?: 'submit' | 'button'
+    type?: 'submit' | 'button' | 'link'
     style?: React.CSSProperties | undefined
     loading?: boolean
     disabled?: boolean
+    href?: string
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -24,21 +25,39 @@ export const Button: React.FC<ButtonProps> = ({
     style,
     loading,
     disabled,
+    href,
 }): JSX.Element => {
-    return (
-        <button
-            className={clsx(
-                styles.button,
-                variant ? styles[variant] : styles.contained,
-                className,
-                color && styles[color],
-            )}
-            onClick={onClick}
-            type={type}
-            style={style}
-            disabled={disabled}
-        >
-            {loading ? 'Загрузка' : children}
-        </button>
-    )
+    if (type === 'link' && href) {
+        return (
+            <a
+                className={clsx(
+                    styles.button,
+                    variant ? styles[variant] : styles.contained,
+                    className,
+                    color && styles[color],
+                )}
+                href={href}
+                style={style}
+            >
+                {loading ? 'Загрузка' : children}
+            </a>
+        )
+    } else {
+        return (
+            <button
+                className={clsx(
+                    styles.button,
+                    variant ? styles[variant] : styles.contained,
+                    className,
+                    color && styles[color],
+                )}
+                onClick={onClick}
+                type={type !== 'link' ? type : 'button'}
+                style={style}
+                disabled={disabled}
+            >
+                {loading ? 'Загрузка' : children}
+            </button>
+        )
+    }
 }
