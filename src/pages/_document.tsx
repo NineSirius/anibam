@@ -4,16 +4,9 @@ export default function Document() {
     return (
         <Html lang="ru">
             <Head>
-                <link
-                    rel="stylesheet"
-                    type="text/css"
-                    href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
-                />
-                <link
-                    rel="stylesheet"
-                    type="text/css"
-                    href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
-                />
+                <link rel="manifest" href="/manifest.json" />
+                <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+                <meta name="theme-color" content="#000" />
             </Head>
             <body>
                 <Main />
