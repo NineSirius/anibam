@@ -57,7 +57,7 @@ export const Navbar = () => {
     }
 
     const links = [
-        { icon: <MdHome size={24} />, title: 'Главная', onClick: () => router.push('/anime') },
+        { icon: <MdHome size={24} />, title: 'Главная', onClick: () => router.push('/') },
         { icon: <MdLibraryBooks size={24} />, title: 'Каталог', onClick: () => router.push('/anime') },
         { icon: <MdShuffle size={24} />, title: 'Случайное', onClick: () => getRandom() },
     ]
