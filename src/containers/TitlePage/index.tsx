@@ -148,39 +148,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => 
                                 Смотреть онлайн
                             </Button>
 
-                            {/* <Select
-                                options={['Смотрю', 'Запланировано', 'Просмотрено']}
-                                value={userList || 'Выберите папку'}
-                                loading={userListLoading}
-                                onChange={handleFolderChange}
-                                className={styles.select}
-                            ></Select> */}
-
                             <ul className={clsx(styles.anime_info, !mobile && styles.active)}>
-                                {/* <li>
-                                    <p>Возрастное ограничение</p>
-                                    <span className={styles.age}>
-                                        {`${titleInfo.}+` || 'Не указано'}
-                                    </span>
-                                </li> */}
-                                {/* {titleInfo.attributes.studios.data.length > 0 && (
-                                    <li>
-                                        <p>Студия</p>
-                                        <span>
-                                            {titleInfo.attributes.studios.data.map((item) => {
-                                                return (
-                                                    <Link
-                                                        key={item.id}
-                                                        target="_blank"
-                                                        href={`https://letmegooglethat.com/?q=${item.attributes.title} `}
-                                                    >
-                                                        {item.attributes.title}
-                                                    </Link>
-                                                )
-                                            })}
-                                        </span>
-                                    </li>
-                                )} */}
                                 <li>
                                     <p>Формат</p>
                                     <span>{titleInfo.type.string}</span>

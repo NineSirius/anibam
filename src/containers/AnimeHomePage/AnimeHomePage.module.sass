@@ -1,9 +1,20 @@
 .list
-  display: flex
-  flex-wrap: wrap
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr))
+  justify-content: center
   gap: 10px
+  padding: 0 10px
+
+  @media screen and (max-width: 670px)
+    grid-template-columns: repeat(2, 1fr)
+    justify-content: center
+
+    div
+      min-width: 100px
+      width: 100%
 
 .pagination
+  max-width: 100%
   margin-top: 15px
   display: flex
   align-items: center

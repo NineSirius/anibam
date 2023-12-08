@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import { TitleT } from '../types/TitleT'
 import axios from 'axios'
 import format from 'date-fns/format'
+import ScrollContainer from 'react-indiana-drag-scroll'
 
 export const HomePage = () => {
     const [titles, setTitles] = React.useState<TitleT[]>([])
@@ -59,38 +60,22 @@ export const HomePage = () => {
                     ></meta>
                 </Head>
                 <div className="container">
-                    {/* <div className={styles.banners}>
-                  <div
-                      className={styles.banner}
-                      onClick={() => router.replace('https://t.me/anibam_bot')}
-                  >
-                      <h4>Telegram Бот</h4>
-                      <p>Смотрите аниме в нашем телеграмм боте</p>
-                  </div>
-                  <div className={styles.banner}>
-                      <h4>Мобильное приложение</h4>
-                      <p>Вы также можете смотреть аниме в нашем мобильном приложении</p>
-                  </div>
-              </div> */}
-
                     <h4 className="main_title" style={{ marginBottom: 10 }}>
                         Аниме {currentSeason} сезона
                     </h4>
 
-                    <div className={styles.list}>
-                        {titles.map((item) => {
+                    <ScrollContainer className={styles.scroll_container} horizontal hideScrollbars={false}>
+                        {titles.map((item, index) => {
                             return (
                                 <TitleCard
                                     key={item.id}
                                     poster={`http://anilibria.tv${item.posters.small.url}`}
                                     name={item.names.ru}
                                     code={item.code}
-                                    description={item.description}
-                                    episodesCount={item.player.episodes.last}
                                 />
                             )
                         })}
-                    </div>
+                    </ScrollContainer>
                 </div>
             </>
         )

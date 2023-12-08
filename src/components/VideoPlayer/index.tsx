@@ -10,7 +10,6 @@ import {
     MdVolumeOff,
 } from 'react-icons/md'
 import styles from './VideoPlayer.module.sass'
-import 'react-video-seek-slider/styles.css'
 import clsx from 'clsx'
 import { Slider } from '../UI/Slider'
 import { Loader } from '../UI/Loader'
