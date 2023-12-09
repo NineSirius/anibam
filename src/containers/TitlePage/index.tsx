@@ -31,7 +31,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => 
     const [userListLoading, setUserListLoading] = useState<boolean>(false)
     const [shareModalShow, setShareModalShow] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
-    const [announce, setAnnounce] = useState<string>('')
+    const [announce, setAnnounce] = useState<string | null>('')
 
     const shareSocial = [
         {
@@ -63,25 +63,25 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => 
                 let day: string | null = null
                 switch (item.day) {
                     case 0:
-                        day = 'понедельник'
+                        day = 'Новая серия каждый понедельник'
                         break
                     case 1:
-                        day = 'вторник'
+                        day = 'Новая серия каждый вторник'
                         break
                     case 2:
-                        day = 'среду'
+                        day = 'Новая серия каждую среду'
                         break
                     case 3:
-                        day = 'четверг'
+                        day = 'Новая серия каждый четверг'
                         break
                     case 4:
-                        day = 'пятницу'
+                        day = 'Новая серия каждую пятницу'
                         break
                     case 5:
-                        day = 'субботу'
+                        day = 'Новая серия каждую субботу'
                         break
                     case 6:
-                        day = 'воскресенье'
+                        day = 'Новая серия каждое воскресенье'
                         break
                     default:
                         break
@@ -89,7 +89,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => 
                 if (day) {
                     item.list.forEach((list) => {
                         if (list.code === titleInfo.code) {
-                            setAnnounce(`Новая серия каждый ${day}`)
+                            setAnnounce(day)
                         }
                     })
                 }
@@ -215,13 +215,6 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => 
                                     <MdShare size={20} />
                                 </Button>
                             </div>
-                            {/* <Select
-                                options={['Смотрю', 'Запланировано', 'Просмотрено']}
-                                value="Добавить в папку"
-                                onChange={handleFolderChange}
-                                className={styles.select}
-                            ></Select> */}
-
                             <ul className={clsx(styles.anime_info, mobile && styles.active)}>
                                 <li>
                                     <p>Формат</p>
@@ -266,8 +259,18 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => 
                             )}
 
                             <div className={styles.episodes}>
-                                <h3>Список серий</h3>
-                                <p className={styles.announce}>{announce}</p>
+                                <div className={styles.episodes_title}>
+                                    <h3>Список серий</h3>
+                                    {announce && (
+                                        <Button
+                                            className={styles.announce}
+                                            color="primary"
+                                            onClick={() => router.push('/schedule')}
+                                        >
+                                            {announce}
+                                        </Button>
+                                    )}
+                                </div>
                                 {episodes.length > 0 ? (
                                     episodes.map((item, index) => (
                                         <Button
