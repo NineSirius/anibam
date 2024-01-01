@@ -6,6 +6,7 @@ import { TitleCard } from '@/components/TitleCard'
 import { getAnilibriaTitles } from '@/api'
 import { Button } from '@/components/UI/Button'
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
+import { Select } from '@/components/UI/Select'
 
 export const AnimeHomePage = () => {
     const router = useRouter()
@@ -83,9 +84,42 @@ export const AnimeHomePage = () => {
         ))
     }
 
+    const Pagination = (
+        <div className={styles.pagination}>
+            <Button onClick={handlePreviousPage} disabled={currentPage === 1} color="primary">
+                <MdSkipPrevious size={24} />
+            </Button>
+            {currentPage > 4 && (
+                <>
+                    <Button onClick={handleFirstPage} disabled={currentPage === 1}>
+                        1
+                    </Button>
+                    <span>...</span>
+                </>
+            )}
+
+            {renderPaginationButtons()}
+            {currentPage < totalPages - 4 && (
+                <>
+                    <span>...</span>
+                    <Button onClick={handleLastPage} disabled={currentPage === totalPages}>
+                        {totalPages}
+                    </Button>
+                </>
+            )}
+            <Button onClick={handleNextPage} disabled={currentPage === totalPages} color="primary">
+                <MdSkipNext size={24} />
+            </Button>
+        </div>
+    )
+
     if (titles) {
         return (
             <div className="container">
+                <div>
+                    <h2 className={styles.title}>Аниме - {currentPage} страница</h2>
+                </div>
+                {Pagination}
                 <div className={styles.list}>
                     {titles.list.map((item) => (
                         <TitleCard
@@ -97,32 +131,7 @@ export const AnimeHomePage = () => {
                     ))}
                 </div>
 
-                <div className={styles.pagination}>
-                    <Button onClick={handlePreviousPage} disabled={currentPage === 1} color="primary">
-                        <MdSkipPrevious size={24} />
-                    </Button>
-                    {currentPage > 4 && (
-                        <>
-                            <Button onClick={handleFirstPage} disabled={currentPage === 1}>
-                                1
-                            </Button>
-                            <span>...</span>
-                        </>
-                    )}
-
-                    {renderPaginationButtons()}
-                    {currentPage < totalPages - 4 && (
-                        <>
-                            <span>...</span>
-                            <Button onClick={handleLastPage} disabled={currentPage === totalPages}>
-                                {totalPages}
-                            </Button>
-                        </>
-                    )}
-                    <Button onClick={handleNextPage} disabled={currentPage === totalPages} color="primary">
-                        <MdSkipNext size={24} />
-                    </Button>
-                </div>
+                {Pagination}
             </div>
         )
     }

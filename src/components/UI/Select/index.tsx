@@ -8,6 +8,7 @@ type OptionT = {
     label: string
 }
 interface SelectProps {
+    title?: string
     options: OptionT[]
     activeValue: string | number
     onChange: (selectedValue: string | number) => void
@@ -18,6 +19,7 @@ interface SelectProps {
 }
 
 export const Select: React.FC<SelectProps> = ({
+    title,
     options,
     activeValue,
     onChange,
@@ -51,7 +53,7 @@ export const Select: React.FC<SelectProps> = ({
     return (
         <div className={clsx(styles.select, className && className)} ref={SelectRef}>
             <button className={styles.selectedOption} onClick={() => setIsOpen(!isOpen)}>
-                {options.find((option) => option.key === activeValue)?.label || 'Выберите серию'}
+                {options.find((option) => option.key === activeValue)?.label || title}
                 {isOpen ? (
                     <MdUnfoldLess style={{ pointerEvents: 'none' }} />
                 ) : (
