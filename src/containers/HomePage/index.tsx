@@ -53,23 +53,26 @@ export const HomePage = () => {
             const currentDay = new Date().getDay() - 1
             console.log(currentDay)
             //@ts-ignore
+
+            const todayTitles: TitleT[] = []
+            const yesterDayTitles: TitleT[] = []
             resp.data[currentDay].list.forEach((item) => {
                 getAnilibriaTitle(item.code).then((title) => {
-                    if (!scheduleToday.find((scheduleTitle) => scheduleTitle.code === title.code)) {
-                        setScheduleToday((prev) => [...prev, title])
-                    }
+                    todayTitles.push(title)
                 })
             })
+            setScheduleToday(todayTitles)
+
             //@ts-ignore
-            resp.data[currentDay !== 0 ? currentDay - 1 : 6].list.map((item) => {
+            resp.data[currentDay !== 0 ? currentDay - 1 : 6].list.forEach((item) => {
                 getAnilibriaTitle(item.code).then((title) => {
-                    if (!scheduleYesterDay.find((scheduleTitle) => scheduleTitle.code === title.code)) {
-                        setScheduleYesterDay((prev) => [...prev, title])
-                    }
+                    yesterDayTitles.push(title)
                 })
             })
+            setScheduleYesterDay(yesterDayTitles)
         })
-    }, [scheduleToday, scheduleYesterDay])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const router = useRouter()
 
