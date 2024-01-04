@@ -4,27 +4,8 @@ import { ScheduleT } from '@/containers/types/ScheduleT'
 import { TitleT } from '@/containers/types/TitleT'
 import React from 'react'
 
-interface TitleProps {
-    titleInfo: TitleT
-    schedule: ScheduleT[]
-}
-
-const Title: React.FC<TitleProps> = ({ titleInfo, schedule }) => {
-    return <TitlePage titleInfo={titleInfo} schedule={schedule} />
+const Title = () => {
+    return <TitlePage />
 }
 
 export default Title
-
-export const getServerSideProps = async (context: any) => {
-    const res = await getAnilibriaTitle(context.query.title)
-    const schedleResp = await getAnilibriaSchedule()
-    const data = {
-        ...res,
-        player: {
-            ...res.player,
-            list: Object.keys(res.player.list).map((key: string) => res.player.list[key]),
-        },
-    }
-
-    return { props: { titleInfo: data, schedule: schedleResp.data } }
-}

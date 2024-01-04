@@ -11,6 +11,7 @@ import clsx from 'clsx'
 import { limitStr } from '../TitleCard'
 import { format, parse, parseISO } from 'date-fns'
 import { TitleT, TitlesDataT } from '@/containers/types/TitleT'
+import { Modal } from '../UI/Modal'
 
 interface SearchProps {
     show: boolean
@@ -58,67 +59,68 @@ export const Search: React.FC<SearchProps> = ({ show, onClose }) => {
 
     return (
         <>
-            <div className={clsx(styles.search, show && styles.active)}>
-                <TextField
-                    label="Введите запрос"
-                    loading={loading}
-                    id="search"
-                    value={searchQuery}
-                    onChange={handleSearchQueryChange}
-                    autoFocus
-                />
+            <Modal show={show} onClose={onClose}>
+                <div className={styles.search}>
+                    <TextField
+                        label="Введите запрос"
+                        loading={loading}
+                        id="search"
+                        value={searchQuery}
+                        onChange={handleSearchQueryChange}
+                        autoFocus
+                    />
 
-                <ul className={styles.search_results}>
-                    {searchResults ? (
-                        searchResults.map((result, index) => (
-                            <li
-                                key={index}
-                                style={{
-                                    display: 'flex',
-                                    gap: 10,
-                                    alignItems: 'flex-start',
-                                }}
-                            >
-                                <Button
+                    <ul className={styles.search_results}>
+                        {searchResults ? (
+                            searchResults.map((result, index) => (
+                                <li
+                                    key={index}
                                     style={{
-                                        padding: 5,
+                                        display: 'flex',
+                                        gap: 10,
                                         alignItems: 'flex-start',
-                                        justifyContent: 'flex-start',
-                                        paddingRight: 15,
-                                        paddingLeft: 15,
-                                        borderRadius: 0,
-                                    }}
-                                    onClick={() => {
-                                        router.push(`/anime/${result.code}`)
-                                        onClose()
                                     }}
                                 >
-                                    {result.posters && (
-                                        <Image
-                                            src={`https://anilibria.tv${result.posters.small.url}`}
-                                            width={50}
-                                            height={50}
-                                            alt={`Постер к аниме ${result.names.ru}`}
-                                        />
-                                    )}
-                                    <div className={styles.result_info}>
-                                        <span>{result.status.string}</span>
-                                        <h5>
-                                            {result.names.ru.length >= 40
-                                                ? limitStr(result.names.ru, 40)
-                                                : result.names.ru}
-                                        </h5>
-                                        <p className={styles.caption}>{result.type.string}</p>
-                                    </div>
-                                </Button>
-                            </li>
-                        ))
-                    ) : (
-                        <li className={styles.nothing}>Ничего не найдено</li>
-                    )}
-                </ul>
-            </div>
-            <Backdrop show={show} onClose={onClose} />
+                                    <Button
+                                        style={{
+                                            padding: 5,
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-start',
+                                            paddingRight: 15,
+                                            paddingLeft: 15,
+                                            borderRadius: 0,
+                                        }}
+                                        onClick={() => {
+                                            router.push(`/anime/${result.code}`)
+                                            onClose()
+                                        }}
+                                    >
+                                        {result.posters && (
+                                            <Image
+                                                src={`https://anilibria.tv${result.posters.small.url}`}
+                                                width={50}
+                                                height={50}
+                                                alt={`Постер к аниме ${result.names.ru}`}
+                                            />
+                                        )}
+                                        <div className={styles.result_info}>
+                                            <span>{result.status.string}</span>
+                                            <h5>
+                                                {result.names.ru.length >= 40
+                                                    ? limitStr(result.names.ru, 40)
+                                                    : result.names.ru}
+                                            </h5>
+                                            <p className={styles.caption}>{result.type.string}</p>
+                                        </div>
+                                    </Button>
+                                </li>
+                            ))
+                        ) : (
+                            <li className={styles.nothing}>Ничего не найдено</li>
+                        )}
+                    </ul>
+                </div>
+            </Modal>
         </>
     )
 }

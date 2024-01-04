@@ -16,13 +16,12 @@ import { MdShare } from 'react-icons/md'
 import { Modal } from '@/components/UI/Modal'
 import Link from 'next/link'
 import { ScheduleT } from '../types/ScheduleT'
+import { getAnilibriaSchedule, getAnilibriaTitle } from '@/api'
 
-interface TitlePageProps {
-    titleInfo: TitleT
-    schedule: ScheduleT[]
-}
+export const TitlePage = () => {
+    const [titleInfo, setTitleInfo] = useState<TitleT | null>(null)
+    const [schedule, setSchedule] = useState<ScheduleT[] | null>(null)
 
-export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => {
     const [hideDesc, setHideDesc] = useState<boolean>(true)
     const [mobile, setMobile] = useState<boolean>(false)
     const [showMore, setShowMore] = useState(false)
@@ -58,7 +57,25 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => 
     }
 
     useEffect(() => {
-        if (titleInfo.status.string === 'В работе') {
+        if (router.query.title) {
+            //@ts-ignore
+            getAnilibriaTitle(router.query.title).then((resp) => {
+                const data = {
+                    ...resp,
+                    player: {
+                        ...resp.player,
+                        list: Object.keys(resp.player.list).map((key: string) => resp.player.list[key]),
+                    },
+                }
+                setTitleInfo(data)
+            })
+            getAnilibriaSchedule().then((resp) => setSchedule(resp.data))
+        }
+        console.log(router)
+    }, [router])
+
+    useEffect(() => {
+        if (titleInfo && schedule && titleInfo.status.string === 'В работе') {
             schedule.forEach((item) => {
                 let day: string | null = null
                 switch (item.day) {
@@ -97,7 +114,7 @@ export const TitlePage: React.FC<TitlePageProps> = ({ titleInfo, schedule }) => 
         } else {
             setAnnounce('')
         }
-    }, [schedule, titleInfo.code, titleInfo.status.string])
+    }, [schedule, titleInfo])
 
     const handleCopyClick = () => {
         const copyText = document.location.href

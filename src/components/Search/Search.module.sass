@@ -1,28 +1,14 @@
 .search
   width: 500px
-  position: absolute
   display: flex
   flex-direction: column
   gap: 10px
-  top: 100px
-  left: 50%
-  transform: translateX(-50%) scale(0.1)
-  z-index: 11
-  visibility: hidden
-  opacity: 0
   transition: .2s
   background: var(--bg)
-  padding: 10px
   border-radius: 10px
-  border: 1px solid var(--border-color)
 
   input
     font-size: 18px
-
-  &.active
-    transform: translateX(-50%) scale(1)
-    visibility: visible
-    opacity: 1
 
   .search_results
     width: 100%

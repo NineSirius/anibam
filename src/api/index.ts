@@ -1,6 +1,7 @@
+import { ScheduleT } from '@/containers/types/ScheduleT'
 import { TitlesDataT } from '@/containers/types/TitleT'
 import { UserT } from '@/containers/types/UserT'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 const strapiApi = axios.create({
     baseURL: process.env.NEXT_PUBLIC_STRAPI_API,
@@ -166,7 +167,7 @@ export const getAnilibriaRandomTitle = async () => {
     return response.data
 }
 
-export const getAnilibriaSchedule = async () => {
+export const getAnilibriaSchedule = async (): Promise<AxiosResponse<ScheduleT[]>> => {
     const response = await anilibriaApi.get(`title/schedule?filter=code`)
     return response
 }

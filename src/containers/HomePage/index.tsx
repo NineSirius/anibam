@@ -7,11 +7,18 @@ import { TitleT } from '../types/TitleT'
 import axios from 'axios'
 import format from 'date-fns/format'
 import ScrollContainer from 'react-indiana-drag-scroll'
+import { getAnilibriaSchedule, getAnilibriaTitle } from '@/api'
+import Image from 'next/image'
+import clsx from 'clsx'
+import { Button } from '@/components/UI/Button'
+import { AnnounceCard } from './AnnounceCard'
 
 export const HomePage = () => {
     const [titles, setTitles] = React.useState<TitleT[]>([])
     const [innerWidth, setInnerWidth] = useState<number>(0)
     const [currentSeason, setCurrentSeason] = useState<null | string>(null)
+    const [scheduleToday, setScheduleToday] = useState<TitleT[]>([])
+    const [scheduleYesterDay, setScheduleYesterDay] = useState<TitleT[]>([])
 
     useEffect(() => {
         const currentYear = format(new Date(), 'yyyy')
@@ -41,7 +48,28 @@ export const HomePage = () => {
             )
             .then((resp) => setTitles(resp.data.list))
         setInnerWidth(window.innerWidth)
-    }, [])
+
+        getAnilibriaSchedule().then((resp) => {
+            const currentDay = new Date().getDay() - 1
+            console.log(currentDay)
+            //@ts-ignore
+            resp.data[currentDay].list.forEach((item) => {
+                getAnilibriaTitle(item.code).then((title) => {
+                    if (!scheduleToday.find((scheduleTitle) => scheduleTitle.code === title.code)) {
+                        setScheduleToday((prev) => [...prev, title])
+                    }
+                })
+            })
+            //@ts-ignore
+            resp.data[currentDay !== 0 ? currentDay - 1 : 6].list.map((item) => {
+                getAnilibriaTitle(item.code).then((title) => {
+                    if (!scheduleYesterDay.find((scheduleTitle) => scheduleTitle.code === title.code)) {
+                        setScheduleYesterDay((prev) => [...prev, title])
+                    }
+                })
+            })
+        })
+    }, [scheduleToday, scheduleYesterDay])
 
     const router = useRouter()
 
@@ -64,7 +92,7 @@ export const HomePage = () => {
                         Аниме {currentSeason} сезона
                     </h4>
 
-                    <ScrollContainer className={styles.scroll_container} horizontal hideScrollbars={false}>
+                    <ScrollContainer className={styles.scroll_container} horizontal>
                         {titles.map((item, index) => {
                             return (
                                 <TitleCard
@@ -76,6 +104,39 @@ export const HomePage = () => {
                             )
                         })}
                     </ScrollContainer>
+
+                    <div className={clsx(styles.announce, 'container')}>
+                        <div className={styles.announce_block}>
+                            <h2>Вышло вчера</h2>
+
+                            <div className={styles.announce_block_list}>
+                                {scheduleYesterDay.map((title, index) => (
+                                    <AnnounceCard
+                                        key={index}
+                                        title={title}
+                                        episodeStr={`${title.player.episodes.last} серия `}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                        <div className={styles.announce_block}>
+                            <h2>Ожидается сегодня</h2>
+
+                            <div className={styles.announce_block_list}>
+                                {scheduleToday.map((title, index) => (
+                                    <AnnounceCard
+                                        key={index}
+                                        title={title}
+                                        episodeStr={`${title.player.episodes.last + 1} серия `}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <Button color="primary" onClick={() => router.push('/schedule')}>
+                        Смотреть полное расписание
+                    </Button>
                 </div>
             </>
         )
