@@ -74,7 +74,7 @@ export const HomePage = () => {
             // setScheduleYesterDay(yesterDayTitles)
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [router])
+    }, [])
 
     if (titles.length > 0) {
         return (
