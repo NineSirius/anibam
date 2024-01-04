@@ -20,6 +20,8 @@ export const HomePage = () => {
     const [scheduleToday, setScheduleToday] = useState<TitleT[]>([])
     const [scheduleYesterDay, setScheduleYesterDay] = useState<TitleT[]>([])
 
+    const router = useRouter()
+
     useEffect(() => {
         const currentYear = format(new Date(), 'yyyy')
         const currentSeason = format(new Date(), 'Q')
@@ -52,29 +54,27 @@ export const HomePage = () => {
         getAnilibriaSchedule().then((resp) => {
             const currentDay = new Date().getDay() - 1
             console.log(currentDay)
-            //@ts-ignore
 
-            const todayTitles: TitleT[] = []
-            const yesterDayTitles: TitleT[] = []
             resp.data[currentDay].list.forEach((item) => {
                 getAnilibriaTitle(item.code).then((title) => {
-                    todayTitles.push(title)
+                    if (!scheduleToday.find((item) => item.code === title.code)) {
+                        setScheduleToday((prev) => [...prev, title])
+                    }
                 })
             })
-            setScheduleToday(todayTitles)
 
-            //@ts-ignore
             resp.data[currentDay !== 0 ? currentDay - 1 : 6].list.forEach((item) => {
                 getAnilibriaTitle(item.code).then((title) => {
-                    yesterDayTitles.push(title)
+                    if (!scheduleYesterDay.find((item) => item.code === title.code)) {
+                        setScheduleYesterDay((prev) => [...prev, title])
+                    }
                 })
             })
-            setScheduleYesterDay(yesterDayTitles)
+            // setScheduleToday(todayTitles)
+            // setScheduleYesterDay(yesterDayTitles)
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    const router = useRouter()
+    }, [router])
 
     if (titles.length > 0) {
         return (
