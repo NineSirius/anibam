@@ -8,44 +8,71 @@ import Head from 'next/head'
 import { Select } from '@/components/UI/Select'
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
 import clsx from 'clsx'
-import { TitleT, hlsT } from '../types/TitleT'
+import { TitleT, hlsT, playerListT } from '../types/TitleT'
 import VideoPlayer from '@/components/VideoPlayer'
 import Link from 'next/link'
 
-interface EpisodePageProps {
-    titleInfo: TitleT
-    episodeNumber: number
-}
-
-export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumber }) => {
-    const [activeEpisode, setActiveEpisode] = useState<number | string>(episodeNumber)
-    const [activeEpisodeName, setActiveEpisodeName] = useState<string | null>(
-        titleInfo.player.list[episodeNumber - 1].name,
-    )
+export const EpisodePage = () => {
+    const [titleInfo, setTitleInfo] = useState<TitleT | null>(null)
+    const [episodeNumber, setEpisodeNumber] = useState<number | null>(null)
+    const [activeEpisodeName, setActiveEpisodeName] = useState<string | null>(null)
+    const [episodesList, setEpisodesList] = useState<playerListT[] | null>(null)
 
     const router = useRouter()
 
     useEffect(() => {
-        if (episodeNumber !== activeEpisode) {
-            setActiveEpisode(episodeNumber)
-            setActiveEpisodeName(titleInfo.player.list[episodeNumber - 1].name)
+        // titleInfo.player.list[episodeNumber - 1].name
+        console.log(router)
+        if (!titleInfo && router.query.title && typeof router.query.title === 'string') {
+            getAnilibriaTitle(router.query.title).then((resp) => {
+                console.log(resp)
+                setTitleInfo(resp)
+            })
         }
-    }, [activeEpisode, episodeNumber, titleInfo.player.list])
+    }, [router])
+
+    useEffect(() => {
+        if (titleInfo) {
+            if (router.query.episodeNumber) {
+                const episodeNumber = +router.query.episodeNumber
+                if (episodeNumber) {
+                    setEpisodeNumber(episodeNumber)
+                    setActiveEpisodeName(titleInfo.player.list[episodeNumber].name)
+                    setEpisodesList(
+                        Object.keys(titleInfo.player.list).map(
+                            (episodeKey: string) => titleInfo.player.list[+episodeKey],
+                        ),
+                    )
+                }
+            } else {
+                router.push('/')
+            }
+        }
+    }, [router, titleInfo])
 
     const findEpisodeIndex = (episodeNum: number) => {
-        return titleInfo.player.list.findIndex((item) => item.episode === episodeNum)
+        if (titleInfo) {
+            return titleInfo.player.list.findIndex((item) => item.episode === episodeNum)
+        } else {
+            return 0
+        }
     }
 
-    const currentEpisodeIndex = findEpisodeIndex(episodeNumber)
+    const currentEpisodeIndex = () => {
+        if (episodeNumber) {
+            return findEpisodeIndex(episodeNumber)
+        } else {
+            return 0
+        }
+    }
 
     const handleEpisodeChange = (value: string | number) => {
         if (titleInfo) {
-            setActiveEpisode(value)
             router.push(`/anime/${titleInfo.code}/episodes/${value}`)
         }
     }
 
-    if (titleInfo) {
+    if (titleInfo && episodeNumber && episodesList) {
         return (
             <>
                 <Head>
@@ -62,14 +89,14 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                             )}
                         >
                             <VideoPlayer
-                                url={`https://cache.libria.fun${titleInfo.player.list[currentEpisodeIndex].hls.hd}`}
-                                preview={titleInfo.player.list[currentEpisodeIndex].preview}
-                                skips={titleInfo.player.list[currentEpisodeIndex].skips}
-                                qualityOptions={Object.keys(titleInfo.player.list[currentEpisodeIndex].hls)
+                                url={`https://cache.libria.fun${titleInfo.player.list[episodeNumber].hls.hd}`}
+                                preview={titleInfo.player.list[episodeNumber].preview}
+                                skips={titleInfo.player.list[episodeNumber].skips}
+                                qualityOptions={Object.keys(titleInfo.player.list[episodeNumber].hls)
                                     .map((key) => {
                                         const hlsUrl =
                                             //@ts-ignore
-                                            titleInfo.player.list[currentEpisodeIndex].hls[key]
+                                            titleInfo.player.list[episodeNumber].hls[key]
                                         if (hlsUrl) {
                                             return {
                                                 quality: key,
@@ -92,19 +119,16 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                                 <div className={styles.right}>
                                     <Button
                                         color="primary"
-                                        disabled={episodeNumber === +titleInfo.player.list[0].episode}
+                                        disabled={episodeNumber === episodesList[0].episode}
                                         onClick={() =>
-                                            router.push(`/anime/${titleInfo.code}/episodes/${currentEpisodeIndex}`)
+                                            router.push(`/anime/${titleInfo.code}/episodes/${episodeNumber - 1}`)
                                         }
                                     >
                                         <MdSkipPrevious size={24} />
                                     </Button>
                                     <Button
                                         color="primary"
-                                        disabled={
-                                            episodeNumber ===
-                                            +titleInfo.player.list[titleInfo.player.list.length - 1].episode
-                                        }
+                                        disabled={episodeNumber === +episodesList[episodesList.length - 1].episode}
                                         onClick={() =>
                                             router.push(`/anime/${titleInfo.code}/episodes/${episodeNumber + 1}`)
                                         }
@@ -116,7 +140,7 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                         </div>
 
                         <div className={styles.episode_list}>
-                            {titleInfo.player.list.map((item) => (
+                            {episodesList.map((item) => (
                                 <Button
                                     className={episodeNumber === item.episode && styles.active_btn}
                                     key={item.uuid}
@@ -128,13 +152,13 @@ export const EpisodePage: React.FC<EpisodePageProps> = ({ titleInfo, episodeNumb
                         </div>
                     </div>
                     <Select
-                        options={titleInfo.player.list.map((item) => {
+                        options={episodesList.map((item) => {
                             return {
                                 key: item.episode,
-                                label: item.name ? `${item.episode} серия - ${item.name}` : `${item.episode} серия`,
+                                label: `${item.episode} серия`,
                             }
                         })}
-                        activeValue={activeEpisode}
+                        activeValue={episodeNumber}
                         onChange={handleEpisodeChange}
                         className={styles.episode_list_select}
                     ></Select>
