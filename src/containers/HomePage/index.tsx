@@ -82,11 +82,16 @@ export const HomePage = () => {
                 <Head>
                     <title>AniBam - Лучший сайт для просмотра аниме.</title>
                     <meta name="color-scheme" content="dark light" />
-                    <meta content="AniBam – смотреть аниме на лучшем сайте в мире." name="description" />
+                    <meta content="AniBam – смотреть аниме на лучшем сайте в мире." name="title" />
+                    <meta
+                        content="Смотрите аниме в хорошем качестве, а также с нашим удобным плеером."
+                        name="description"
+                    />
                     <meta
                         content="аниме, смотреть аниме, фильмы, смотреть фильмы, фильмы бесплатно, сериалы, смотреть сериалы, лучшие сериалы, крутые сериалы, мультфильмы, смотреть мультфильмы, мультики, мультики для детей, смотреть мультики для детей"
                         name="keywords"
                     ></meta>
+                    <meta content="AniBam – смотреть аниме на лучшем сайте в мире." name="og:title" />
                 </Head>
                 <div className="container">
                     <h4 className="main_title" style={{ marginBottom: 10 }}>

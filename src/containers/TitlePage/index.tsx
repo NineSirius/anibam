@@ -132,7 +132,11 @@ export const TitlePage = () => {
             <>
                 <Head>
                     <title>{`${titleInfo.names.ru} - смотреть на AniBam`}</title>
-                    <meta property="og:title" content={`${titleInfo.names.ru} смотреть онлайн`} />
+                    <meta property="title" content={`${titleInfo.names.ru} - смотреть на AniBam`} />
+                    <meta property="description" content={`${titleInfo.description}`} />
+                    <meta property="image" content={`${titleInfo.posters.medium.url}`} />
+                    <meta property="url" content={`https://anibam.vercel.app/anime/${titleInfo.code}`} />
+                    <meta property="og:title" content={`${titleInfo.names.ru} - смотреть на AniBam`} />
                     <meta property="og:description" content={`${titleInfo.description}`} />
                     <meta property="og:image" content={`${titleInfo.posters.medium.url}`} />
                     <meta property="og:url" content={`https://anibam.vercel.app/anime/${titleInfo.code}`} />
