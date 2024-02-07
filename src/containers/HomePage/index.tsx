@@ -80,11 +80,9 @@ export const HomePage = () => {
         return (
             <>
                 <Head>
-                    <title>Смотреть аниме, фильмы и сериалы на AniBam</title>
-                    <meta
-                        content="AniBam – Смотреть фильмы, сериалы, аниме и мультфильмы бесплатно"
-                        name="description"
-                    />
+                    <title>AniBam - Лучший сайт для просмотра аниме.</title>
+                    <meta name="color-scheme" content="dark light" />
+                    <meta content="AniBam – смотреть аниме на лучшем сайте в мире." name="description" />
                     <meta
                         content="аниме, смотреть аниме, фильмы, смотреть фильмы, фильмы бесплатно, сериалы, смотреть сериалы, лучшие сериалы, крутые сериалы, мультфильмы, смотреть мультфильмы, мультики, мультики для детей, смотреть мультики для детей"
                         name="keywords"
