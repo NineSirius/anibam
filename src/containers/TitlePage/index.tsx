@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import ContentLoader from 'react-content-loader'
 import { enqueueSnackbar } from 'notistack'
 import { useDispatch, useSelector } from 'react-redux'
-import { useRouter } from 'next/router'
+import { redirect, useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
@@ -17,6 +17,13 @@ import { Modal } from '@/components/UI/Modal'
 import Link from 'next/link'
 import { ScheduleT } from '../types/ScheduleT'
 import { getAnilibriaSchedule, getAnilibriaTitle } from '@/api'
+import { shareSocial } from './shareSocial'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+    title: 'AniBam - лучший сайт для просмотра аниме',
+    description: 'Welcome to Next.js',
+}
 
 export const TitlePage = () => {
     const [titleInfo, setTitleInfo] = useState<TitleT | null>(null)
@@ -32,22 +39,8 @@ export const TitlePage = () => {
     const [loading, setLoading] = useState<boolean>(false)
     const [announce, setAnnounce] = useState<string | null>('')
 
-    const shareSocial = [
-        {
-            id: 1,
-            title: 'Вконтакте',
-            url: `https://vk.com/share.php?url=`,
-            imageUrl: '/img/logo/vk-logo.png',
-        },
-        {
-            id: 2,
-            title: 'Телеграмм',
-            url: `https://t.me/share/url?url=`,
-            imageUrl: '/img/logo/telegram-logo.png',
-        },
-    ]
-
     const router = useRouter()
+    const params = useParams()
     const user = useSelector((store: StoreTypes) => store.user)
 
     const dispatch = useDispatch()
@@ -57,22 +50,33 @@ export const TitlePage = () => {
     }
 
     useEffect(() => {
-        if (router.query.title) {
+        if (params.title) {
             //@ts-ignore
-            getAnilibriaTitle(router.query.title).then((resp) => {
-                const data = {
-                    ...resp,
-                    player: {
-                        ...resp.player,
-                        list: Object.keys(resp.player.list).map((key: string) => resp.player.list[key]),
-                    },
-                }
-                setTitleInfo(data)
-            })
+            getAnilibriaTitle(params.title)
+                .then((resp) => {
+                    const data = {
+                        ...resp,
+                        player: {
+                            ...resp.player,
+                            list: Object.keys(resp.player.list).map((key: string) => resp.player.list[key]),
+                        },
+                    }
+                    setTitleInfo(data)
+                })
+                .catch((err) => {
+                    const error = err.response.data.error
+                    switch (error.code) {
+                        case 404:
+                            redirect('/404')
+                            break
+
+                        default:
+                            break
+                    }
+                })
             getAnilibriaSchedule().then((resp) => setSchedule(resp.data))
         }
-        console.log(router)
-    }, [router])
+    }, [params])
 
     useEffect(() => {
         if (titleInfo && schedule && titleInfo.status.string === 'В работе') {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { TitleCard } from '@/components/TitleCard'
 import styles from './HomePage.module.sass'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { TitleT } from '../types/TitleT'
 import axios from 'axios'
 import format from 'date-fns/format'
@@ -25,7 +25,7 @@ export const HomePage = () => {
     useEffect(() => {
         const currentYear = format(new Date(), 'yyyy')
         const currentSeason = format(new Date(), 'Q')
-        console.log(currentSeason)
+        // console.log(currentSeason)
 
         switch (currentSeason) {
             case '1':
@@ -53,7 +53,7 @@ export const HomePage = () => {
 
         getAnilibriaSchedule().then((resp) => {
             const currentDay = new Date().getDay() - 1
-            console.log(currentDay)
+            // console.log(currentDay)
 
             resp.data[currentDay].list.forEach((item) => {
                 getAnilibriaTitle(item.code).then((title) => {

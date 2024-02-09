@@ -11,7 +11,7 @@ import ImageViewer from 'react-simple-image-viewer'
 import clsx from 'clsx'
 import { useDispatch, useSelector } from 'react-redux'
 import { Modal } from '@/components/UI/Modal'
-import { useRouter } from 'next/router'
+import { usePathname, useRouter } from 'next/navigation'
 import Cookie from 'js-cookie'
 import { getUserData } from '@/api'
 import { Footer } from '@/components/Footer'
@@ -28,6 +28,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const images = useSelector((store: StoreTypes) => store.lightgallery)
 
     const router = useRouter()
+    const pathname = usePathname()
 
     const dispatch = useDispatch()
 
@@ -40,7 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }, [])
 
     useEffect(() => {
-        console.log(router)
+        // console.log(router)
     }, [router])
 
     useEffect(() => {
@@ -82,13 +83,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     transition: '0.3s',
                 }}
             >
-                {router.asPath !== '/auth/login' && router.asPath !== '/auth/register' && (
-                    <Navbar />
-                )}
+                {pathname !== '/auth/login' && pathname !== '/auth/register' && <Navbar />}
                 <div>{children}</div>
-                {router.asPath !== '/auth/login' && router.asPath !== '/auth/register' && (
-                    <Footer />
-                )}
+                {pathname !== '/auth/login' && pathname !== '/auth/register' && <Footer />}
             </div>
 
             {images.length > 0 && (

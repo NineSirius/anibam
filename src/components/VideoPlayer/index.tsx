@@ -13,10 +13,11 @@ import styles from './VideoPlayer.module.sass'
 import clsx from 'clsx'
 import { Slider } from '../UI/Slider'
 import { Loader } from '../UI/Loader'
-import { skipsT } from '@/containers/types/TitleT'
+import { TitleT, skipsT } from '@/containers/types/TitleT'
 import Image from 'next/image'
 
 type VideoPlayerProps = {
+    titleInfo: TitleT
     url: string
     qualityOptions?: any[]
     skips: skipsT

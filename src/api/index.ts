@@ -4,7 +4,7 @@ import { UserT } from '@/containers/types/UserT'
 import axios, { AxiosResponse } from 'axios'
 
 const strapiApi = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_STRAPI_API,
+    baseURL: process.env.NEXT_PUBLIC_ANIBAM_API,
 })
 
 export const getTitles = async () => {

@@ -3,7 +3,7 @@ import React from 'react'
 import styles from './EpisodePage.module.sass'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/UI/Button'
-import { useRouter } from 'next/router'
+import { useParams, useRouter } from 'next/navigation'
 import Head from 'next/head'
 import { Select } from '@/components/UI/Select'
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
@@ -19,22 +19,23 @@ export const EpisodePage = () => {
     const [episodesList, setEpisodesList] = useState<playerListT[] | null>(null)
 
     const router = useRouter()
+    const params = useParams()
 
     useEffect(() => {
         // titleInfo.player.list[episodeNumber - 1].name
         console.log(router)
-        if (!titleInfo && router.query.title && typeof router.query.title === 'string') {
-            getAnilibriaTitle(router.query.title).then((resp) => {
+        if (!titleInfo && params.title && typeof params.title === 'string') {
+            getAnilibriaTitle(params.title).then((resp) => {
                 console.log(resp)
                 setTitleInfo(resp)
             })
         }
-    }, [router])
+    }, [params.title, router, titleInfo])
 
     useEffect(() => {
         if (titleInfo) {
-            if (router.query.episodeNumber) {
-                const episodeNumber = +router.query.episodeNumber
+            if (params.episodeNumber) {
+                const episodeNumber = +params.episodeNumber
                 if (episodeNumber) {
                     setEpisodeNumber(episodeNumber)
                     setActiveEpisodeName(titleInfo.player.list[episodeNumber].name)
@@ -48,7 +49,7 @@ export const EpisodePage = () => {
                 router.push('/')
             }
         }
-    }, [router, titleInfo])
+    }, [params, router, titleInfo])
 
     const findEpisodeIndex = (episodeNum: number) => {
         if (titleInfo) {
@@ -89,6 +90,7 @@ export const EpisodePage = () => {
                             )}
                         >
                             <VideoPlayer
+                                titleInfo={titleInfo}
                                 url={`https://cache.libria.fun${titleInfo.player.list[episodeNumber].hls.hd}`}
                                 preview={titleInfo.player.list[episodeNumber].preview}
                                 skips={titleInfo.player.list[episodeNumber].skips}

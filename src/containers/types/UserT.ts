@@ -5,6 +5,7 @@ export type UserT = {
     id: number
     username: string
     email: string
+    gender: 'male' | 'female' | 'hidden' | null
     confirmed: boolean
     blocked: boolean
     createdAt: string

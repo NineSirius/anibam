@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import React, { useRef, useState } from 'react'
 import styles from './TitleCard.module.sass'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { MdClose, MdInfo } from 'react-icons/md'
 import { useEffect } from 'react'

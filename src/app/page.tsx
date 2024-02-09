@@ -1,3 +1,4 @@
+'use client'
 import { HomePage } from '@/containers/HomePage'
 
 const Home = () => {

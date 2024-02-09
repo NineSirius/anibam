@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import styles from './AnimeHomePage.module.sass'
 import { TitlesDataT } from '../types/TitleT'
 import { TitleCard } from '@/components/TitleCard'
@@ -9,7 +9,6 @@ import { MdSkipNext, MdSkipPrevious } from 'react-icons/md'
 import { Select } from '@/components/UI/Select'
 
 export const AnimeHomePage = () => {
-    const router = useRouter()
     const [width, setWidth] = useState<number>(0)
     const [titles, setTitles] = useState<TitlesDataT | null>(null)
     const [itemsPerPage, setItemsPerPage] = useState<number>(0)
@@ -17,16 +16,24 @@ export const AnimeHomePage = () => {
     const [totalPages, setTotalPages] = useState<number>(0)
     const [currentPage, setCurrentPage] = useState<number>(0)
 
+    const router = useRouter()
+    const params = useSearchParams()
+
     useEffect(() => {
-        const currentPage = router.query.page ? +router.query.page : 1
-        getAnilibriaTitles(currentPage).then((resp) => {
-            setTitles(resp)
-            setItemsPerPage(resp.pagination.items_per_page)
-            setTotalItems(resp.pagination.total_items)
-            setTotalPages(Math.ceil(resp.pagination.total_items / resp.pagination.items_per_page))
-            setCurrentPage(currentPage)
-        })
-    }, [router.query.page])
+        console.log(params.get('page'))
+        const page = params.get('page')
+
+        if (page) {
+            const currentPage = page ? +page : 1
+            getAnilibriaTitles(currentPage).then((resp) => {
+                setTitles(resp)
+                setItemsPerPage(resp.pagination.items_per_page)
+                setTotalItems(resp.pagination.total_items)
+                setTotalPages(Math.ceil(resp.pagination.total_items / resp.pagination.items_per_page))
+                setCurrentPage(currentPage)
+            })
+        }
+    }, [params])
 
     useEffect(() => {
         console.log(window.screen.availWidth)
@@ -35,20 +42,20 @@ export const AnimeHomePage = () => {
 
     const handlePreviousPage = () => {
         const prevPage = Math.max(currentPage - 1, 1)
-        router.push({ pathname: router.pathname, query: { page: prevPage } })
+        router.push(`/anime?page=${prevPage}`)
     }
 
     const handleNextPage = () => {
         const nextPage = Math.min(currentPage + 1, totalPages)
-        router.push({ pathname: router.pathname, query: { page: nextPage } })
+        router.push(`/anime?page=${nextPage}`)
     }
 
     const handleFirstPage = () => {
-        router.push({ pathname: router.pathname, query: { page: 1 } })
+        router.push(`/anime?page=${1}`)
     }
 
     const handleLastPage = () => {
-        router.push({ pathname: router.pathname, query: { page: totalPages } })
+        router.push(`/anime?page=${totalPages}`)
     }
 
     const renderPaginationButtons = () => {
@@ -77,7 +84,7 @@ export const AnimeHomePage = () => {
             <Button
                 key={page}
                 className={page === currentPage ? styles.activePage : undefined}
-                onClick={() => router.push({ pathname: router.pathname, query: { page } })}
+                onClick={() => router.push(`/anime?page=${page}`)}
             >
                 {page}
             </Button>

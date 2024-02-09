@@ -2,7 +2,7 @@ import React, { FormEventHandler, useState } from 'react'
 import styles from './auth.module.sass'
 import { Button } from '@/components/UI/Button'
 import { MdArrowBack, MdDarkMode, MdHome, MdLaptop, MdLightMode } from 'react-icons/md'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 import { RegisterForm } from '@/components/Auth/RegisterForm'
 import { useDispatch, useSelector } from 'react-redux'

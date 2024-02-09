@@ -34,7 +34,19 @@ type AuthUserMenuProps = {
 export const AuthUserMenu: React.FC<AuthUserMenuProps> = ({ user, router }) => {
     const dispatch = useDispatch()
     return (
-        <Menu label={user.username}>
+        <Menu
+            labelStyle={{ padding: 0, borderRadius: '50%' }}
+            label={
+                <Image
+                    src={user.avatar ? user.avatar.url : '/img/base-avatar.png'}
+                    width={50}
+                    height={50}
+                    style={{ objectFit: 'cover' }}
+                    className={styles.avatar}
+                    alt={`Аватарка пользователя ${user.username}`}
+                />
+            }
+        >
             <div>
                 <Button style={{ borderRadius: 0 }} onClick={() => router.push(`/users/${user.username}`)}>
                     <div
@@ -50,6 +62,7 @@ export const AuthUserMenu: React.FC<AuthUserMenuProps> = ({ user, router }) => {
                             width={50}
                             height={50}
                             style={{ objectFit: 'cover' }}
+                            className={styles.avatar}
                             alt={`Аватарка пользователя ${user.username}`}
                         />
                         <div
@@ -63,24 +76,11 @@ export const AuthUserMenu: React.FC<AuthUserMenuProps> = ({ user, router }) => {
                             <h4>{user.username}</h4>
                             <p className={styles.role}>
                                 {user.role.name === 'Authenticated' && 'Пользователь'}
-                                {user.role.name === 'Owner' && 'Владелец'}
+                                {user.role.name === 'Moderator' && 'Модератор'}
                             </p>
                         </div>
                     </div>
                 </Button>
-                {user.role.name === 'Owner' && (
-                    <Button
-                        style={{
-                            borderRadius: 0,
-                            alignItems: 'center',
-                            gap: 10,
-                            justifyContent: 'flex-start',
-                        }}
-                        onClick={() => router.replace('http://localhost:1337/admin')}
-                    >
-                        <MdTune size={20} /> Панель администратора
-                    </Button>
-                )}
                 <Button
                     style={{
                         borderRadius: 0,

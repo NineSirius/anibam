@@ -25,7 +25,7 @@ import { StoreTypes, addUserData, removeUserData, setDarkTheme, setLightTheme } 
 import Image from 'next/image'
 import Cookie from 'js-cookie'
 import { Menu } from '../UI/Menu'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { getAnilibriaRandomTitle, getUserData } from '@/api'
 import { Search } from '../Search'
 import { AuthUserMenu } from './AuthUserMenu'

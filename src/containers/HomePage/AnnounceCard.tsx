@@ -1,6 +1,6 @@
 import React from 'react'
 import styles from './HomePage.module.sass'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { TitleT } from '../types/TitleT'
 import Image from 'next/image'
 

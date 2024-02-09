@@ -1,7 +1,5 @@
-import cookie from 'cookie'
-import { getUserData } from '@/api'
+'use client'
 import ProfilePage from '@/containers/ProfilePage'
-import React from 'react'
 
 const Profile = () => {
     return <ProfilePage />
