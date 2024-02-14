@@ -53,7 +53,8 @@ export const EpisodePage = () => {
 
     const findEpisodeIndex = (episodeNum: number) => {
         if (titleInfo) {
-            return titleInfo.player.list.findIndex((item) => item.episode === episodeNum)
+            const playerList = Object.keys(titleInfo.player.list).map((key) => titleInfo.player.list[key])
+            return playerList.findIndex((item) => item.episode === episodeNum)
         } else {
             return 0
         }
@@ -91,23 +92,8 @@ export const EpisodePage = () => {
                         >
                             <VideoPlayer
                                 titleInfo={titleInfo}
-                                url={`https://cache.libria.fun${titleInfo.player.list[episodeNumber].hls.hd}`}
-                                preview={titleInfo.player.list[episodeNumber].preview}
-                                skips={titleInfo.player.list[episodeNumber].skips}
-                                qualityOptions={Object.keys(titleInfo.player.list[episodeNumber].hls)
-                                    .map((key) => {
-                                        const hlsUrl =
-                                            //@ts-ignore
-                                            titleInfo.player.list[episodeNumber].hls[key]
-                                        if (hlsUrl) {
-                                            return {
-                                                quality: key,
-                                                url: `https://cache.libria.fun/${hlsUrl}`,
-                                            }
-                                        }
-                                        return null
-                                    })
-                                    .filter(Boolean)}
+                                activeEpisode={findEpisodeIndex(episodeNumber)}
+                                playList={episodesList}
                             />
                             <div className={styles.episode_info}>
                                 <div className={styles.left}>

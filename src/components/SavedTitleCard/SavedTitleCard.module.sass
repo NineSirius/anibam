@@ -1,0 +1,39 @@
+.card
+  min-width: 300px
+  max-width: 350px
+  display: flex
+  align-items: center
+  background: var(--card)
+  border-radius: 10px
+  overflow: hidden
+  transition: .2s
+
+  &:hover
+    cursor: pointer
+    background: var(--card-hover)
+
+  .poster
+    width: 80px
+    height: auto
+
+  .info
+    display: grid
+    height: 100%
+    grid-template-rows: repeat(2, 1fr)
+    gap: 5px
+    padding: 5px 10px
+
+    .seek
+      position: relative
+      margin-top: 5px
+      width: 100%
+      height: 2px
+      background: var(--seek)
+
+      .seekTime
+        position: absolute
+        top: 0
+        left: 0
+        display: inline-flex
+        height: 2px
+        background: var(--seek-time)

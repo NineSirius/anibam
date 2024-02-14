@@ -1,299 +1,88 @@
 .title_info
   display: flex
-  gap: 30px
+  gap: 25px
 
-  .anime_info
-    display: none
+  .poster
+    width: 100%
+    height: auto
+
+  .left
+    width: 20%
+    display: flex
     flex-direction: column
-    gap: 15px
-    margin-top: 15px
-    list-style: none
-    border: 1px solid var(--border-color)
-    padding: 10px 15px
-    border-radius: 5px
+    gap: 10px
 
-    &.active
-      display: flex
+  .right
+    width: 80%
 
-    p
-      color: var(--caption-color)
+    .title_controls
+      margin-top: 15px
 
-    .age
-      color: var(--error-color)
+      button
+        width: max-content
 
-    span
-      font-size: 1.125rem
-      color: var(--bg-alternate)
-
-  .relations
-    margin-top: 15px
-    border: 1px solid var(--border-color)
-    border-radius: 5px
-    list-style: none
-    color: var(--title-color)
-    padding: 10px 0
-
-    h4
-      padding-left: 15px
-      padding-bottom: 10px
-      font-size: 18px
-
-    &_list
+    .info_list
       display: flex
       flex-direction: column
+      margin-top: 30px
+      gap: 15px
 
       &_item
         display: flex
-        align-items: center
-        gap: 20px
-        width: 100%
-        border: unset
-        background: none
-        padding: 10px 15px
+        max-width: 100%
 
-        &.active
-          background: var(--btn-primary-bg)
-          color: var(--bg-alternate) !important
+        .title
+          width: 30%
+          font-weight: 600
+          color: var(--caption-color)
 
-          &:hover
-            cursor: text
-            background: var(--btn-primary-hover-bg)
-            color: var(--border-color)
+        .value
+          width: 70%
+          color: var(--text-color)
 
-        &:hover
-          cursor: pointer
-          background: var(--btn-hover-bg)
+          a
+            color: var(--link-color)
 
-        .item_info
-          display: flex
-          flex-direction: column
+        span
+          font-size: 1.15rem
 
-          span
-            max-width: max-content
-            border-radius: 5px
-            color: var(--error-color)
-            font-weight: 600
+    .description
+      margin-top: 30px
 
-          h4
-            padding: 0
-            font-size: 14px
+      & p
+        color: var(--text-color)
+        line-height: 170%
 
-  .poster_wrap
-    min-width: 250px
+.title
+  font-size: 2.5rem
+
+.caption
+  margin-top: 10px
+  font-size: 1.25rem
+
+.player
+  margin-top: 40px
+
+  &_list
+    margin-top: 10px
+    width: max-content
     display: flex
-    flex-direction: column
-    justify-content: flex-start
-
-    .poster
-      width: 100%
-      height: auto
-      object-fit: cover
-
-      &:hover
-        background: var(--btn-hover-bg)
-        color: var(--bg-alternate)
-
-  .title_info_content
-    .select
-      display: none
+    align-items: center
 
     .button
-      display: none
+      font-weight: 600
+      width: max-content
+      border: none
+      background: var(--btn-primary-bg)
+      color: var(--text-color)
+      padding: 10px 15px
 
-  h1
-    color: var(--title-color)
+      &:hover
+        cursor: pointer
+        background: var(--btn-primary-hover-bg)
 
-  .genres
-    display: flex
-    gap: 10px
-    list-style: none
-    margin-top: 10px
+  &_anibam
+    width: 100%
 
-    .genre_item
-      display: inline-flex
-      max-width: max-content
-      align-items: center
-      background: var(--bg-alternate)
-      border-radius: 5px
-      font-size: 0.875rem
-      color: var(--bg)
-      padding: 5px 10px
-
-.select
-  margin-top: 15px
-
-.button
-  margin-top: 15px
-  background: var(--btn-hover-bg)
-  color: var(--bg-alternate)
-  transition: 0.2s
-
-.mobile_play_btn_wrap
-  margin-top: 10px
-  display: flex
-  align-items: center
-  gap: 10px
-
-  button
-    margin: 0
-
-.share_btn
-  width: max-content !important
-
-.description
-  max-height: auto
-  overflow: hidden
-  transition: max-height 0.3s ease-out, opacity 0.3s ease-out
-
-  p
-    margin-top: 15px
-    transition: height .2s
-    color: var(--desc-color)
-    line-height: 140%
-
-  &.active
-    max-height: 500px
-
-.frames_wrap
-  margin-top: 15px
-
-  .frames
-    display: flex
-    gap: 10px
-
-    img
-      width: 20%
-      height: 100px
-      object-fit: cover
-
-.more_btn
-  width: max-content
-  margin-top: 10px
-  border: unset
-  background: none
-  font-size: 1rem
-  color: var(--bg-alternate)
-  padding: 5px 10px
-  border-radius: 5px
-  transition: .2s
-
-  &:hover
-    cursor: pointer
-    background: var(--btn-primary-bg)
-
-.episodes
+.franchise
   margin-top: 20px
-  border: 1px solid var(--border-color)
-  padding: 5px 10px
-  border-radius: 5px
-
-  &_title
-    display: flex
-    align-items: center
-    justify-content: space-between
-    gap: 10px
-
-    @media screen and (max-width: 500px)
-      gap: 0
-      flex-direction: column
-
-  .announce
-    margin: 5px 0
-    width: max-content !important
-    color: var(--title-color)
-    padding: 5px 15px
-    border-radius: 5px
-    font-weight: 600
-
-  h2
-    color: var(--title-color)
-    margin-bottom: 10px
-
-  h3
-    margin: 10px 0
-    color: var(--title-color)
-
-.comments
-  margin-top: 20px
-  border: 1px solid var(--border-color)
-  border-radius: 5px
-  padding: 10px
-
-  h2
-    color: var(--title-color)
-    margin-bottom: 10px
-
-.share_modal
-  display: flex
-  flex-direction: column
-  gap: 10px
-  width: max-content
-  color: var(--desc-color)
-
-  pre
-    background: var(--btn-primary-bg)
-    padding: 10px
-    border: 1px sloid var(--border-color)
-    color: var(--bg-alternate)
-
-  .social
-    display: flex
-    align-items: center
-    gap: 10px
-
-  .share_btn
-    max-width: 40px
-    max-height: 40px
-    display: inline-flex
-    background: unset
-    border-radius: 5px
-
-    img
-      width: 100%
-      height: 100%
-      border-radius: 5px
-
-@media screen and (max-width: 810px)
-  .genres
-    flex-wrap: wrap
-    align-items: center
-
-@media screen and (max-width: 700px)
-  .anime_info
-    display: flex !important
-
-    &.active
-      display: none !important
-
-  .title_info
-    display: flex
-    flex-direction: column
-
-    .poster_wrap
-      .select
-        display: none
-
-      .button
-        display: none
-
-      .poster
-        max-width: 300px
-        max-height: 380px
-        margin: 0 auto
-
-    .title_info_content
-      .select
-        display: flex
-      .button
-        display: flex
-
-      h1
-        text-align: center
-
-      .caption
-        text-align: center
-
-      .genres
-        flex-wrap: wrap
-        justify-content: center
-        align-items: center

@@ -13,42 +13,59 @@ import styles from './VideoPlayer.module.sass'
 import clsx from 'clsx'
 import { Slider } from '../UI/Slider'
 import { Loader } from '../UI/Loader'
-import { TitleT, skipsT } from '@/containers/types/TitleT'
+import { TitleT, playerListT, skipsT } from '@/containers/types/TitleT'
 import Image from 'next/image'
+import { Button } from '../UI/Button'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { SavedTitleCardProps } from '../SavedTitleCard'
 
 type VideoPlayerProps = {
+    activeEpisode: number
+    playList: playerListT[]
     titleInfo: TitleT
-    url: string
-    qualityOptions?: any[]
-    skips: skipsT
-    preview: string | null
+    className?: string
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, preview }) => {
+export const formatPlayerTime = (seconds: number): string => {
+    let minutes = Math.floor(seconds / 60)
+    const remainingSeconds = Math.floor(seconds % 60)
+    if (seconds > 3600) {
+        const hours = Math.floor(seconds / 3600)
+        minutes = Math.floor(seconds / 60) - hours * 60
+        return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+    } else {
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+    }
+}
+
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ activeEpisode, playList, titleInfo, className }) => {
     const playerRef = useRef<ReactPlayer | null>(null)
     const [isMobile, setIsMobile] = useState<boolean>(false)
     const [pause, setPause] = useState<boolean>(false)
     const [playing, setPlaying] = useState(false)
-    const [volume, setVolume] = useState(0.2)
+    const [volume, setVolume] = useState(0.5)
     const [isMute, setIsMute] = useState<boolean>(false)
     const [seekTime, setSeekTime] = useState<number>(0)
     const [savedSeekTime, setSavedSeekTime] = useState<number>(0)
     const [bufferTime, setBufferTime] = useState<number>(0)
     const [isFullscreen, setIsFullscreen] = useState<boolean>(false)
     const [playbackRate, setPlaybackRate] = useState(1.0)
-    const [quality, setQuality] = useState<string | undefined>(qualityOptions ? qualityOptions[0].quality : undefined)
-    const [activeQuality, setActiveQuality] = useState<'qhd' | 'fhd' | 'hd' | 'sd'>(
-        qualityOptions ? qualityOptions[0].quality : 'None',
-    )
-    const [activeUrl, setActiveUrl] = useState<string | undefined>(qualityOptions ? qualityOptions[0].url : url)
+    const [quality, setQuality] = useState<any[]>([])
+    const [activeEpisodeQuality, setActiveEpisodeQuality] = useState<number>(0)
     const [played, setPlayed] = useState(0)
     const [duration, setDuration] = useState<number>(0)
     const [controlsShow, setControlsShow] = useState<boolean>(false)
     const [lastMouseMove, setLastMouseMove] = useState<number>(0)
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
+    const [savedData, setSavedData] = useState<SavedTitleCardProps[]>([])
+    const [savedDataIndex, setSavedDataIndex] = useState<number | null>(null)
+    const [savedSeek, setSavedSeek] = useState<number | null>(null)
 
     const [settingsShow, setSettingsShow] = useState<boolean>(false)
+
+    const router = useRouter()
+    const searchParams = useSearchParams()
 
     const handleMouseMove = useCallback(() => {
         setLastMouseMove(Date.now())
@@ -67,19 +84,67 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
     }, [isMobile])
 
     useEffect(() => {
-        if (playerRef.current && playerRef.current.getDuration()) {
-            const duration = playerRef.current.getDuration()
-            playerRef.current.seekTo(played * duration)
-        }
-    }, [played])
+        const volume = localStorage.getItem('volume')
+        const playbackRate = localStorage.getItem('playbackRate')
+        const quality = localStorage.getItem('quality')
+        const isMute = localStorage.getItem('isMute')
 
-    useEffect(() => {
-        if (qualityOptions) {
-            setActiveUrl(qualityOptions[0].url)
+        if (volume) {
+            setVolume(+volume)
         } else {
-            setActiveUrl(url)
+            setVolume(0.5)
+            localStorage.setItem('volume', `${0.5}`)
         }
-    }, [qualityOptions, url])
+
+        if (isMute) {
+            switch (isMute) {
+                case 'true':
+                    setIsMute(true)
+                    break
+                default:
+                    setIsMute(false)
+                    break
+            }
+        } else {
+            setIsMute(false)
+            localStorage.setItem('isMute', 'false')
+        }
+
+        if (playbackRate) {
+            setVolume(+playbackRate)
+        } else {
+            setVolume(1)
+            localStorage.setItem('playbackRate', `${1}`)
+        }
+
+        const savedWatchData = localStorage.getItem('savedWatchData')
+
+        if (savedWatchData) {
+            const parsedWatchData = JSON.parse(savedWatchData)
+            const index = parsedWatchData.findIndex((item: any) => item.code === titleInfo.code)
+            setSavedData(parsedWatchData)
+            if (index >= 0) {
+                setSavedDataIndex(index)
+            }
+        }
+
+        const episodeIndex = playList.findIndex((title) => title.episode === activeEpisode)
+
+        const qualityArray = Object.keys(playList[episodeIndex].hls).map((key) => ({
+            quality: key,
+            //@ts-ignore
+            url: playList[episodeIndex].hls[key],
+        }))
+        setActiveEpisodeQuality(qualityArray.findIndex((qualityItem) => qualityItem.url))
+        setQuality(qualityArray)
+    }, [activeEpisode, playList, titleInfo.code])
+
+    // useEffect(() => {
+    //     if (playerRef.current && playerRef.current.getDuration()) {
+    //         const duration = playerRef.current.getDuration()
+    //         playerRef.current.seekTo(played * duration)
+    //     }
+    // }, [played])
 
     useEffect(() => {
         const playerContainer = document.getElementById('video-player-container')
@@ -173,14 +238,58 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
             setPlaying(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [qualityOptions, savedSeekTime])
+    }, [savedSeekTime])
 
     useEffect(() => {
-        if (savedSeekTime && playerRef.current) {
-            playerRef.current.seekTo(savedSeekTime)
+        if (playerRef.current && playing && savedSeek) {
+            playerRef.current.seekTo(savedSeek)
+            setSavedSeek(null)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeUrl])
+    }, [playing, seekTime])
+
+    const onProgress = (state: any) => {
+        setBufferTime(state.loadedSeconds)
+
+        // setSeekTime(state.playedSeconds)
+
+        if (seekTime >= 1 && savedSeek) {
+            setSeekTime(savedSeek)
+            setSavedSeek(null)
+        } else {
+            setSeekTime(state.playedSeconds)
+        }
+
+        if (titleInfo) {
+            const savedWatchData = localStorage.getItem('savedWatchData')
+
+            const saveData = {
+                code: titleInfo.code,
+                title: titleInfo.names.ru,
+                playedInfo: {
+                    e: playList[activeEpisode].episode,
+                    t: state.playedSeconds,
+                    epTime: duration,
+                },
+            }
+
+            if (savedWatchData) {
+                const parsedWatchData = JSON.parse(savedWatchData)
+                if (parsedWatchData.find((item: TitleT) => item.code === titleInfo.code)) {
+                    const index = parsedWatchData.findIndex((item: TitleT) => item.code === titleInfo.code)
+                    parsedWatchData[index] = saveData
+                    localStorage.setItem('savedWatchData', JSON.stringify(parsedWatchData))
+                } else {
+                    parsedWatchData.push(saveData)
+                    localStorage.setItem('savedWatchData', JSON.stringify(parsedWatchData))
+                }
+            } else {
+                localStorage.setItem('savedWatchData', '[]')
+            }
+
+            // localStorage.setItem(`title-${titleInfo.id}`, JSON.stringify(saveData))
+        }
+    }
 
     const handleVideoReady = () => {
         setLoading(false)
@@ -229,13 +338,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
     const handleVolumeChange = (value: number) => {
         setIsMute(false)
         setVolume(value / 100)
+        localStorage.setItem('isMute', 'false')
+        localStorage.setItem('volume', `${value / 100}`)
+    }
+
+    const handleIsMuteChange = () => {
+        localStorage.setItem('isMute', `${!isMute}`)
+        setIsMute(!isMute)
     }
 
     const handleQualityChange = (newQuality: 'fhd' | 'hd' | 'sd') => {
         if (playerRef.current && playerRef.current.getCurrentTime()) {
             setPlayed(playerRef.current.getCurrentTime() / playerRef.current.getDuration())
         }
-        setActiveQuality(newQuality)
+        const index = quality.findIndex((qualityItem) => qualityItem.quality === newQuality)
+        setActiveEpisodeQuality(index)
     }
 
     const handleControlZoneClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -248,18 +365,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
         } else if (event.detail === 2) {
             handlePlayPause()
             handleFullscreenToggle()
-        }
-    }
-
-    const formatTime = (seconds: number): string => {
-        let minutes = Math.floor(seconds / 60)
-        const remainingSeconds = Math.floor(seconds % 60)
-        if (seconds > 3600) {
-            const hours = Math.floor(seconds / 3600)
-            minutes = Math.floor(seconds / 60) - hours * 60
-            return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
-        } else {
-            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
         }
     }
 
@@ -278,10 +383,22 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
         }
     }
 
+    const onContinue = () => {
+        if (savedDataIndex !== null && savedDataIndex >= 0) {
+            if (playList[activeEpisode].episode !== savedData[savedDataIndex].playedInfo.e) {
+                router.push(`/anime/${titleInfo.code}/episodes/${savedData[savedDataIndex].playedInfo.e}`)
+            } else {
+                setPlaying(true)
+                setPause(true)
+                setSavedSeek(savedData[savedDataIndex].playedInfo.t)
+            }
+        }
+    }
+
     if (playing) {
         return (
             <div
-                className={styles.player}
+                className={clsx(styles.player, className && className)}
                 style={{ cursor: controlsShow ? 'initial' : 'none' }}
                 id="video-player-container"
                 onMouseEnter={() => setControlsShow(true)}
@@ -303,42 +420,44 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
                 </div>
                 <ReactPlayer
                     ref={playerRef}
-                    url={activeUrl}
+                    url={`https://cache.libria.fun${quality[activeEpisodeQuality].url}`}
                     playing={pause}
                     volume={isMute ? 0 : volume}
                     playbackRate={playbackRate}
                     controls={false}
+                    onStart={() => {
+                        if (savedSeek) {
+                            setSeekTime(savedSeek)
+                        }
+                    }}
                     width="100%"
                     height="100%"
                     onReady={handleVideoReady}
                     onBuffer={() => setLoading(true)}
                     onBufferEnd={() => setLoading(false)}
                     onError={handleVideoError}
-                    onProgress={(state) => {
-                        setBufferTime(state.loadedSeconds)
-                        setSeekTime(state.playedSeconds)
-                    }}
+                    onProgress={onProgress}
                     playIcon={<MdPlayArrow size={32} />}
                     bufferTime={40000}
                     onDuration={(duration) => {
                         setDuration(duration)
                     }}
-                    {...(quality !== 'auto' && { config: { file: { attributes: { quality } } } })}
+                    // {...(quality !== 'auto' && { config: { file: { attributes: { quality } } } })}
                 />
 
                 <button
                     onClick={() => {
-                        setSeekTime(skips?.opening[1] / duration)
+                        setSeekTime(playList[activeEpisode].skips?.opening[1] / duration)
                         if (playerRef.current && playerRef.current.getDuration()) {
                             const duration = playerRef.current.getDuration()
-                            playerRef.current.seekTo(skips?.opening[1] / duration)
+                            playerRef.current.seekTo(playList[activeEpisode].skips?.opening[1] / duration)
                         }
                     }}
                     className={clsx(
                         styles.skip_opening,
-                        skips?.opening.length > 0 &&
-                            seekTime >= skips?.opening[0] &&
-                            seekTime < skips?.opening[0] + 15 &&
+                        playList[activeEpisode].skips?.opening.length > 0 &&
+                            seekTime >= playList[activeEpisode].skips?.opening[0] &&
+                            seekTime < playList[activeEpisode].skips?.opening[0] + 15 &&
                             styles.active,
                     )}
                 >
@@ -359,23 +478,23 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
                             }
                         }}
                         isTooltip
-                        formatTime={formatTime}
+                        formatTime={formatPlayerTime}
                         loaded={bufferTime}
                     />
                     <div className={clsx(styles.settings, settingsShow && styles.show)}>
-                        {qualityOptions &&
-                            qualityOptions.map((item, index) => {
-                                const activeQuality = getQualityByString(item.quality)
+                        {quality
+                            .filter((quality) => quality.url)
+                            .map((item, index) => {
                                 return (
                                     <button
                                         key={index}
                                         onClick={() => {
                                             setSavedSeekTime(seekTime)
-                                            setActiveUrl(item.url)
+                                            setActiveEpisodeQuality(index)
                                             handleQualityChange(item.quality)
                                         }}
                                     >
-                                        {activeQuality}
+                                        {getQualityByString(item.quality)}
                                     </button>
                                 )
                             })}
@@ -387,7 +506,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
                             </button>
                             <div className={styles.volume}>
                                 {!isMobile && (
-                                    <button onClick={() => setIsMute(!isMute)}>
+                                    <button onClick={handleIsMuteChange}>
                                         {isMute ? (
                                             <MdVolumeOff size={28} />
                                         ) : volume > 0.2 ? (
@@ -411,13 +530,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
 
                             {duration && (
                                 <div className={styles.time}>
-                                    <span>{formatTime(seekTime)}</span> / <span>{formatTime(duration)}</span>
+                                    <span>{formatPlayerTime(seekTime)}</span> /{' '}
+                                    <span>{formatPlayerTime(duration)}</span>
                                 </div>
                             )}
                         </div>
                         <div className={styles.controls_footer_right}>
                             <button onClick={() => setSettingsShow(!settingsShow)}>
-                                {getQualityByString(activeQuality)}
+                                {getQualityByString(quality[activeEpisodeQuality].quality)}
                             </button>
                             <button onClick={handleFullscreenToggle}>
                                 {isFullscreen ? <MdFullscreenExit size={32} /> : <MdFullscreen size={32} />}
@@ -431,7 +551,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
         return (
             <div className={styles.player_container}>
                 <Image
-                    src={preview ? `https://anilibria.tv${preview}` : '/img/base-preview.png'}
+                    src={
+                        playList[activeEpisode] && playList[activeEpisode].preview
+                            ? `https://anilibria.tv${playList[activeEpisode].preview}`
+                            : '/img/base-preview.png'
+                    }
                     width={1280}
                     height={720}
                     alt={'Смотрите аниме на AniBam'}
@@ -446,6 +570,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, qualityOptions, skips, p
                 >
                     <MdPlayArrow color="#fff" size={128} />
                 </button>
+
+                {savedData && savedDataIndex !== null && savedDataIndex >= 0 && (
+                    <div className={styles.continue}>
+                        {/* <p>
+                            Вы остановились на {savedData[savedDataIndex].playedInfo.e} серии -{' '}
+                            {formatPlayerTime(savedData[savedDataIndex].playedInfo.t)}
+                        </p> */}
+                        <button className={styles.continue_btn} onClick={onContinue}>
+                            Продолжить просмотр
+                        </button>
+                    </div>
+                )}
             </div>
         )
     }

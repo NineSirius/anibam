@@ -12,10 +12,15 @@ import Image from 'next/image'
 import clsx from 'clsx'
 import { Button } from '@/components/UI/Button'
 import { AnnounceCard } from './AnnounceCard'
+import { SavedTitleCard } from '@/components/SavedTitleCard'
+
+interface SavedTitleT extends TitleT {
+    playedInfo: { e: number; t: number; epTime: number }
+}
 
 export const HomePage = () => {
-    const [titles, setTitles] = React.useState<TitleT[]>([])
-    const [innerWidth, setInnerWidth] = useState<number>(0)
+    const [titles, setTitles] = useState<TitleT[]>([])
+    const [savedTitles, setSavedTitles] = useState<SavedTitleT[]>([])
     const [currentSeason, setCurrentSeason] = useState<null | string>(null)
     const [scheduleToday, setScheduleToday] = useState<TitleT[]>([])
     const [scheduleYesterDay, setScheduleYesterDay] = useState<TitleT[]>([])
@@ -49,7 +54,6 @@ export const HomePage = () => {
                 `https://api.anilibria.tv/v3/title/search?year=${currentYear}&season_code=${currentSeason}&items_per_page=10`,
             )
             .then((resp) => setTitles(resp.data.list))
-        setInnerWidth(window.innerWidth)
 
         getAnilibriaSchedule().then((resp) => {
             const currentDay = new Date().getDay() - 1
@@ -76,6 +80,27 @@ export const HomePage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    useEffect(() => {
+        const savedWatchData = localStorage.getItem('savedWatchData')
+
+        if (savedWatchData) {
+            const fetchData = async () => {
+                const parsedWatchData = JSON.parse(savedWatchData)
+                const data = await parsedWatchData.map(async (item: SavedTitleT) => {
+                    const data = await getAnilibriaTitle(item.code)
+                    return {
+                        ...data,
+                        playedInfo: item.playedInfo,
+                    }
+                })
+                Promise.all(data).then((resp) => setSavedTitles(resp.reverse()))
+            }
+            fetchData()
+        }
+
+        // Promise.all(data).then((resp) => console.log(resp))
+    }, [])
+
     if (titles.length > 0) {
         return (
             <>
@@ -94,6 +119,28 @@ export const HomePage = () => {
                     <meta content="AniBam – смотреть аниме на лучшем сайте в мире." name="og:title" />
                 </Head>
                 <div className="container">
+                    {savedTitles.length > 0 && (
+                        <div className={styles.continue_block}>
+                            <h4 className="title">Продолжить просмотр</h4>
+
+                            <ScrollContainer className={styles.continue_block_titles} horizontal>
+                                {savedTitles.map((title) => {
+                                    return (
+                                        <SavedTitleCard
+                                            key={title.code}
+                                            title={title.names.ru}
+                                            poster={`https://anilibria.tv${title.posters.small.url}`}
+                                            playedInfo={title.playedInfo}
+                                            onClick={() =>
+                                                router.push(`/anime/${title.code}/episodes/${title.playedInfo.e}`)
+                                            }
+                                        />
+                                    )
+                                })}
+                            </ScrollContainer>
+                        </div>
+                    )}
+
                     <h4 className="main_title" style={{ marginBottom: 10 }}>
                         Аниме {currentSeason} сезона
                     </h4>

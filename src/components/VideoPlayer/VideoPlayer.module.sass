@@ -2,6 +2,9 @@
   position: relative
 
   &_container
+    width: 100%
+    height: 100%
+    position: relative
     display: flex
     justify-content: center
     align-items: center
@@ -21,6 +24,28 @@
 
       &:hover
         cursor: pointer
+
+    .continue
+      position: absolute
+      left: 50%
+      transform: translateX(-50%)
+      bottom: 20px
+
+      & p
+        color: #f2f2f2
+
+      &_btn
+        font-weight: 600
+        margin-top: 5px
+        width: 100%
+        border-radius: 5px
+        padding: 10px 10px
+        background: var(--btn-primary-bg)
+        border: none
+
+        &:hover
+          background: var(--btn-primary-bg)
+          cursor: pointer
 
   .controls_zone
     position: absolute

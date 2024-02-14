@@ -9,9 +9,9 @@ import React, { useEffect, useState } from 'react'
 import { addToLightGallery, StoreTypes } from '@/store/reducers/user.reducer'
 import { Button } from '@/components/UI/Button'
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
-import { limitStr } from '@/components/TitleCard'
+import { TitleCard, limitStr } from '@/components/TitleCard'
 import styles from './TitlePage.module.sass'
-import { TitleT } from '../types/TitleT'
+import { TitleT, playerListT } from '../types/TitleT'
 import { MdShare } from 'react-icons/md'
 import { Modal } from '@/components/UI/Modal'
 import Link from 'next/link'
@@ -19,15 +19,24 @@ import { ScheduleT } from '../types/ScheduleT'
 import { getAnilibriaSchedule, getAnilibriaTitle } from '@/api'
 import { shareSocial } from './shareSocial'
 import { Metadata } from 'next'
+import VideoPlayer from '@/components/VideoPlayer'
+import axios from 'axios'
 
 export const metadata: Metadata = {
     title: 'AniBam - лучший сайт для просмотра аниме',
     description: 'Welcome to Next.js',
 }
 
+type PlayerT = {
+    name: string
+    url: string | null
+}
+
 export const TitlePage = () => {
     const [titleInfo, setTitleInfo] = useState<TitleT | null>(null)
+    const [episodesList, setEpisodesList] = useState<playerListT[]>([])
     const [schedule, setSchedule] = useState<ScheduleT[] | null>(null)
+    const [franchises, setFranchises] = useState<any[]>([])
 
     const [hideDesc, setHideDesc] = useState<boolean>(true)
     const [mobile, setMobile] = useState<boolean>(false)
@@ -38,6 +47,11 @@ export const TitlePage = () => {
     const [shareModalShow, setShareModalShow] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
     const [announce, setAnnounce] = useState<string | null>('')
+    const [players, setPlayers] = useState<PlayerT[]>([])
+    const [activePlayer, setActivePlayer] = useState<PlayerT>({
+        name: 'AniBam',
+        url: null,
+    })
 
     const router = useRouter()
     const params = useParams()
@@ -61,6 +75,25 @@ export const TitlePage = () => {
                             list: Object.keys(resp.player.list).map((key: string) => resp.player.list[key]),
                         },
                     }
+
+                    setEpisodesList(
+                        Object.keys(data.player.list).map((episodeKey: string) => data.player.list[+episodeKey]),
+                    )
+                    const players = [
+                        {
+                            name: 'AniBam',
+                            url: null,
+                        },
+                        {
+                            name: 'AniLibria',
+                            url: `https://www.anilibria.tv/public/iframe.php?id=${data.id}`,
+                        },
+                    ]
+                    if (data.player.alternative_player) {
+                        players.push({ name: 'Внешний плеер', url: data.player.alternative_player })
+                    }
+
+                    setPlayers(players)
                     setTitleInfo(data)
                 })
                 .catch((err) => {
@@ -134,7 +167,7 @@ export const TitlePage = () => {
 
         return (
             <>
-                <Head>
+                {/* <Head>
                     <title>{`${titleInfo.names.ru} - смотреть на AniBam`}</title>
                     <meta property="title" content={`${titleInfo.names.ru} - смотреть на AniBam`} />
                     <meta property="description" content={`${titleInfo.description}`} />
@@ -144,219 +177,111 @@ export const TitlePage = () => {
                     <meta property="og:description" content={`${titleInfo.description}`} />
                     <meta property="og:image" content={`${titleInfo.posters.medium.url}`} />
                     <meta property="og:url" content={`https://anibam.vercel.app/anime/${titleInfo.code}`} />
-                </Head>
-                <div className="container">
-                    <div className={styles.title_info}>
-                        <div className={styles.poster_wrap}>
-                            {titleInfo.posters && (
-                                <Image
-                                    src={`https://anilibria.tv${titleInfo.posters.medium.url}`}
-                                    width={200}
-                                    height={500}
-                                    alt={`Постер к аниме ${titleInfo.names.ru}`}
-                                    className={styles.poster}
-                                    onClick={() =>
-                                        dispatch(
-                                            addToLightGallery([
-                                                `https://anilibria.tv${titleInfo.posters.original.url}`,
-                                            ]),
-                                        )
-                                    }
-                                />
-                            )}
+                </Head> */}
 
-                            <Button
-                                color="primary"
-                                className={styles.button}
-                                onClick={() => {
-                                    if (titleInfo.player.list.length > 0) {
-                                        router.push(`/anime/${titleInfo.code}/episodes/1`)
-                                    } else enqueueSnackbar('Эпизоды отсутствуют')
-                                }}
-                            >
-                                Смотреть онлайн
-                            </Button>
+                <div className={styles.content}>
+                    <div className={`${styles.title_info} container`}>
+                        <div className={styles.left}>
+                            <Image
+                                src={`https://anilibria.tv${titleInfo.posters.medium.url}`}
+                                width={300}
+                                height={200}
+                                alt={`Постер к аниме ${titleInfo.names.ru}`}
+                                className={styles.poster}
+                            />
 
-                            <ul className={clsx(styles.anime_info, !mobile && styles.active)}>
-                                <li>
-                                    <p>Формат</p>
-                                    <span>{titleInfo.type.string}</span>
-                                </li>
-                                <li>
-                                    <p>Дата выхода</p>
-                                    <span>{`${titleInfo.season.year}`}</span>
-                                </li>
-                                <li>
-                                    <p>Озвучка</p>
-                                    <span title={titleInfo.team.voice.join(', ')}>AniLibria</span>
-                                </li>
-
-                                <li>
-                                    <p>Кол-во эпизодов</p>
-                                    <span>{titleInfo.player.list.length} эп.</span>
-                                </li>
-                                <li>
-                                    <p>Статус</p>
-                                    <span>{titleInfo.status.string}</span>
-                                </li>
-                                <li>
-                                    <p>Страна</p>
-                                    <span>Япония</span>
-                                </li>
-                            </ul>
+                            <Button color="primary">Смотреть онлайн</Button>
                         </div>
 
-                        <div className={styles.title_info_content}>
-                            <div className={styles.rating}></div>
-                            <h1>{titleInfo.names.ru}</h1>
-                            <p className={clsx('caption', styles.caption)}>{titleInfo.names.en}</p>
+                        <div className={styles.right}>
+                            <h1 className={styles.title}>{titleInfo.names.ru}</h1>
+                            <p className={styles.caption}>{titleInfo.names.en}</p>
 
-                            <div className={styles.genres}>
-                                {titleInfo.genres.map((item, index) => {
-                                    return (
-                                        <span key={index} className={styles.genre_item}>
-                                            {item}
-                                        </span>
-                                    )
-                                })}
-                            </div>
-
-                            <div className={styles.mobile_play_btn_wrap}>
-                                <Button
-                                    className={styles.button}
-                                    onClick={() => {
-                                        if (titleInfo.player.episodes.last > 0) {
-                                            router.push(`/anime/${titleInfo.code}/episodes/1`)
-                                        } else enqueueSnackbar('Эпизоды отсутствуют')
-                                    }}
-                                >
-                                    Смотреть онлайн
-                                </Button>
-                                <Button
-                                    className={styles.share_btn}
-                                    color="primary"
-                                    onClick={() => setShareModalShow(true)}
-                                >
-                                    <MdShare size={20} />
+                            <div className={styles.title_controls}>
+                                <Button color="primary" onClick={() => setShareModalShow(true)}>
+                                    <MdShare />
+                                    Поделиться
                                 </Button>
                             </div>
-                            <ul className={clsx(styles.anime_info, mobile && styles.active)}>
-                                <li>
-                                    <p>Формат</p>
-                                    <span>{titleInfo.type.string}</span>
+
+                            <ul className={styles.info_list}>
+                                <li className={styles.info_list_item}>
+                                    <span className={styles.title}>Тип</span>
+                                    <span className={styles.value}>{titleInfo.type.full_string}</span>
                                 </li>
-                                <li>
-                                    <p>Дата выхода</p>
-                                    <span>{`${titleInfo.season.year}, ${titleInfo.season.string}`}</span>
+                                <li className={styles.info_list_item}>
+                                    <span className={styles.title}>Статус</span>
+                                    <span className={styles.value}>{titleInfo.status.string}</span>
                                 </li>
-                                <li>
-                                    <p>Озвучка</p>
-                                    <span title={titleInfo.team.voice.join(', ')}>AniLibria</span>
+                                <li className={styles.info_list_item}>
+                                    <span className={styles.title}>Жанры</span>
+                                    <span className={styles.value}>
+                                        {titleInfo.genres.map((genre, index) => (
+                                            <a
+                                                key={genre}
+                                                className={styles.link}
+                                                href={`https://anibam.vercel.app/anime?genre=${genre}`}
+                                            >
+                                                {`${genre}${index !== titleInfo.genres.length - 1 ? ',' : ''} `}
+                                            </a>
+                                        ))}
+                                    </span>
                                 </li>
-                                <li>
-                                    <p>Кол-во эпизодов</p>
-                                    <span>{titleInfo.player.list.length} эп.</span>
-                                </li>
-                                <li>
-                                    <p>Статус</p>
-                                    <span>{titleInfo.status.string}</span>
-                                </li>
-                                <li>
-                                    <p>Страна</p>
-                                    <span>Япония</span>
+                                <li className={styles.info_list_item}>
+                                    <span className={styles.title}>Сезон</span>
+                                    <span className={styles.value}>
+                                        {titleInfo.season.string} {titleInfo.season.year}
+                                    </span>
                                 </li>
                             </ul>
 
-                            <ReactMarkdown className={clsx(styles.description, !hideDesc && styles.active)}>
-                                {titleInfo.description.length < 350
-                                    ? titleInfo.description
-                                    : hideDesc
-                                    ? limitStr(titleInfo.description, 350)
-                                    : titleInfo.description}
-                            </ReactMarkdown>
+                            <ReactMarkdown className={styles.description}>{titleInfo.description}</ReactMarkdown>
 
-                            {titleInfo.description.length >= 350 && (
-                                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <button onClick={() => setHideDesc(!hideDesc)} className={styles.more_btn}>
-                                        {hideDesc ? 'Подробнее' : 'Скрыть'}
-                                    </button>
-                                </div>
-                            )}
+                            {titleInfo.franchises.map((franchise: any) => (
+                                <div className={styles.franchise} key={franchise.franchise.id}>
+                                    <h4>Франшиза {`"${franchise.franchise.name}"`}</h4>
 
-                            <div className={styles.episodes}>
-                                <div className={styles.episodes_title}>
-                                    <h3>Список серий</h3>
-                                    {announce && (
-                                        <Button
-                                            className={styles.announce}
-                                            color="primary"
-                                            onClick={() => router.push('/schedule')}
-                                        >
-                                            {announce}
-                                        </Button>
-                                    )}
+                                    <div className={styles.franchise_titles}>
+                                        {/* {franchise.releases.map((release: any) => {
+                                            const data = await fetch(
+                                                'https://api.anilibria.tv/v3/title?code=tokyo-ghoul&filter=id,names,code,posters,',
+                                            )
+                                            // <TitleCard key={release.code} />
+                                        })} */}
+                                    </div>
                                 </div>
-                                {episodes.length > 0 ? (
-                                    episodes.map((item, index) => (
-                                        <Button
-                                            key={index}
-                                            style={{ justifyContent: 'flex-start' }}
-                                            onClick={() =>
-                                                router.push(`/anime/${titleInfo.code}/episodes/${item.episode}`)
-                                            }
+                            ))}
+
+                            <div className={styles.player}>
+                                <h4>Смотреть онлайн</h4>
+                                <div className={styles.player_list}>
+                                    {players.map((player) => (
+                                        <button
+                                            key={player.name}
+                                            onClick={() => setActivePlayer(player)}
+                                            className={styles.button}
                                         >
-                                            {`${item.episode} эпизод`}
-                                        </Button>
-                                    ))
+                                            {player.name}
+                                        </button>
+                                    ))}
+                                </div>
+                                {activePlayer.name === 'AniBam' ? (
+                                    <VideoPlayer
+                                        titleInfo={titleInfo}
+                                        activeEpisode={1}
+                                        playList={episodesList}
+                                        className={styles.player_anibam}
+                                    />
                                 ) : (
-                                    <h2>В скором времени добавятся</h2>
+                                    <iframe
+                                        src={activePlayer.url}
+                                        type="text/html"
+                                        width={'100%'}
+                                        height={515}
+                                        frameborder="0"
+                                        allowfullscreen
+                                    ></iframe>
                                 )}
-                                {titleInfo.player.list.length > 7 && (
-                                    <Button onClick={toggleShowMore}>
-                                        {showMore ? `Скрыть (${remainingCount})` : `Показать еще (${remainingCount})`}
-                                    </Button>
-                                )}
-                            </div>
-
-                            {titleInfo.franchises.length > 0 && (
-                                <div className={styles.relations}>
-                                    <h4>Порядок просмотра</h4>
-                                    <ul className={styles.relations_list}>
-                                        {titleInfo.franchises[0].releases.length > 0 &&
-                                            titleInfo.franchises[0].releases.map((item: any) => {
-                                                if (item.code === titleInfo.code) {
-                                                    return (
-                                                        <div
-                                                            key={item.id}
-                                                            className={clsx(styles.relations_list_item, styles.active)}
-                                                        >
-                                                            <div className={styles.item_info}>
-                                                                <h4>{item.names.ru}</h4>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                } else {
-                                                    return (
-                                                        <div
-                                                            key={item.id}
-                                                            className={styles.relations_list_item}
-                                                            onClick={() => router.push(`/anime/${item.code}`)}
-                                                        >
-                                                            <div className={styles.item_info}>
-                                                                <h4>{item.names.ru}</h4>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                }
-                                            })}
-                                    </ul>
-                                </div>
-                            )}
-
-                            <div className={styles.similar_titles}></div>
-
-                            <div className={styles.comments}>
-                                <h2>Комментарии</h2>
                             </div>
                         </div>
                     </div>
